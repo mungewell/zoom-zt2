@@ -1,0 +1,11 @@
+python3 zoom_zt2.py -A  2 -u 0 -i 128 -n EGFILTER.ZD2 -v 1.20 -w everything.zt2
+python3 zoom_zt2.py -A  3 -u 0 -i 256 -n TS_BOOST.ZD2 -v 1.20 -w everything.zt2
+python3 zoom_zt2.py -A  3 -u 0 -i 272 -n REDCRBST.ZD2 -v 1.10 -w everything.zt2
+python3 zoom_zt2.py -A  6 -u 0 -i 224 -n KICKFLNG.ZD2 -v 1.20 -w everything.zt2
+python3 zoom_zt2.py -A  8 -u 0 -i 96 -n HOLDDLY.ZD2 -v 1.20 -w everything.zt2
+python3 zoom_zt2.py -A  9 -u 0 -i 176 -n AMBIENCE.ZD2 -v 1.10 -w missing.zt2
+python3 zoom_zt2.py -A  9 -u 0 -i 192 -n PARTICLE.ZD2 -v 1.20 -w missing.zt2
+python3 zoom_zt2.py -A  9 -u 0 -i 240 -n HOLDVERB.ZD2 -v 1.00 -w missing.zt2
+python3 zoom_zt2.py -A  10 -u 128 -i 16 -n BASSWAH.ZD2 -v 1.30 -w everything.zt2
+python3 zoom_zt2.py -A  10 -u 128 -i 48 -n B_PDLPIT.ZD2 -v 1.20 -w everything.zt2
+python3 zoom_zt2.py -A  10 -u 128 -i 64 -n B_PDLMNP.ZD2 -v 1.20 -w everything.zt2
