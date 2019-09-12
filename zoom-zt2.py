@@ -7,7 +7,7 @@
 from construct import *
 
 #--------------------------------------------------
-# Define file format using Construct (v2.9)
+# Define ZT2/ZD2 file format using Construct (v2.9)
 # requires:
 # https://github.com/construct/construct
 
@@ -63,6 +63,30 @@ ZT2 = Padded(8502, Sequence(
     "header" / Header,
     "groups" / GreedyRange(Group),
 ))
+
+ZD2 = Struct(
+    Const(b"\x5a\x44\x4c\x46\x78"),
+    Padding(83),
+    Const(b"\x01"),
+    "version" / PaddedString(4, "ascii"),
+    Const(b"\x00\x00"),
+    "group" / Byte,
+    "groupname" / Enum(Computed(this.group),
+        DYNAMICS = 1,
+	FILTER = 2,
+	DRIVE = 3,
+	AMP = 4,
+	CABINET = 5,
+	MODULATION = 6,
+	SFX = 7,
+	DELAY = 8,
+	REVERB = 9,
+	PEDAL = 11,
+	ACOUSTIC = 29,
+    ),
+    "type" / Int32ul,
+    "name" / CString("ascii"),
+)
 
 #--------------------------------------------------
 
