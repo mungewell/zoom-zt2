@@ -105,6 +105,12 @@ class zoom(object):
     inport = None
     outport = None
 
+    def is_connected(self):
+        if self.inport == None or self.outport == None:
+            return(False)
+        else:
+            return(True)
+
     def connect(self):
         for port in mido.get_input_names():
             if port[:len(midiname)]==midiname:
@@ -291,6 +297,7 @@ def main():
     from optparse import OptionParser
 
     data = bytearray(b"")
+    pedal = zoom()
 
     usage = "usage: %prog [options] FILENAME"
     parser = OptionParser(usage)
@@ -347,76 +354,13 @@ def main():
         sys.exit("Cannot use 'install' and 'uninstall' at same time")
     
     if options.receive or options.send or options.install:
-        for port in mido.get_input_names():
-            if port[:len(midiname)]==midiname:
-                inport = mido.open_input(port)
-                #print("Using Input:", port)
-                break
-        for port in mido.get_output_names():
-            if port[:len(midiname)]==midiname:
-                outport = mido.open_output(port)
-                #print("Using Output:", port)
-                break
-    
-        if inport == None or outport == None:
+        if not pedal.connect():
             sys.exit("Unable to find Pedal")
     
-        # Enable PC Mode
-        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x52])
-        outport.send(msg); sleep(0); msg = inport.receive()
-    
     if options.receive:
-        # Set up read
-        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x25, 0x00, 0x00, 0x46, 0x4c, 0x53, 0x54, 0x5f, 0x53, 0x45, 0x51, 0x2e, 0x5a, 0x54, 0x32, 0x00, 0x05])
-        outport.send(msg); sleep(0); msg = inport.receive()
-
-        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x05, 0x00])
-        outport.send(msg); sleep(0); msg = inport.receive()
-
-        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x27])
-        outport.send(msg); sleep(0); msg = inport.receive()
-        
-        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x20, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46, 0x4c, 0x53, 0x54, 0x5f, 0x53, 0x45, 0x51, 0x2e, 0x5a, 0x54, 0x32, 0x00])
-        outport.send(msg); sleep(0); msg = inport.receive()
-    
-        # Read parts 1 through 17
-        for part in range(17):
-            msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x05, 0x00])
-            outport.send(msg); sleep(0); msg = inport.receive()
-    
-            msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x22, 0x14, 0x2f, 0x60, 0x00, 0x0c, 0x00, 0x04, 0x00, 0x00, 0x00])
-            outport.send(msg); sleep(0); msg = inport.receive()
-    
-            msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x05, 0x00])
-            outport.send(msg); sleep(0); msg = inport.receive()
-    
-            #decode received data
-            packet = msg.data
-            block = bytearray(b"")
-            offset = 10
-            loop = -1 # start by reading hibits value
-            hibits = 0
-    
-            length = int(packet[offset-1]) * 128 + int(packet[offset-2])
-            for byte in range(length + int(length/7) + 1):
-                if loop !=-1:
-                    if (hibits & (2**loop)):
-                        block.append(128 + packet[offset+byte])
-                    else:
-                        block.append(packet[offset+byte])
-                    loop = loop - 1
-                else:
-                    hibits = packet[offset+byte]
-                    # do we need to acount for short sets (at end of block block)?
-                    loop = 6
-        
-            # confirm checksum (last 5 bytes of packet)
-            checksum = packet[-5] + (packet[-4] << 7) + (packet[-3] << 14) \
-                    + (packet[-2] << 21) + ((packet[-1] & 0x0F) << 28) 
-            if (checksum ^ 0xFFFFFFFF) == binascii.crc32(block):
-                data = data + block
-            else:
-                print("Checksum error", hex(checksum))
+        pedal.file_check("FLST_SEQ.ZT2")
+        data = pedal.file_download("FLST_SEQ.ZT2")
+        pedal.file_close()
     else:
         # Read data from file
         infile = open(args[0], "rb")
@@ -517,192 +461,22 @@ def main():
             bindata = binfile.read()
             binfile.close()
 
-    if options.install or options.uninstall:
-        # I "f0 52 00 6e 60 25 00 00 42 4c 41 43 4b 4f 50 54 2e 5a 44 32 00 f7"
-        # U "f0 52 00 6e 60 25 00 00 42 4c 41 43 4b 4f 50 54 2e 5a 44 32 00 f7"
-        packet = bytearray(b"\x52\x00\x6e\x60\x25\x00\x00")
-        if options.install:
-            head, tail = os.path.split(options.install)
-        else:
-            head, tail = os.path.split(options.uninstall)
+            pedal.file_check(options.install)
+            pedal.file_upload(options.install)
 
-        for x in range(len(tail)):
-            packet.append(ord(tail[x]))
-        packet.append(0x00)
-        msg = mido.Message("sysex", data = packet)
-        outport.send(msg); sleep(0); msg = inport.receive()
-    
-        # U "f0 52 00 6e 60 05 00 f7"
-
-        # I/U "f0 52 00 6e 60 27 f7"
-        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x27])
-        outport.send(msg); sleep(0); msg = inport.receive()
-    
-        # I "f0 52 00 6e 60 20 01 00 00 00 00 00 00 00 00 00 42 4c 41 43 4b 4f 50 54 2e 5a 44 32 00 f7"
-        # U "f0 52 00 6e 60 24 42 4c 41 43 4b 4f 50 54 2e 5a 44 32 00 f7 00"
-        if options.install:
-            packet = bytearray(b"\x52\x00\x6e\x60\x20\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00")
-        else:
-            packet = bytearray(b"\x52\x00\x6e\x60\x24")
-        for x in range(len(tail)):
-            packet.append(ord(tail[x]))
-        packet.append(0x00)
-        msg = mido.Message("sysex", data = packet)
-        outport.send(msg); sleep(0); msg = inport.receive()
-    
-        # getting hung during uninstall....
-        if options.install:
-            # "f0 52 00 6e 60 05 00 f7"
-            msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x05, 0x00])
-            outport.send(msg); sleep(0); msg = inport.receive()
-
-        # data sent same way as FLST
-        while options.install and len(bindata):
-            # header (without 0xF0)
-            packet = bytearray(b"\x52\x00\x6e\x60\x23\x40\x00\x00\x00\x00")
-    
-            if len(bindata) > 512:
-                length = 512
-            else:
-                length = len(bindata)
-            packet.append(length & 0x7f)
-            packet.append((length >> 7) & 0x7f)
-            packet = packet + bytearray(b"\x00\x00\x00")
-    
-            # Encode/Pack high bits
-            encode = bytearray(b"\x00")
-            for z in range(length):
-                # into [0] bits 7..0
-                encode[0] = encode[0] + ((bindata[z] & 0x80) >> len(encode))
-                encode.append(bindata[z] & 0x7f)
-
-                if len(encode) > 7:
-                    #print(binascii.hexlify(encode))
-                    packet = packet + encode
-                    encode = bytearray(b"\x00")
-
-            # don't forget to add last few bytes
-            if len(encode) > 1:
-                packet = packet + encode
-    
-            # Compute CRC32
-            crc = binascii.crc32(bindata[:length]) ^ 0xFFFFFFFF
-            packet.append(crc & 0x7f)
-            packet.append((crc >> 7) & 0x7f)
-            packet.append((crc >> 14) & 0x7f)
-            packet.append((crc >> 21) & 0x7f)
-            packet.append((crc >> 28) & 0x0f)
-    
-            bindata = bindata[length:]
-            #print(hex(len(packet)), binascii.hexlify(packet))
-
-            msg = mido.Message("sysex", data = packet)
-            outport.send(msg); sleep(0); msg = inport.receive()
-            #print(msg)
-    
-            msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x05, 0x00])
-            outport.send(msg); sleep(0); msg = inport.receive()
-            #print(msg)
-    
+    if options.uninstall:
+        pedal.file_check(options.uninstall)
+        pedal.file_delete(options.uninstall)
 
     if options.send:
-        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x25, 0x00, 0x00, 0x46, 0x4c, 0x53, 0x54, 0x5f, 0x53, 0x45, 0x51, 0x2e, 0x5a, 0x54, 0x32, 0x00])
-        outport.send(msg); sleep(0); msg = inport.receive()
-        #print(msg)
-    
-        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x05, 0x00])
-        outport.send(msg); sleep(0); msg = inport.receive()
-        #print(msg)
-    
-        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x27])
-        outport.send(msg); sleep(0); msg = inport.receive()
-        #print(msg)
-    
-        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x24, 0x46, 0x4c, 0x53, 0x54, 0x5f, 0x53, 0x45, 0x51, 0x2e, 0x5a, 0x54, 0x32, 0x00])
-        outport.send(msg); sleep(0); msg = inport.receive()
-        #print(msg)
-    
-        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x20, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46, 0x4c, 0x53, 0x54, 0x5f, 0x53, 0x45, 0x51, 0x2e, 0x5a, 0x54, 0x32, 0x00])
-        outport.send(msg); sleep(0); msg = inport.receive()
-        #print(msg)
-    
-        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x05, 0x00])
-        outport.send(msg); sleep(0); msg = inport.receive()
-        #print(msg)
-        #print("sending FLTS_SEQ next....")
-    
-        while len(data):
-            # header (without 0xF0)
-            packet = bytearray(b"\x52\x00\x6e\x60\x23\x40\x00\x00\x00\x00")
-    
-            if len(data) > 512:
-                length = 512
-            else:
-                length = len(data)
-            packet.append(length & 0x7f)
-            packet.append((length >> 7) & 0x7f)
-            packet = packet + bytearray(b"\x00\x00\x00")
-    
-            # Encode/Pack high bits
-            encode = bytearray(b"\x00")
-            for z in range(length):
-                # into [0] bits 7..0
-                encode[0] = encode[0] + ((data[z] & 0x80) >> len(encode))
-                encode.append(data[z] & 0x7f)
-    
-                if len(encode) > 7:
-                    #print(binascii.hexlify(encode))
-                    packet = packet + encode
-                    encode = bytearray(b"\x00")
-
-            # don't forget to add last few bytes
-            if len(encode) > 1:
-                packet = packet + encode
-    
-            # Compute CRC32
-            crc = binascii.crc32(data[:length]) ^ 0xFFFFFFFF
-            packet.append(crc & 0x7f)
-            packet.append((crc >> 7) & 0x7f)
-            packet.append((crc >> 14) & 0x7f)
-            packet.append((crc >> 21) & 0x7f)
-            packet.append((crc >> 28) & 0x0f)
-    
-            data = data[length:]
-            #print(hex(len(packet)), binascii.hexlify(packet))
-
-            msg = mido.Message("sysex", data = packet)
-            outport.send(msg); sleep(0); msg = inport.receive()
-            #print(msg)
-    
-            msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x05, 0x00])
-            outport.send(msg); sleep(0); msg = inport.receive()
-            #print(msg)
+        pedal.file_check("FLST_SEQ.ZT2")
+        pedal.file_upload("FLST_SEQ.ZT2", data)
     
     if options.send or options.install or options.uninstall:
-        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x21, 0x40, 0x00, 0x00, 0x00, 0x00])
-        outport.send(msg); sleep(0); msg = inport.receive()
-        #print(msg)
-        
-        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x09])
-        outport.send(msg); sleep(0); msg = inport.receive()
-        #print(msg)
-        
-        '''
-        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x09])
-        outport.send(msg); sleep(0); msg = inport.receive()
-        #print(msg)
+        pedal.file_close()
     
-        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x57])
-        outport.send(msg); sleep(0); msg = inport.receive()
-        #print(msg)
-        '''
-    
-    
-    if options.receive or options.send:
-        # Disable PC Mode
-        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x53])
-        outport.send(msg); sleep(0); msg = inport.receive()
-    
+    if pedal.is_connected():
+        pedal.disconnect()
     
 if __name__ == "__main__":
     main()
