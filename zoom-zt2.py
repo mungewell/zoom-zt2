@@ -89,23 +89,206 @@ ZD2 = Struct(
 )
 
 #--------------------------------------------------
-
-import sys
 import os
-from optparse import OptionParser
+import sys
 import mido
 import binascii
 from time import sleep
-
-inport = None
-outport = None
-data = bytearray(b"")
 
 if sys.platform == 'win32':
     mido.set_backend('mido.backends.rtmidi_python')
     midiname = b"ZOOM G"
 else:
     midiname = "ZOOM G"
+
+class zoom(object):
+    inport = None
+    outport = None
+
+    def connect(self):
+        for port in mido.get_input_names():
+            if port[:len(midiname)]==midiname:
+                self.inport = mido.open_input(port)
+                #print("Using Input:", port)
+                break
+        for port in mido.get_output_names():
+            if port[:len(midiname)]==midiname:
+                self.outport = mido.open_output(port)
+                #print("Using Output:", port)
+                break
+
+        if self.inport == None or self.outport == None:
+            #print("Unable to find Pedal")
+            return(False)
+
+        # Enable PC Mode
+        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x52])
+        self.outport.send(msg); sleep(0); msg = self.inport.receive()
+        return(True)
+
+    def disconnect(self):
+        # Disable PC Mode
+        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x53])
+        self.outport.send(msg); sleep(0); msg = self.inport.receive()
+
+        self.inport = None
+        self.outport = None
+
+    def pack(self, data):
+        # Pack 8bit data into 7bit, MSB's in first byte followed
+        # by 7 bytes (bits 6..0).
+        packet = bytearray(b"")
+        encode = bytearray(b"\x00")
+
+        for byte in data:
+            encode[0] = encode[0] + ((byte & 0x80) >> len(encode))
+            encode.append(byte & 0x7f)
+
+            if len(encode) > 7:
+                packet = packet + encode
+                encode = bytearray(b"\x00")
+
+        # don't forget to add last few bytes
+        if len(encode) > 1:
+            packet = packet + encode
+
+        return(packet)
+
+    def unpack(self, packet):
+        # Unpack data 7bit to 8bit, MSBs in first byte
+        data = bytearray(b"")
+        loop = -1
+        hibits = 0
+
+        for byte in packet:
+            if loop !=-1:
+                if (hibits & (2**loop)):
+                    data.append(128 + byte)
+                else:
+                    data.append(byte)
+                loop = loop - 1
+            else:
+                hibits = byte
+                # do we need to acount for short sets (at end of block block)?
+                loop = 6
+
+        return(data)
+
+    def filename(self, packet, name):
+        # send filename (with different packet headers)
+        head, tail = os.path.split(name)
+        for x in range(len(tail)):
+            packet.append(ord(tail[x]))
+        packet.append(0x00)
+
+        msg = mido.Message("sysex", data = packet)
+        self.outport.send(msg); sleep(0); msg = self.inport.receive()
+        return(msg)
+
+    def file_check(self, name):
+        # check file is present on device
+        packet = bytearray(b"\x52\x00\x6e\x60\x25\x00\x00")
+        head, tail = os.path.split(name)
+        self.filename(packet, tail)
+
+        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x05, 0x00])
+        self.outport.send(msg); sleep(0); msg = self.inport.receive()
+        
+        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x27])
+        self.outport.send(msg); sleep(0); msg = self.inport.receive()
+        return(True)
+    
+    def file_download(self, name):
+        # download file from pedal to PC
+        packet = bytearray(b"\x52\x00\x6e\x60\x20\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00")
+        head, tail = os.path.split(name)
+        self.filename(packet, tail)
+
+        msg = mido.Message("sysex", data = packet)
+        self.outport.send(msg); sleep(0); msg = self.inport.receive()
+        
+        # Read parts 1 through 17 - refers to FLST_SEQ, possibly larger
+        data = bytearray(b"")
+        for part in range(17):
+            msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x05, 0x00])
+            self.outport.send(msg); sleep(0); msg = self.inport.receive()
+
+            msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x22, 0x14, 0x2f, 0x60, 0x00, 0x0c, 0x00, 0x04, 0x00, 0x00, 0x00])
+            self.outport.send(msg); sleep(0); msg = self.inport.receive()
+
+            msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x05, 0x00])
+            self.outport.send(msg); sleep(0); msg = self.inport.receive()
+
+            #decode received data
+            packet = msg.data
+            length = int(packet[9]) * 128 + int(packet[8])
+            block = self.unpack(packet[10:10 + length + int(length/7) + 1])
+
+            # confirm checksum (last 5 bytes of packet)
+            checksum = packet[-5] + (packet[-4] << 7) + (packet[-3] << 14) \
+                    + (packet[-2] << 21) + ((packet[-1] & 0x0F) << 28) 
+            if (checksum ^ 0xFFFFFFFF) == binascii.crc32(block):
+                data = data + block
+            else:
+                print("Checksum error", hex(checksum))
+        return(data)
+
+    def file_upload(self, name, data):
+        packet = bytearray(b"\x52\x00\x6e\x60\x24")
+        head, tail = os.path.split(name)
+        self.filename(packet, tail)
+
+        packet = bytearray(b"\x52\x00\x6e\x60\x20\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00")
+        head, tail = os.path.split(name)
+        self.filename(packet, tail)
+
+        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x05, 0x00])
+        self.outport.send(msg); sleep(0); msg = self.inport.receive()
+
+        while len(data):
+            packet = bytearray(b"\x52\x00\x6e\x60\x23\x40\x00\x00\x00\x00")
+            if len(data) > 512:
+                length = 512
+            else:
+                length = len(data)
+            packet.append(length & 0x7f)
+            packet.append((length >> 7) & 0x7f)
+            packet = packet + bytearray(b"\x00\x00\x00")
+
+            packet = packet + self.pack(data[:length])
+
+            # Compute CRC32
+            crc = binascii.crc32(data[:length]) ^ 0xFFFFFFFF
+            packet.append(crc & 0x7f)
+            packet.append((crc >> 7) & 0x7f)
+            packet.append((crc >> 14) & 0x7f)
+            packet.append((crc >> 21) & 0x7f)
+            packet.append((crc >> 28) & 0x0f)
+
+            data = data[length:]
+            #print(hex(len(packet)), binascii.hexlify(packet))
+
+            msg = mido.Message("sysex", data = packet)
+            self.outport.send(msg); sleep(0); msg = self.inport.receive()
+
+            msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x05, 0x00])
+            self.outport.send(msg); sleep(0); msg = self.inport.receive()
+
+    def file_delete(self, name):
+        packet = bytearray(b"\x52\x00\x6e\x60\x24")
+        head, tail = os.path.split(name)
+        print(self.filename(packet, tail))
+
+    def file_close(self):
+        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x21, 0x40, 0x00, 0x00, 0x00, 0x00])
+        self.outport.send(msg); sleep(0); msg = self.inport.receive()
+        
+        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x09])
+        self.outport.send(msg); sleep(0); msg = self.inport.receive()
+
+from optparse import OptionParser
+
+data = bytearray(b"")
 
 usage = "usage: %prog [options] FILENAME"
 parser = OptionParser(usage)
@@ -150,7 +333,11 @@ parser.add_option("-I", "--install",
 parser.add_option("-U", "--uninstall",
     help="Remove effect binary from attached device", dest="uninstall")
 
+parser.add_option("-T", "--test", dest="test",
+    help="test", action="store_true")
+
 (options, args) = parser.parse_args()
+
 if len(args) != 1:
     parser.error("FILE not specified")
 
@@ -236,6 +423,18 @@ else:
     else:
         data = infile.read()
         infile.close()
+
+if options.test:
+    pedal = zoom()
+    pedal.connect()
+
+    pedal.file_check("AIR.ZD2")
+    pedal.file_delete("AIR.ZD2")
+    pedal.file_close()
+
+    #print(config)
+    pedal.disconnect()
+    quit()
 
 if options.add and options.name and options.ver and options.id and options.unknown:
     config = ZT2.parse(data)
