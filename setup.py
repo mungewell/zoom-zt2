@@ -15,7 +15,7 @@ options = {
 setup(
     name = "zoomzt2.py",
     options = options,
-    version = "0.1.0.0",
+    version = "0.1.1.0",
     description = 'Script for Upload Effects/Configuration to ZOOM G Series Pedals',
     executables = executables
 )

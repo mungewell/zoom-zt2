@@ -28,9 +28,8 @@ Effect = Struct(
     "version" / PaddedString(4, "ascii"),
     Const(b"\x00"),
     "installed" / Default(Byte, 1),     # "Guitar Lab additional effects" = 0
-    "id" / Int16ul,
-    "unknown" / Byte,                   # seems to be connected with ID 
-    "group" / Byte,
+    "id" / Int32ul,
+    "group" / Computed((this.id & 0xFF000000) >> 24),
     Check(this.group == this._.group),
     Const(b"\x00\x00\x00"),
 )
@@ -66,8 +65,7 @@ ZT2 = Padded(8502, Sequence(
 
 ZD2 = Struct(
     Const(b"\x5a\x44\x4c\x46\x78"),
-    Padding(83),
-    Const(b"\x01"),
+    Padding(84),
     "version" / PaddedString(4, "ascii"),
     Const(b"\x00\x00"),
     "group" / Byte,
@@ -84,7 +82,7 @@ ZD2 = Struct(
 	PEDAL = 11,
 	ACOUSTIC = 29,
     ),
-    "type" / Int32ul,
+    "id" / Int32ul,
     "name" / CString("ascii"),
 )
 
@@ -180,6 +178,62 @@ class zoomzt2(object):
 
         return(data)
 
+    def add_effect(self, data, name, version, id):
+        config = ZT2.parse(data)
+        head, tail = os.path.split(name)
+        
+        group_new = (id & 0xFF000000) >> 24
+        group_found = False
+
+        for group in config[1]:
+            if group['group'] == group_new:
+                group_found = True
+                effects = group['effects']
+                slice = 0
+                for effect in effects:
+                    if effect['effect'] == tail:
+                        del effects[slice]
+                    slice = slice + 1
+
+                new = dict(effect=tail, version=version, id=id)
+                effects.append(new)
+
+        if not group_found:
+            effects = []
+            new = dict(effect=tail, version=version, id=id, group=group_new)
+            effects.append(new)
+            new = dict(group=group_new, groupname=group_new, effects=effects, groupend=group_new)
+            config[1].append(new)
+
+        return ZT2.build(config)
+
+    def add_effect_from_filename(self, data, name):
+        binfile = open(name, "rb")
+        if binfile:
+            bindata = binfile.read()
+            binfile.close()
+
+            binconfig = ZD2.parse(bindata)
+            head, tail = os.path.split(name)
+
+            return self.add_effect(data, tail, binconfig['version'], binconfig['id'])
+        return data
+
+
+    def remove_effect(self, data, name):
+        config = ZT2.parse(data)
+        head, tail = os.path.split(name)
+        
+        for group in config[1]:
+            effects = group['effects']
+            slice = 0
+            for effect in effects:
+                if effect['effect'] == tail:
+                    del effects[slice]
+                slice = slice + 1
+
+        return ZT2.build(config)
+
     def filename(self, packet, name):
         # send filename (with different packet headers)
         head, tail = os.path.split(name)
@@ -204,6 +258,20 @@ class zoomzt2(object):
         self.outport.send(msg); sleep(0); msg = self.inport.receive()
         return(True)
     
+    def file_wild(self, first):
+        if first:
+            packet = bytearray(b"\x52\x00\x6e\x60\x25\x00\x00")
+        else:
+            packet = bytearray(b"\x52\x00\x6e\x60\x26\x00\x00")
+        msg = self.filename(packet, "*")
+
+        if msg.data[4] == 4:
+            for x in range(14,27):
+                if msg.data[x] == 0:
+                    return bytes(msg.data[14:x]).decode("utf-8")
+        else:
+            return ""
+
     def file_download(self, name):
         # download file from pedal to PC
         packet = bytearray(b"\x52\x00\x6e\x60\x20\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00")
@@ -215,7 +283,7 @@ class zoomzt2(object):
         
         # Read parts 1 through 17 - refers to FLST_SEQ, possibly larger
         data = bytearray(b"")
-        for part in range(17):
+        while True:
             msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x05, 0x00])
             self.outport.send(msg); sleep(0); msg = self.inport.receive()
 
@@ -228,6 +296,8 @@ class zoomzt2(object):
             #decode received data
             packet = msg.data
             length = int(packet[9]) * 128 + int(packet[8])
+            if length == 0:
+                break
             block = self.unpack(packet[10:10 + length + int(length/7) + 1])
 
             # confirm checksum (last 5 bytes of packet)
@@ -297,7 +367,7 @@ def main():
     from optparse import OptionParser
 
     data = bytearray(b"")
-    pedal = zoom()
+    pedal = zoomzt2()
 
     usage = "usage: %prog [options] FILENAME"
     parser = OptionParser(usage)
@@ -312,20 +382,16 @@ def main():
         dest="build")
     
     parser.add_option("-A", "--add",
-        help="add an effect to group ADD", dest="add")
-    parser.add_option("-n", "--name",
-        help="effect name (use with --add)", dest="name")
+        help="add effect to FLST_SEQ", dest="add")
     parser.add_option("-v", "--ver",
         help="effect version (use with --add)", dest="ver")
     parser.add_option("-i", "--id",
         help="effect id (use with --add)", dest="id")
-    parser.add_option("-u", "--unknown",
-        help="effect unknown (use with --add)", dest="unknown")
+    parser.add_option("-D", "--delete",
+    help="delete effect from FLST_SEQ", dest="delete")
     
     parser.add_option("-t", "--toggle",
         help="toggle install/uninstall state of effect NAME in FLST_SEQ", dest="toggle")
-    parser.add_option("-D", "--delete",
-    help="delete last effect in group DEL", dest="delete")
 
     parser.add_option("-w", "--write", dest="write",
         help="write config back to same file", action="store_true")
@@ -370,41 +436,14 @@ def main():
             data = infile.read()
         infile.close()
 
-    if options.add and options.name and options.ver and options.id and options.unknown:
-        config = ZT2.parse(data)
-    
-        group = config[1][int(options.add)-1]
-        number = group['group']
-        effects = group['effects']
-    
-        print("Group %s:" % number)
-        for effect in effects:
-            print("    %s" % effect["effect"])
-
-        # create record for new effect
-        print("Add:%s" % options.name)
-        new = dict(effect=options.name, version=options.ver, id=int(options.id), \
-                unknown=int(options.unknown), group=number)
-    
-        effects.append(new)
-        data = ZT2.build(config)
+    if options.add and options.ver and options.id:
+        if options.id[:2] == "0x":
+            data = pedal.add_effect(data, options.add, options.ver, int(options.id, 16))
+        else:
+            data = pedal.add_effect(data, options.add, options.ver, int(options.id))
 
     if options.delete:
-        config = ZT2.parse(data)
-    
-        group = config[1][int(options.delete)-1]
-        number = group['group']
-        effects = group['effects']
-    
-        print("Group %s:" % number)
-        last = len(effects)-1
-        for effect in effects[:-1]:
-            print("    %s" % effect["effect"])
-    
-        print("Del:%s" % effects[last]['effect'])
-    
-        del effects[last]
-        data = ZT2.build(config)
+        data = pedal.remove_effect(data, options.delete)
     
     if options.dump and data:
         config = ZT2.parse(data)
@@ -432,18 +471,16 @@ def main():
     
             for effect in dict(group)["effects"]:
                 print("   ", dict(effect)["effect"], "(ver=", dict(effect)["version"], \
-                    "), group=", dict(effect)["group"], ", id=", dict(effect)["id"], \
-                    "unknown=", dict(effect)["unknown"], \
+                    "), group=", dict(effect)["group"], ", id=", hex(dict(effect)["id"]), \
                     ", installed=", dict(effect)["installed"])
 
     if options.build and data:
         config = ZT2.parse(data)
         for group in config[1]:
             for effect in dict(group)["effects"]:
-                print("python3 zoom-zt2.py -A ", dict(effect)["group"], \
-                    "-u", dict(effect)["unknown"], "-i", dict(effect)["id"], \
-                    "-n", dict(effect)["effect"], "-v", dict(effect)["version"], \
-                "-w", options.build)
+                print("python3 zoom-zt2.py -i ", hex(dict(effect)["id"]), \
+                    "-A", dict(effect)["effect"], "-v", dict(effect)["version"], \
+                    "-w", options.build)
 
     if options.write and data:
        outfile = open(args[0], "wb")
