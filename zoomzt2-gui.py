@@ -67,6 +67,7 @@ class _479389042__675845753_MyFrame(wx.Frame):
         # Enable file downloads (or not)
         #self.notebook_1_tab3.Hide()
 
+        self.button_3.Disable()
         self.button_3.Hide()
         self.button_4.Hide()
         self.button_5.Hide()
@@ -130,6 +131,7 @@ class _479389042__675845753_MyFrame(wx.Frame):
             self.text_ctrl_1.AppendText("\nID   : " + hex(config['id']))
 
             self.button_6.SetLabel(tail)
+            self.button_3.Enable()
 
         event.Skip()
 
@@ -170,6 +172,9 @@ class _479389042__675845753_MyFrame(wx.Frame):
             self.pedal.file_check("FLST_SEQ.ZT2")
             self.pedal.file_upload("FLST_SEQ.ZT2", data)
             self.pedal.file_close()
+
+            self.text_ctrl_1.AppendText("\n\nEffect installed!")
+            self.button_3.Disable()
 
         event.Skip()
 
