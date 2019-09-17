@@ -408,9 +408,6 @@ def main():
     parser.add_option("-U", "--uninstall",
     help="Remove effect binary from attached device", dest="uninstall")
 
-    parser.add_option("-T", "--test", dest="test",
-        help="test", action="store_true")
-    
     (options, args) = parser.parse_args()
     
     if len(args) != 1:
@@ -430,7 +427,7 @@ def main():
     else:
         # Read data from file
         infile = open(args[0], "rb")
-        if not infile and not options.test:
+        if not infile:
             sys.exit("Unable to open config FILE for reading")
         else:
             data = infile.read()
