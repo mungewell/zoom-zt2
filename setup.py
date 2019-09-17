@@ -2,7 +2,7 @@ from cx_Freeze import setup, Executable
 
 base = None    
 
-executables = [Executable("zoomzt2.py", base=base)]
+executables = [Executable("zoomzt2-gui.py", base=base)]
 
 packages = ["construct", "os", "optparse", "sys", "binascii", "mido", "rtmidi_python"]
 options = {
@@ -13,7 +13,7 @@ options = {
 }
 
 setup(
-    name = "zoomzt2.py",
+    name = "zoomzt2-gui.py",
     options = options,
     version = "0.1.1.0",
     description = 'Script for Upload Effects/Configuration to ZOOM G Series Pedals',
