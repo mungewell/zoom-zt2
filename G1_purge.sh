@@ -1,4 +1,4 @@
-# awk -F " " '{print $1, $2, "-U", $10, "-S empty.zt2";}' < G1_everything.sh
+# awk -F " " '{print $1, $2, "-U", $6, "-S empty.zt2";}' < G1_everything.sh
 python3 zoom-zt2.py -U COMP.ZD2 -S empty.zt2
 python3 zoom-zt2.py -U RACKCOMP.ZD2 -S empty.zt2
 python3 zoom-zt2.py -U SLWATK.ZD2 -S empty.zt2

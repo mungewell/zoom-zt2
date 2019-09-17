@@ -1,11 +1,11 @@
-python3 zoom_zt2.py -A  2 -u 0 -i 128 -n EGFILTER.ZD2 -v 1.20 -w everything.zt2
-python3 zoom_zt2.py -A  3 -u 0 -i 256 -n TS_BOOST.ZD2 -v 1.20 -w everything.zt2
-python3 zoom_zt2.py -A  3 -u 0 -i 272 -n REDCRBST.ZD2 -v 1.10 -w everything.zt2
-python3 zoom_zt2.py -A  6 -u 0 -i 224 -n KICKFLNG.ZD2 -v 1.20 -w everything.zt2
-python3 zoom_zt2.py -A  8 -u 0 -i 96 -n HOLDDLY.ZD2 -v 1.20 -w everything.zt2
-python3 zoom_zt2.py -A  9 -u 0 -i 176 -n AMBIENCE.ZD2 -v 1.10 -w missing.zt2
-python3 zoom_zt2.py -A  9 -u 0 -i 192 -n PARTICLE.ZD2 -v 1.20 -w missing.zt2
-python3 zoom_zt2.py -A  9 -u 0 -i 240 -n HOLDVERB.ZD2 -v 1.00 -w missing.zt2
-python3 zoom_zt2.py -A  10 -u 128 -i 16 -n BASSWAH.ZD2 -v 1.30 -w everything.zt2
-python3 zoom_zt2.py -A  10 -u 128 -i 48 -n B_PDLPIT.ZD2 -v 1.20 -w everything.zt2
-python3 zoom_zt2.py -A  10 -u 128 -i 64 -n B_PDLMNP.ZD2 -v 1.20 -w everything.zt2
+python3 zoom-zt2.py -i  0x2000080 -A EGFILTER.ZD2 -v 1.20 -w missing.zt2
+python3 zoom-zt2.py -i  0x3000100 -A TS_BOOST.ZD2 -v 1.20 -w missing.zt2
+python3 zoom-zt2.py -i  0x3000110 -A REDCRBST.ZD2 -v 1.10 -w missing.zt2
+python3 zoom-zt2.py -i  0x60000e0 -A KICKFLNG.ZD2 -v 1.20 -w missing.zt2
+python3 zoom-zt2.py -i  0x8000060 -A HOLDDLY.ZD2 -v 1.20 -w missing.zt2
+python3 zoom-zt2.py -i  0x90000b0 -A AMBIENCE.ZD2 -v 1.10 -w missing.zt2
+python3 zoom-zt2.py -i  0x90000c0 -A PARTICLE.ZD2 -v 1.20 -w missing.zt2
+python3 zoom-zt2.py -i  0x90000f0 -A HOLDVERB.ZD2 -v 1.00 -w missing.zt2
+python3 zoom-zt2.py -i  0xb800010 -A BASSWAH.ZD2 -v 1.30 -w missing.zt2
+python3 zoom-zt2.py -i  0xb800030 -A B_PDLPIT.ZD2 -v 1.20 -w missing.zt2
+python3 zoom-zt2.py -i  0xb800040 -A B_PDLMNP.ZD2 -v 1.20 -w missing.zt2
