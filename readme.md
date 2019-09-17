@@ -14,26 +14,25 @@ This project is not supported/authorized by ZOOM, use at your own risk.
 
 ## Operation.
 
-The 'zoom-zt2.py' script uses MIDI SysEx to control the pedal, and functions
+![Screen Shot](/pictures/ZoomZT2-GUI.png)
+
+The 'zoomzt2-gui.py' script uses MIDI SysEx to control the pedal, and functions
 on Linux and Windows. A pre-built Windows binary is provided in releases for
 convience for those who down have/want Python install.
 
 In order to install a new effect, the binary for the effect must first be located - 
 which can be extracted from the F/W Installer binary via 'Zoom-Firmware-Editor'.
 
-Download current state of FLST_SEQ ("-R -w") from the pedal, then add new effect to 
-it ("-A") and re-uploaded it & the new binary blob ("-S" & "-I").
+Once the script is started it will attempt to connect with the pedal, if not found
+check the connection and press 'Connect'. Click 'Select Effect' and navigate to 
+where you have stored the binary for the desired effect.
 
-```
-$ python3 zoom-zt2.py -R -w try_glamcomp.zt2
-$ python3 zoom-zt2.py -A 1 -n "GLAMCOMP.ZD2" -v "1.10" -i 112 -u 128 -w try_glamcomp.zt2
-Group 1:
-    GLAMCOMP.ZD2
-Add:GLAMCOMP.ZD2
-$ python3 zoom-zt2.py -I "GLAMCOMP.ZD2" -S try_glamcomp.zt2
-```
+The 'Info' window will show some basic parameters for the effect. Click 'Install'
+and the effect will be uploaded to the pedal. The 'Effects' and 'Files' tabs allow
+you to see what is already present on the pedal.
 
-And it's installed... :-)
+The 'zoomzt.py' script can alternatively be used from the command line to modify
+a 'FLST_SEQ.ZT2' file and/or to install/remove effects from a pedal.
 
 ## Effects
 
@@ -50,14 +49,14 @@ G3/G5.
 The AC-2 and AC-3 use a similar '.ZD2' effects, but they do not have a LCD display
 and all effects are in a special 'group 29'.
 
-## Options
+## 'ZoomZT2.py' Options
 
 The script is controlled via command line options, primarily it used for editing the
 contents of '.zt2' files. But it also allows for upload/download to the pedal.
 
 ```
-$ python3 zoom-zt2.py -h
-Usage: zoom-zt2.py [options] FILENAME
+$ python3 zoomzt2.py --help
+Usage: zoomzt2.py [options] FILENAME
 
 Options:
   -h, --help            show this help message and exit
@@ -65,17 +64,14 @@ Options:
   -s, --summary         summarized configuration in human readable form
   -b BUILD, --build=BUILD
                         output commands required to build this FLTS_SEQ
-  -A ADD, --add=ADD     add an effect to group ADD
-  -n NAME, --name=NAME  effect name (use with --add)
+  -A ADD, --add=ADD     add effect to FLST_SEQ
   -v VER, --ver=VER     effect version (use with --add)
   -i ID, --id=ID        effect id (use with --add)
-  -u UNKNOWN, --unknown=UNKNOWN
-                        effect unknown (use with --add)
+  -D DELETE, --delete=DELETE
+                        delete effect from FLST_SEQ
   -t TOGGLE, --toggle=TOGGLE
                         toggle install/uninstall state of effect NAME in
                         FLST_SEQ
-  -D DELETE, --delete=DELETE
-                        delete last effect in group DEL
   -w, --write           write config back to same file
   -R, --receive         Receive FLST_SEQ from attached device
   -S, --send            Send FLST_SEQ to attached device
