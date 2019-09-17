@@ -193,6 +193,9 @@ class _479389042__675845753_MyFrame(wx.Frame):
             self.pedal.file_upload("FLST_SEQ.ZT2", data)
             self.pedal.file_close()
 
+            self.ReadEffects()
+            self.ReadFiles()
+
         event.Skip()
 
     def butDownload(self, event):  # wxGlade: _479389042__675845753_MyFrame.<event_handler>
