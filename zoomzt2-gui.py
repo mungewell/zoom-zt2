@@ -175,6 +175,8 @@ class _479389042__675845753_MyFrame(wx.Frame):
 
             self.text_ctrl_1.AppendText("\n\nEffect installed!")
             self.button_3.Disable()
+            self.ReadEffects()
+            self.ReadFiles()
 
         event.Skip()
 
