@@ -31,7 +31,7 @@ The 'Info' window will show some basic parameters for the effect. Click 'Install
 and the effect will be uploaded to the pedal. The 'Effects' and 'Files' tabs allow
 you to see what is already present on the pedal.
 
-The 'zoomzt.py' script can alternatively be used from the command line to modify
+The 'zoomzt2.py' script can alternatively be used from the command line to modify
 a 'FLST_SEQ.ZT2' file and/or to install/remove effects from a pedal.
 
 ## Effects
@@ -49,10 +49,10 @@ G3/G5.
 The AC-2 and AC-3 use a similar '.ZD2' effects, but they do not have a LCD display
 and all effects are in a special 'group 29'.
 
-## 'ZoomZT2.py' Options
+## Command Line Options
 
-The script is controlled via command line options, primarily it used for editing the
-contents of '.zt2' files. But it also allows for upload/download to the pedal.
+The 'zoomzt2.py' script is controlled via command line options. Primarily it used for editing
+the contents of '.zt2' files, but it also allows for upload/download to the pedal.
 
 ```
 $ python3 zoomzt2.py --help
