@@ -301,6 +301,7 @@ class zoomzt2(object):
             block = self.unpack(packet[10:10 + length + int(length/7) + 1])
 
             # confirm checksum (last 5 bytes of packet)
+            # note: mido packet does not have SysEx prefix/postfix
             checksum = packet[-5] + (packet[-4] << 7) + (packet[-3] << 14) \
                     + (packet[-2] << 21) + ((packet[-1] & 0x0F) << 28) 
             if (checksum ^ 0xFFFFFFFF) == binascii.crc32(block):
@@ -362,6 +363,62 @@ class zoomzt2(object):
         msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x09])
         self.outport.send(msg); sleep(0); msg = self.inport.receive()
 
+    def patch_download(self, location):
+        packet = bytearray(b"\x52\x00\x6e\x09\x00")
+        packet.append(int(location/10)-1)
+        packet.append(location % 10)
+
+        msg = mido.Message("sysex", data = packet)
+        self.outport.send(msg); sleep(0); msg = self.inport.receive()
+
+        # decode received data
+        packet = msg.data
+        length = int(packet[8]) * 128 + int(packet[7])
+        if length == 0:
+            return()
+        data = self.unpack(packet[9:9 + length + int(length/7) + 1])
+
+        # confirm checksum (last 5 bytes of packet)
+        checksum = packet[-5] + (packet[-4] << 7) + (packet[-3] << 14) \
+                + (packet[-2] << 21) + ((packet[-1] & 0x0F) << 28) 
+
+        if (checksum ^ 0xFFFFFFFF) != binascii.crc32(data):
+            print("Checksum error", hex(checksum))
+
+        return(data)
+
+    def patch_upload(self, location, data):
+        packet = bytearray(b"\x52\x00\x6e\x08\x00")
+        packet.append(int(location/10)-1)
+        packet.append(location % 10)
+
+        length = len(data)
+        packet.append(length & 0x7f)
+        packet.append((length >> 7) & 0x7f)
+
+        packet = packet + self.pack(data[:length])
+
+        # Compute CRC32
+        crc = binascii.crc32(data[:length]) ^ 0xFFFFFFFF
+        packet.append(crc & 0x7f)
+        packet.append((crc >> 7) & 0x7f)
+        packet.append((crc >> 14) & 0x7f)
+        packet.append((crc >> 21) & 0x7f)
+        packet.append((crc >> 28) & 0x0f)
+
+        #print(hex(len(packet)), binascii.hexlify(packet))
+
+        msg = mido.Message("sysex", data = packet)
+        self.outport.send(msg); sleep(0); msg = self.inport.receive()
+
+    '''
+    def patch_download_current(self):
+        packet = bytearray(b"\x52\x00\x6e\x29")
+
+    def patch_upload_current(self, data):
+        packet = bytearray(b"\x52\x00\x6e\x28")
+    '''
+
 #--------------------------------------------------
 def main():
     from optparse import OptionParser
@@ -399,14 +456,20 @@ def main():
     # interaction with attached device
     parser.add_option("-R", "--receive",
         help="Receive FLST_SEQ from attached device",
-    action="store_true", dest="receive")
+        action="store_true", dest="receive")
     parser.add_option("-S", "--send",
         help="Send FLST_SEQ to attached device",
         action="store_true", dest="send")
     parser.add_option("-I", "--install",
         help="Install effect binary to attached device", dest="install")
     parser.add_option("-U", "--uninstall",
-    help="Remove effect binary from attached device", dest="uninstall")
+        help="Remove effect binary from attached device", dest="uninstall")
+
+    # attached device's effect patches
+    parser.add_option("-p", "--patch",
+        help="download specific patch (10..59)", dest="patch")
+    parser.add_option("-P", "--upload",
+        help="download specific patch (10..59)", dest="upload")
 
     (options, args) = parser.parse_args()
     
@@ -415,11 +478,45 @@ def main():
 
     if options.install and options.uninstall:
         sys.exit("Cannot use 'install' and 'uninstall' at same time")
-    
-    if options.receive or options.send or options.install:
+
+    if options.patch:
+        if int(options.patch) < 10 or int(options.patch) > 59:
+            sys.exit("Patch number should be between 10 and 59")
+
+    if options.upload:
+        if int(options.upload) < 10 or int(options.upload) > 59:
+            sys.exit("Patch number should be between 10 and 59")
+
+    if options.receive or options.send or options.install or options.patch or options.upload:
         if not pedal.connect():
             sys.exit("Unable to find Pedal")
-    
+
+    if options.patch:
+        data = pedal.patch_download(int(options.patch))
+        pedal.disconnect()
+
+        outfile = open(args[0], "wb")
+        if not outfile:
+            sys.exit("Unable to open FILE for writing")
+
+        outfile.write(data)
+        outfile.close()
+        exit(0)
+
+    if options.upload:
+        infile = open(args[0], "rb")
+        if not infile:
+            sys.exit("Unable to open FILE for reading")
+        else:
+            data = infile.read()
+        infile.close()
+
+        if len(data):
+            data = pedal.patch_upload(int(options.upload), data)
+        pedal.disconnect()
+
+        exit(0)
+
     if options.receive:
         pedal.file_check("FLST_SEQ.ZT2")
         data = pedal.file_download("FLST_SEQ.ZT2")
