@@ -469,7 +469,7 @@ def main():
     parser.add_option("-p", "--patch",
         help="download specific patch (10..59)", dest="patch")
     parser.add_option("-P", "--upload",
-        help="download specific patch (10..59)", dest="upload")
+        help="upload specific patch (10..59)", dest="upload")
 
     (options, args) = parser.parse_args()
     
