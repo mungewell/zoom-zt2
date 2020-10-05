@@ -487,7 +487,7 @@ def main():
         if int(options.upload) < 10 or int(options.upload) > 59:
             sys.exit("Patch number should be between 10 and 59")
 
-    if options.receive or options.send or options.install or options.patch or options.upload:
+    if options.receive or options.send or options.install or options.uninstall or options.patch or options.upload:
         if not pedal.connect():
             sys.exit("Unable to find Pedal")
 
