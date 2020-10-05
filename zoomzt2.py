@@ -16,7 +16,7 @@ Header = Struct(
     Padding(22),
     "name" / PaddedString(12, "ascii"),
     Padding(6),
-    Const(b"\x01"),
+    Bytes(1),
     Padding(7),
     Const(b"\x3c\x3c\x3c\x00"),
     Padding(22),
