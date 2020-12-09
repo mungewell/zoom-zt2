@@ -99,7 +99,7 @@ need to know this....
 Most actions are triggered by SysEx packets, and the G1Four responds on 
 'Address' `52 00 6e`. This may be different for other pedals in the family.
 
-One exception is 'Select Bank/Program'
+One exception is 'Select Bank/Program', which used PC/CC messages
 ```
 $ amidi -p hw:1,0,0 -S 'b0 20 00 c0 03'
                                ^     ^
@@ -115,41 +115,7 @@ control_change channel=0 control=32 value=4 time=0
 program_change channel=0 program=4 time=0
 ```
 
-Some actions can only be performed when the pedal is switch to a particular
-mode.
-
-Editor Mode - sends CC's/SysEx on configuration change
-`$ amidi -p hw:1,0,0 -S 'F0 52 00 6e 50 F7'`
-
-Exit Editor Mode
-`$ amidi -p hw:1,0,0 -S 'F0 52 00 6e 51 F7'`
-
-Enter PC mode
-`$ amidi -p hw:1,0,0 -S 'F0 52 00 6e 52 F7'`
-
-Exit PC Mode
-`$ amidi -p hw:1,0,0 -S 'F0 52 00 6e 53 F7'`
-
-Enter/Exit Tuner Mode
-`$ amidi -p hw:1,0,0 -S 'F0 52 00 6e 64 0b F7'`
-or
-`$ amidi -p hw:1,0,0 -S 'F0 52 00 6e 64 0c F7'`
-
-Configure Effects
-```
-$ amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 01  02 3d 17 00 00 00 f7'
-                                                    ^^ ^^ value lo/hi
-                                                 ^^ param
-                                             ^^ slot
-param 0: effect on/off
-param 1: effect type
-param 2: dial 1 (left most)
-param 3: dial 2
-param 4: dial 3
-param 5: dial 4 (right most)
-```
-
-Configure Tempo
+Configure Tempo, for drum machine/looper
 ```
 $ amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 0a 02 75 00 00 00 00 f7'
                                                    ^^ ^^
@@ -163,7 +129,7 @@ $ amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 0a 00 20 00 00 00 00 f7'
                                                    ++---- Volume
 ```
 
-Turn tuner on, when in Editor mode the pedal will send note information
+Turn tuner on, when in 'Editor mode' the pedal will continuously send note information
 ```
 $ amidi -p hw:1,0,0 -S 'F0 52 00 6e 64 0b F7'
 
@@ -175,5 +141,46 @@ $ amidi -p hw:1,0,0 -S 'F0 52 00 6e 64 0b F7'
 Turn tuner off
 ```
 $ amidi -p hw:1,0,0 -S 'F0 52 00 6e 64 0c F7'
+```
+
+### Modes
+
+Some actions can only be performed when the pedal is switch to a particular
+mode.
+
+Editor Mode - sends CC's/SysEx on configuration change
+```
+$ amidi -p hw:1,0,0 -S 'F0 52 00 6e 50 F7'
+```
+
+Exit Editor Mode
+```
+$ amidi -p hw:1,0,0 -S 'F0 52 00 6e 51 F7'
+```
+
+Enter PC mode
+```
+$ amidi -p hw:1,0,0 -S 'F0 52 00 6e 52 F7'
+```
+
+Exit PC Mode
+```
+$ amidi -p hw:1,0,0 -S 'F0 52 00 6e 53 F7'
+```
+
+### Effects settings
+
+Configure Effects
+```
+$ amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 01  02 3d 17 00 00 00 f7'
+                                                    ^^ ^^ value lo/hi
+                                                 ^^ param
+                                             ^^ slot
+param 0: effect on/off
+param 1: effect type
+param 2: dial 1 (left most)
+param 3: dial 2
+param 4: dial 3
+param 5: dial 4 (right most)
 ```
 
