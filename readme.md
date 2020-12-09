@@ -55,7 +55,7 @@ The 'zoomzt2.py' script is controlled via command line options. Primarily it use
 the contents of '.zt2' files, but it also allows for upload/download to the pedal.
 
 ```
-$ python3 zoomzt2.py --help
+$ python3 zoomzt2.py -h
 Usage: zoomzt2.py [options] FILENAME
 
 Options:
@@ -79,4 +79,101 @@ Options:
                         Install effect binary to attached device
   -U UNINSTALL, --uninstall=UNINSTALL
                         Remove effect binary from attached device
+  -p PATCH, --patch=PATCH
+                        download specific patch (10..59)
+  -P UPLOAD, --upload=UPLOAD
+                        upload specific patch (10..59)
 ```
+
+## MIDI Operation
+
+The two scripts (above) use MIDI to communicate with the pedal(s), the
+following is my attempt to document those packets - more for interest than
+any real purpose.
+
+Unless you are trying to do something funky, or are just nerdy, you don't 
+need to know this....
+
+### MIDI structure; address + command + parameters
+
+Most actions are triggered by SysEx packets, and the G1Four responds on 
+'Address' `52 00 6e`. This may be different for other pedals in the family.
+
+One exception is 'Select Bank/Program'
+```
+$ amidi -p hw:1,0,0 -S 'b0 20 00 c0 03'
+                               ^     ^
+                               |     +--- Program (0..9)
+                               +--------- Bank (0..4)
+```
+
+Request bank/program ID, response is in 'normal' MIDI CC/PC messages.
+```
+$ amidi -p hw:1,0,0 -S 'f0 52 00 6e 33 f7'
+control_change channel=0 control=0 value=0 time=0
+control_change channel=0 control=32 value=4 time=0
+program_change channel=0 program=4 time=0
+```
+
+Some actions can only be performed when the pedal is switch to a particular
+mode.
+
+Editor Mode - sends CC's/SysEx on configuration change
+`$ amidi -p hw:1,0,0 -S 'F0 52 00 6e 50 F7'`
+
+Exit Editor Mode
+`$ amidi -p hw:1,0,0 -S 'F0 52 00 6e 51 F7'`
+
+Enter PC mode
+`$ amidi -p hw:1,0,0 -S 'F0 52 00 6e 52 F7'`
+
+Exit PC Mode
+`$ amidi -p hw:1,0,0 -S 'F0 52 00 6e 53 F7'`
+
+Enter/Exit Tuner Mode
+`$ amidi -p hw:1,0,0 -S 'F0 52 00 6e 64 0b F7'`
+or
+`$ amidi -p hw:1,0,0 -S 'F0 52 00 6e 64 0c F7'`
+
+Configure Effects
+```
+$ amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 01  02 3d 17 00 00 00 f7'
+                                                    ^^ ^^ value lo/hi
+                                                 ^^ param
+                                             ^^ slot
+param 0: effect on/off
+param 1: effect type
+param 2: dial 1 (left most)
+param 3: dial 2
+param 4: dial 3
+param 5: dial 4 (right most)
+```
+
+Configure Tempo
+```
+$ amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 0a 02 75 00 00 00 00 f7'
+                                                   ^^ ^^
+                                                   ++-++---- Tempo lo/hi (ie. set to 117 BPM)
+```
+
+Set Master Volume
+```
+$ amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 0a 00 20 00 00 00 00 f7'
+                                                   ^^
+                                                   ++---- Volume
+```
+
+Turn tuner on, when in Editor mode the pedal will send note information
+```
+$ amidi -p hw:1,0,0 -S 'F0 52 00 6e 64 0b F7'
+
+3427328 + 0: 0xf052006e640bf7
+3427328 + 0: 0xb0620c <- note A=1, A#=2, .. G#=b, no_note/"_"=c
+3427328 + 0: 0xb06300 <- degree 1=flat, 8=perfect, f=sharp
+```
+
+Turn tuner off
+```
+$ amidi -p hw:1,0,0 -S 'F0 52 00 6e 64 0c F7'
+```
+
