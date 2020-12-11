@@ -194,7 +194,16 @@ $ amidi -p hw:1,0,0 -S 'f0 52 00 6e 29 f7'
 Request Specific Patch Info (note: slightly longer reply).
 ```
 $ amidi -p hw:1,0,0 -S 'F0 52 00 6e 09 00 04 09 F7'
-                                           ^ ^^
-                                           | ++-- Program (0..9)
+                                           ^  ^
+                                           |  +-- Program (0..9)
                                            +----- Bank (0..4)
+```
+
+Read display information of current patch, which is mostly text based.
+(can be saved to a file and processed with 'decode_screens.py')
+```
+$ amidi -p hw:2,0,0 -S 'F0 52 00 6e 64 02 00 00 00 F7'
+                                           ^  ^
+                                           |  +-- End Screen
+                                           +----- Start Screen
 ```
