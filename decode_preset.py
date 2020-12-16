@@ -55,7 +55,7 @@ EDTB2 = Struct( # Working with a Byte-reversed copy of data
 )
 
 EDTB1 = Struct(
-    "dump" / Peek(HexDump(Bytes(24))),
+    # "dump" / Peek(HexDump(Bytes(24))),
     "autorev" / ByteSwapped(Bytes(24)),
     "reversed" / RestreamData(this.autorev, EDTB2), # this does not allow re-build of data :-(
 )
@@ -73,7 +73,7 @@ EDTB = Struct(
 PPRM = Struct(
     Const(b"PPRM"),
     "length" / Int32ul,
-    "pprm_dump" / Peek(HexDump(Bytes(this.length))),
+    #"pprm_dump" / Peek(HexDump(Bytes(this.length))),
     Padding(this.length),
 )
 
