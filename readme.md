@@ -170,18 +170,46 @@ $ amidi -p hw:1,0,0 -S 'F0 52 00 6e 53 F7'
 
 ### Effects settings
 
-Configure Effects
+Configure Current Patch Effect(s)
 ```
 $ amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 01  02 3d 17 00 00 00 f7'
                                                     ^^ ^^ value lo/hi
                                                  ^^ param
-                                             ^^ slot
-param 0: effect on/off
+                                             ^^ display slot (0..8)
+param 0: effect on/off (0,1)
 param 1: effect type
 param 2: dial 1 (left most)
 param 3: dial 2
 param 4: dial 3
 param 5: dial 4 (right most)
+param 6: dial 5 (pg 2, if applicable)
+param 7: dial 6
+param 8: dial 7
+param 9: dial 8
+```
+
+The 'display slot' is nominally 0 through 4. However if the patch includes
+'large effects' (with more that 4 active parameters) they will consume 2 slots
+each, meaning that the next effect will skip a slot (be higher by 1).
+
+For G1Four if slot is larger than allowable (ie more than 5 effects in use, but 
+upto 8), the first slot will be affected. I assume this is to allow more effects
+on the G5n and G11.
+
+Note: G1Four/similar pages the dials (on screen) in groups of 3 if more than 
+4 dials are active, the right most dial is used to change which are displayed.
+
+Change Current Patch Name (character by character)
+```
+$ amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 09  02 3d 00 00 00 00 f7'
+                                                    ^^ ASCII character
+                                                 ^^ nth position (0..9)
+```
+
+Change Current Patch Level (seen under 'Settings'/'Patch')
+```
+$ amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 0a  00 3d 00 00 00 00 f7'
+                                                    ^^ Patch Level
 ```
 
 ### Patches
