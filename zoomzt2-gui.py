@@ -181,7 +181,8 @@ class _479389042__675845753_MyFrame(wx.Frame):
         event.Skip()
 
     def butRemove(self, event):  # wxGlade: _479389042__675845753_MyFrame.<event_handler>
-        name = self.list_box_1.GetString(self.list_box_1.GetSelection())
+        index = self.list_box_1.GetSelection()
+        name = self.list_box_1.GetString(index)
         if name :
             self.pedal.file_check(name)
             self.pedal.file_delete(name)
@@ -197,6 +198,10 @@ class _479389042__675845753_MyFrame(wx.Frame):
 
             self.ReadEffects()
             self.ReadFiles()
+
+        if index >= self.list_box_1.Count:
+            index -= 1
+        self.list_box_1.SetSelection(index)
 
         event.Skip()
 
