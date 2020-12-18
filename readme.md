@@ -129,18 +129,26 @@ $ amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 0a 00 20 00 00 00 00 f7'
                                                    ++---- Volume
 ```
 
-Turn tuner on, when in 'Editor mode' the pedal will continuously send note information
+Turn tuner on/off
 ```
 $ amidi -p hw:1,0,0 -S 'F0 52 00 6e 64 0b F7'
+or
+$ amidi -p hw:1,0,0 -S 'F0 52 00 6e 64 0c F7'
+```
 
+When in 'Editor mode' the pedal will continuously send note information
+```
 3427328 + 0: 0xf052006e640bf7
 3427328 + 0: 0xb0620c <- note A=1, A#=2, .. G#=b, no_note/"_"=c
 3427328 + 0: 0xb06300 <- degree 1=flat, 8=perfect, f=sharp
 ```
 
-Turn tuner off
+And tuning information (440Hz = 0x05)
 ```
-$ amidi -p hw:1,0,0 -S 'F0 52 00 6e 64 0c F7'
+52855808 + 0: 0xf052006e6403000a0c0600000000f7
+52886528 + 0: 0xf052006e6403000a0c0700000000f7
+52913152 + 0: 0xf052006e6403000a0c0800000000f7
+                                  ^^ Tuning
 ```
 
 ### Modes
@@ -167,6 +175,8 @@ Exit PC Mode
 ```
 $ amidi -p hw:1,0,0 -S 'F0 52 00 6e 53 F7'
 ```
+
+Note: in PC mode the only function on pedal is to change Lo/Mid/Hi tone, and Volume.
 
 ### Effects settings
 
@@ -212,7 +222,21 @@ $ amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 0a  00 3d 00 00 00 00 f7'
                                                     ^^ Patch Level
 ```
 
-### Patches
+### Other Settings
+
+Change Tempo (for Rythm/Looper)
+```
+$ amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 0a  02 3d 00 00 00 00 f7'
+                                                    ^^ ^^ Tempo
+```
+
+Change Autosave
+```
+$ amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 0a  0f 01 00 00 00 00 f7'
+                                                    ^^ Autosave (0..1)
+```
+
+### Patch Files
 
 Request Current Patch Info (need to be in 'Editor Mode')
 ```
