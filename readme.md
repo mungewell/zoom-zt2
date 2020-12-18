@@ -122,13 +122,6 @@ $ amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 0a 02 75 00 00 00 00 f7'
                                                    ++-++---- Tempo lo/hi (ie. set to 117 BPM)
 ```
 
-Set Master Volume
-```
-$ amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 0a 00 20 00 00 00 00 f7'
-                                                   ^^
-                                                   ++---- Volume
-```
-
 Turn tuner on/off
 ```
 $ amidi -p hw:1,0,0 -S 'F0 52 00 6e 64 0b F7'
@@ -216,7 +209,7 @@ $ amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 09  02 3d 00 00 00 00 f7'
                                                  ^^ nth position (0..9)
 ```
 
-Change Current Patch Level (seen under 'Settings'/'Patch')
+Change Current Patch Volume Level (seen under 'Settings'/'Patch')
 ```
 $ amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 0a  00 3d 00 00 00 00 f7'
                                                     ^^ Patch Level
