@@ -574,7 +574,7 @@ def main():
         config = ZT2.parse(data)
         for group in config[1]:
             for effect in dict(group)["effects"]:
-                print("python3 zoom-zt2.py -i ", hex(dict(effect)["id"]), \
+                print("python3 zoomzt2.py -i ", hex(dict(effect)["id"]), \
                     "-A", dict(effect)["effect"], "-v", dict(effect)["version"], \
                     "-w", options.build)
 
