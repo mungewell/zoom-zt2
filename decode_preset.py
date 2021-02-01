@@ -134,6 +134,12 @@ def main():
         if options.outfile:
             outfile = open(options.outfile, "wb")
 
+            # need to rebuild EDTB's reversed data
+            for id in range(1,6):
+                #config['EDTB']["effect"+str(id)]['reversed']['control']['enabled'] = False
+                blob = EDTB2.build(config['EDTB']["effect"+str(id)]['reversed'])
+                config['EDTB']["effect"+str(id)]['autorev'] = blob
+
             data = ZPTC.build(config)
             if outfile:
                 outfile.write(data)
