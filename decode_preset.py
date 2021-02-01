@@ -55,7 +55,7 @@ EDTB2 = Struct( # Working with a Byte-reversed copy of data
 )
 
 EDTB1 = Struct(
-    # "dump" / Peek(HexDump(Bytes(24))),
+    #"dump" / Peek(HexDump(Bytes(24))),
     "autorev" / ByteSwapped(Bytes(24)),
     "reversed" / RestreamData(this.autorev, EDTB2), # this does not allow re-build of data :-(
 )
@@ -77,13 +77,13 @@ PPRM = Struct(
     Padding(this.length),
 )
 
-ZPTC = Struct(
+ZPTC = Padded(760, Struct(
     "PTCF" / PTCF,
     "TXJ1" / TXJ1,
     "TXE1" / TXE1,
     "EDTB" / EDTB,
     "PPRM" / PPRM,
-)
+))
 
 
 #--------------------------------------------------
@@ -95,6 +95,12 @@ def main():
     parser.add_option("-d", "--dump",
         help="dump configuration to text",
         action="store_true", dest="dump")
+    parser.add_option("-s", "--summary",
+        help="summarize LINE in human readable form",
+        action="store_true", dest="summary")
+
+    parser.add_option("-o", "--output", dest="outfile",
+        help="write data to OUTFILE")
 
     (options, args) = parser.parse_args()
     
@@ -108,10 +114,30 @@ def main():
         data = infile.read()
     infile.close()
 
-    if options.dump and data:
+    if data:
         config = ZPTC.parse(data)
-        print(config)
 
+        if options.dump:
+            print(config)
+
+        if options.summary:
+            print("Name: %s" % config['PTCF']['name'])
+            for id in range(1,6):
+                print("Effect %d: 0x%8.8X" % (id, config['PTCF']["id"+str(id)]))
+
+                print("   Enabled:", config['EDTB']["effect"+str(id)] \
+                        ['reversed']['control']['enabled'])
+                for param in range(1,9):
+                    print("   Param %d: %d" % (param, config['EDTB']["effect"+str(id)] \
+                        ['reversed']['control']['param'+str(param)]))
+
+        if options.outfile:
+            outfile = open(options.outfile, "wb")
+
+            data = ZPTC.build(config)
+            if outfile:
+                outfile.write(data)
+                outfile.close
 
 if __name__ == "__main__":
     main()
