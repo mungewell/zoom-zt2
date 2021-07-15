@@ -19,6 +19,9 @@ def main():
         help="summarized configuration in human readable form",
     action="store_true", dest="summary")
 
+    parser.add_option("-b", "--extract",
+    help="extract icon bitmap to FILE", dest="extract")
+
     (options, args) = parser.parse_args()
     
     if len(args) != 1:
@@ -39,6 +42,15 @@ def main():
         config = zoomzt2.ZD2.parse(data)
 
         print("0x%8.8x : %s (v%s), %s" % (config['id'], config['name'], config['version'], args[0]))
+
+    if options.extract and data:
+       outfile = open(options.extract, "wb")
+       if not outfile:
+           sys.exit("Unable to open FILE for writing")
+
+       config = zoomzt2.ZD2.parse(data)
+       outfile.write(config["ICON"]["data"])
+       outfile.close()
 
 if __name__ == "__main__":
     main()

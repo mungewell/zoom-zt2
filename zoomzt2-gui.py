@@ -129,6 +129,7 @@ class _479389042__675845753_MyFrame(wx.Frame):
             self.text_ctrl_1.AppendText("\nGroup: " + str(config['group']) + " (" \
                     + config['groupname'] + ")")
             self.text_ctrl_1.AppendText("\nID   : " + hex(config['id']))
+            self.text_ctrl_1.AppendText("\n\n" + config['TXE1']['description'])
 
             self.button_6.SetLabel(tail)
             self.button_3.Enable()

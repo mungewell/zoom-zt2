@@ -64,28 +64,72 @@ ZT2 = Padded(8502, Sequence(
     "groups" / GreedyRange(Group),
 ))
 
+#--------------------------------------------------
+
+ICON = Struct(
+    Const(b"ICON"),
+    "length" / Int32ul,
+    "data" / Bytes(this.length),
+)
+
+TXJ1 = Struct(
+    Const(b"TXJ1"),
+    "length" / Int32ul,
+    "data" / Bytes(this.length),
+)
+
+TXE1 = Struct(
+    Const(b"TXE1"),
+    "length" / Int32ul,
+    "description" / PaddedString(this.length, "ascii"),
+)
+
+INFO = Struct(
+    Const(b"INFO"),
+    "length" / Int32ul,
+    "data" / Bytes(this.length),
+)
+
+DATA = Struct(
+    Const(b"DATA"),
+    "length" / Int32ul,
+    "data" / Bytes(this.length),
+)
+
+PRMJ = Struct(
+    Const(b"PRMJ"),
+    "length" / Int32ul,
+    "data" / Bytes(this.length),
+)
+
+PRME = Struct(
+    Const(b"PRME"),
+    "length" / Int32ul,
+    "xml" / PaddedString(this.length, "ascii"),
+)
+
 ZD2 = Struct(
-    Const(b"\x5a\x44\x4c\x46\x78"),
-    Padding(84),
+    Const(b"ZDLF"),
+    "length" / Int32ul,
+    "unknown" / Bytes(81),
     "version" / PaddedString(4, "ascii"),
     Const(b"\x00\x00"),
     "group" / Byte,
-    "groupname" / Enum(Computed(this.group),
-        DYNAMICS = 1,
-	FILTER = 2,
-	DRIVE = 3,
-	AMP = 4,
-	CABINET = 5,
-	MODULATION = 6,
-	SFX = 7,
-	DELAY = 8,
-	REVERB = 9,
-	PEDAL = 11,
-	AG_MODEL = 20,
-	ACOUSTIC = 29,
-    ),
     "id" / Int32ul,
+
     "name" / CString("ascii"),
+    "unknown2" / Bytes(lambda this: 10 - len(this.name)),
+
+    "groupname" / CString("ascii"),
+    "unknown3" / Bytes(lambda this: 16 - len(this.groupname)),
+
+    "ICON" / ICON,
+    "TXJ1" / TXJ1,
+    "TXE1" / TXE1,
+    "INFO" / INFO,
+    "DATA" / DATA,
+    "PRMJ" / PRMJ,
+    "PRME" / PRME,
 )
 
 #--------------------------------------------------
