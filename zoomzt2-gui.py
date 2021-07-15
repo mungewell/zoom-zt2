@@ -7,6 +7,9 @@
 import wx
 import zoomzt2
 import os
+from optparse import OptionParser
+
+global options
 
 # begin wxGlade: dependencies
 # end wxGlade
@@ -39,6 +42,7 @@ class _479389042__675845753_MyFrame(wx.Frame):
         self.button_2 = wx.Button(self.panel_1, wx.ID_ANY, "Connect")
         self.button_3 = wx.Button(self.panel_1, wx.ID_ANY, "Install")
         self.button_4 = wx.Button(self.panel_1, wx.ID_ANY, "Remove")
+        self.button_7 = wx.Button(self.panel_1, wx.ID_ANY, "Delete")
         self.button_5 = wx.Button(self.panel_1, wx.ID_ANY, "Download")
 
         self.__set_properties()
@@ -50,6 +54,7 @@ class _479389042__675845753_MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.butConnect, self.button_2)
         self.Bind(wx.EVT_BUTTON, self.butInstall, self.button_3)
         self.Bind(wx.EVT_BUTTON, self.butRemove, self.button_4)
+        self.Bind(wx.EVT_BUTTON, self.butDelete, self.button_7)
         self.Bind(wx.EVT_BUTTON, self.butDownload, self.button_5)
         # end wxGlade
 
@@ -70,6 +75,7 @@ class _479389042__675845753_MyFrame(wx.Frame):
         self.button_3.Disable()
         self.button_3.Hide()
         self.button_4.Hide()
+        self.button_7.Hide()
         self.button_5.Hide()
         # end wxGlade
 
@@ -77,7 +83,7 @@ class _479389042__675845753_MyFrame(wx.Frame):
         # begin wxGlade: _479389042__675845753_MyFrame.__do_layout
         sizer_2 = wx.BoxSizer(wx.VERTICAL)
         sizer_3 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_1 = wx.BoxSizer(wx.VERTICAL)
+        sizer_1 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_6 = wx.BoxSizer(wx.VERTICAL)
         sizer_5 = wx.BoxSizer(wx.VERTICAL)
         sizer_4 = wx.BoxSizer(wx.VERTICAL)
@@ -99,6 +105,7 @@ class _479389042__675845753_MyFrame(wx.Frame):
         sizer_1.Add(self.button_2, 1, wx.EXPAND, 0)
         sizer_1.Add(self.button_3, 1, wx.EXPAND, 0)
         sizer_1.Add(self.button_4, 1, wx.EXPAND, 0)
+        sizer_1.Add(self.button_7, 1, wx.EXPAND, 0)
         sizer_1.Add(self.button_5, 1, wx.EXPAND, 0)
         self.panel_1.SetSizer(sizer_1)
         sizer_3.Add(self.panel_1, 1, 0, 0)
@@ -206,6 +213,17 @@ class _479389042__675845753_MyFrame(wx.Frame):
 
         event.Skip()
 
+    def butDelete(self, event):  # wxGlade: _479389042__675845753_MyFrame.<event_handler>
+        name = self.list_box_2.GetString(self.list_box_2.GetSelection())
+        if name :
+            self.pedal.file_check(name)
+            self.pedal.file_delete(name)
+            self.pedal.file_close()
+
+            self.ReadFiles()
+
+        event.Skip()
+
     def butDownload(self, event):  # wxGlade: _479389042__675845753_MyFrame.<event_handler>
         name = self.list_box_2.GetString(self.list_box_2.GetSelection())
         if name :
@@ -225,6 +243,7 @@ class _479389042__675845753_MyFrame(wx.Frame):
     def UpdateButtons(self):
         self.button_3.Hide()
         self.button_4.Hide()
+        self.button_7.Hide()
         self.button_5.Hide()
 
         if self.pedal.is_connected():
@@ -240,6 +259,8 @@ class _479389042__675845753_MyFrame(wx.Frame):
         if page == 1:
             self.button_4.Show()
         if page == 2:
+            if options.delete:
+                self.button_7.Show()
             self.button_5.Show()
         self.Layout()
 
@@ -295,5 +316,13 @@ class MyApp(wx.App):
 # end of class MyApp
 
 if __name__ == "__main__":
+    usage = "usage: %prog [options] FILENAME"
+    parser = OptionParser(usage)
+    parser.add_option("-D", "--delete",
+        help="enable button to delete files from device (use with care)",
+        action="store_true", dest="delete")
+
+    (options, args) = parser.parse_args()
+
     App = MyApp(0)
     App.MainLoop()
