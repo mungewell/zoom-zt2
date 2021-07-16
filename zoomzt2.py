@@ -342,7 +342,7 @@ class zoomzt2(object):
             #decode received data
             packet = msg.data
             length = int(packet[9]) * 128 + int(packet[8])
-            if length == 0:
+            if packet[4] != 4 or length == 0:
                 break
             block = self.unpack(packet[10:10 + length + int(length/7) + 1])
 
