@@ -14,24 +14,24 @@ from construct import *
 # requires:
 # https://github.com/construct/construct
 
-Type = Struct(
-    Enum(Byte,
+Info = Struct(
+    "screen1" / Byte,
+    "param1" / Byte,
+    "type1" / Enum(Byte,
         VALUE  = 0x00,
         NAME   = 0x01,
         INVERT = 0x07,
     ),
-)
-
-Info = Struct(
-    "screen1" / Byte,
-    "param1" / Byte,
-    "type1" / Embedded(Type),
     "invert1" / Byte,
     "value" / PaddedString(10, "ascii"),
 
     "screen2" / Byte,
     "param2" / Byte,
-    "type2" / Embedded(Type),
+    "type2" / Enum(Byte,
+        VALUE  = 0x00,
+        NAME   = 0x01,
+        INVERT = 0x07,
+    ),
     "invert2" / Byte,
     "name" / PaddedString(10, "ascii"),
 )
