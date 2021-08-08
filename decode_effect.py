@@ -21,6 +21,11 @@ def main():
 
     parser.add_option("-b", "--bitmap",
     help="extract icon bitmap to FILE", dest="bitmap")
+    parser.add_option("-j", "--japan",
+        help="select Japanese version for export",
+        action="store_true", dest="japan")
+    parser.add_option("-x", "--xml",
+    help="extract XML to FILE", dest="xml")
 
     (options, args) = parser.parse_args()
     
@@ -50,6 +55,18 @@ def main():
 
        config = zoomzt2.ZD2.parse(data)
        outfile.write(config["ICON"]["data"])
+       outfile.close()
+
+    if data and options.xml:
+       outfile = open(options.xml, "wb")
+       if not outfile:
+           sys.exit("Unable to open FILE for writing")
+
+       config = zoomzt2.ZD2.parse(data)
+       if options.japan:
+           outfile.write(config["PRMJ"]["data"])
+       else:
+           outfile.write(bytes(config["PRME"]["xml"], encoding="ascii"))
        outfile.close()
 
 if __name__ == "__main__":
