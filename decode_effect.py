@@ -26,6 +26,8 @@ def main():
         action="store_true", dest="japan")
     parser.add_option("-x", "--xml",
     help="extract XML to FILE", dest="xml")
+    parser.add_option("-t", "--text",
+    help="extract Text to FILE", dest="text")
 
     (options, args) = parser.parse_args()
     
@@ -67,6 +69,18 @@ def main():
            outfile.write(config["PRMJ"]["data"])
        else:
            outfile.write(bytes(config["PRME"]["xml"], encoding="ascii"))
+       outfile.close()
+
+    if data and options.text:
+       outfile = open(options.text, "wb")
+       if not outfile:
+           sys.exit("Unable to open FILE for writing")
+
+       config = zoomzt2.ZD2.parse(data)
+       if options.japan:
+           outfile.write(config["TXJ1"]["data"])
+       else:
+           outfile.write(bytes(config["TXE1"]["description"], encoding="ascii"))
        outfile.close()
 
 if __name__ == "__main__":
