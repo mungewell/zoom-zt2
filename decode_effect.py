@@ -19,8 +19,8 @@ def main():
         help="summarized configuration in human readable form",
     action="store_true", dest="summary")
 
-    parser.add_option("-b", "--extract",
-    help="extract icon bitmap to FILE", dest="extract")
+    parser.add_option("-b", "--bitmap",
+    help="extract icon bitmap to FILE", dest="bitmap")
 
     (options, args) = parser.parse_args()
     
@@ -43,8 +43,8 @@ def main():
 
         print("0x%8.8x : %s (v%s), %s" % (config['id'], config['name'], config['version'], args[0]))
 
-    if options.extract and data:
-       outfile = open(options.extract, "wb")
+    if data and options.bitmap:
+       outfile = open(options.bitmap, "wb")
        if not outfile:
            sys.exit("Unable to open FILE for writing")
 
