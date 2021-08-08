@@ -28,6 +28,8 @@ def main():
     help="extract XML to FILE", dest="xml")
     parser.add_option("-t", "--text",
     help="extract Text to FILE", dest="text")
+    parser.add_option("-i", "--info",
+    help="extract Info to FILE", dest="info")
 
     (options, args) = parser.parse_args()
     
@@ -81,6 +83,15 @@ def main():
            outfile.write(config["TXJ1"]["data"])
        else:
            outfile.write(bytes(config["TXE1"]["description"], encoding="ascii"))
+       outfile.close()
+
+    if data and options.info:
+       outfile = open(options.info, "wb")
+       if not outfile:
+           sys.exit("Unable to open FILE for writing")
+
+       config = zoomzt2.ZD2.parse(data)
+       outfile.write(config["INFO"]["data"])
        outfile.close()
 
 if __name__ == "__main__":
