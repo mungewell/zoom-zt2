@@ -30,6 +30,8 @@ def main():
     help="extract Text to FILE", dest="text")
     parser.add_option("-i", "--info",
     help="extract Info to FILE", dest="info")
+    parser.add_option("-c", "--code",
+    help="extract Code to FILE", dest="code")
 
     (options, args) = parser.parse_args()
     
@@ -92,6 +94,15 @@ def main():
 
        config = zoomzt2.ZD2.parse(data)
        outfile.write(config["INFO"]["data"])
+       outfile.close()
+
+    if data and options.code:
+       outfile = open(options.code, "wb")
+       if not outfile:
+           sys.exit("Unable to open FILE for writing")
+
+       config = zoomzt2.ZD2.parse(data)
+       outfile.write(config["DATA"]["data"])
        outfile.close()
 
 if __name__ == "__main__":
