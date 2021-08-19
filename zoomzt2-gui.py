@@ -265,7 +265,7 @@ class _479389042__675845753_MyFrame(wx.Frame):
         self.Layout()
 
     def ConnectPedal(self):
-        if self.pedal.connect():
+        if self.pedal.connect(options.midiskip):
             self.ReadEffects()
             self.ReadFiles()
             self.UpdateButtons()
@@ -321,6 +321,9 @@ if __name__ == "__main__":
     parser.add_option("-D", "--delete",
         help="enable button to delete files from device (use with care)",
         action="store_true", dest="delete")
+    parser.add_option("-M", "--midiskip",
+        type=int, default=0, dest="midiskip",
+        help="Skip devices when connecting, ie when you multiple pedals")
 
     (options, args) = parser.parse_args()
 

@@ -155,17 +155,24 @@ class zoomzt2(object):
         else:
             return(True)
 
-    def connect(self):
+    def connect(self, midiskip = 0):
+        skip = midiskip
         for port in mido.get_input_names():
             if port[:len(midiname)]==midiname:
-                self.inport = mido.open_input(port)
-                #print("Using Input:", port)
-                break
+                if not skip:
+                    self.inport = mido.open_input(port)
+                    break
+                else:
+                    skip = skip - 1
+
+        skip = midiskip
         for port in mido.get_output_names():
             if port[:len(midiname)]==midiname:
-                self.outport = mido.open_output(port)
-                #print("Using Output:", port)
-                break
+                if not skip:
+                    self.outport = mido.open_output(port)
+                    break
+                else:
+                    skip = skip - 1
 
         if self.inport == None or self.outport == None:
             #print("Unable to find Pedal")
@@ -510,6 +517,9 @@ def main():
         help="Install effect binary to attached device", dest="install")
     parser.add_option("-U", "--uninstall",
         help="Remove effect binary from attached device", dest="uninstall")
+    parser.add_option("-M", "--midiskip",
+        type=int, default=0, dest="midiskip",
+        help="Skip devices when connecting, ie when you have multiple pedals")
 
     # attached device's effect patches
     parser.add_option("-p", "--patch",
@@ -534,7 +544,7 @@ def main():
             sys.exit("Patch number should be between 10 and 59")
 
     if options.receive or options.send or options.install or options.patch or options.upload:
-        if not pedal.connect():
+        if not pedal.connect(options.midiskip):
             sys.exit("Unable to find Pedal")
 
     if options.patch:
