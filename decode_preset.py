@@ -11,19 +11,6 @@ from construct import *
 # requires:
 # https://github.com/construct/construct
 
-PTCF = Struct(
-    Const(b"PTCF"),
-    Padding(8),
-    "effects" / Int32ul,
-    Padding(10),
-    "name" / PaddedString(10, "ascii"),
-    "id1" / Int32ul,
-    "id2" / Int32ul,
-    "id3" / Int32ul,
-    "id4" / Int32ul,
-    "id5" / Int32ul,
-)
-
 TXJ1 = Struct(
     Const(b"TXJ1"),
     "length" / Int32ul,
@@ -63,11 +50,7 @@ EDTB1 = Struct(
 EDTB = Struct(
     Const(b"EDTB"),
     "length" / Int32ul,
-    "effect1" / EDTB1,
-    "effect2" / EDTB1,
-    "effect3" / EDTB1,
-    "effect4" / EDTB1,
-    "effect5" / EDTB1,
+    "effects" / Array(this._.fx_count, EDTB1),
 )
 
 PPRM = Struct(
@@ -78,7 +61,13 @@ PPRM = Struct(
 )
 
 ZPTC = Padded(760, Struct(
-    "PTCF" / PTCF,
+    Const(b"PTCF"),
+    Padding(8),
+    "fx_count" / Int32ul,
+    Padding(10),
+    "name" / PaddedString(10, "ascii"),
+    "ids" / Array(this.fx_count, Int32ul),
+
     "TXJ1" / TXJ1,
     "TXE1" / TXE1,
     "EDTB" / EDTB,
@@ -121,14 +110,14 @@ def main():
             print(config)
 
         if options.summary:
-            print("Name: %s" % config['PTCF']['name'])
-            for id in range(1,6):
-                print("Effect %d: 0x%8.8X" % (id, config['PTCF']["id"+str(id)]))
+            print("Name: %s" % config['name'])
+            for id in range(config['fx_count']):
+                print("Effect %d: 0x%8.8X" % (id+1, config['ids'][id]))
 
-                print("   Enabled:", config['EDTB']["effect"+str(id)] \
+                print("   Enabled:", config['EDTB']['effects'][id] \
                         ['reversed']['control']['enabled'])
                 for param in range(1,9):
-                    print("   Param %d: %d" % (param, config['EDTB']["effect"+str(id)] \
+                    print("   Param %d: %d" % (param, config['EDTB']['effects'][id] \
                         ['reversed']['control']['param'+str(param)]))
 
         if options.outfile:
@@ -136,9 +125,9 @@ def main():
 
             # need to rebuild EDTB's reversed data
             for id in range(1,6):
-                #config['EDTB']["effect"+str(id)]['reversed']['control']['enabled'] = False
-                blob = EDTB2.build(config['EDTB']["effect"+str(id)]['reversed'])
-                config['EDTB']["effect"+str(id)]['autorev'] = blob
+                #config['EDTB']['effect'][id]['reversed']['control']['enabled'] = False
+                blob = EDTB2.build(config['EDTB']['effect'][id]['reversed'])
+                config['EDTB']['effect'][id]['autorev'] = blob
 
             data = ZPTC.build(config)
             if outfile:
