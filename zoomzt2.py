@@ -474,84 +474,100 @@ class zoomzt2(object):
 
 #--------------------------------------------------
 def main():
-    from optparse import OptionParser
+    from argparse import ArgumentParser
 
     data = bytearray(b"")
     pedal = zoomzt2()
 
     usage = "usage: %prog [options] FILENAME"
-    parser = OptionParser(usage)
-    parser.add_option("-d", "--dump",
+    parser = ArgumentParser(prog="zoom-zt2")
+    parser.add_argument('files', metavar='FILE', nargs='+',
+        help='File(s) to process')
+
+    # actions on FLST_SEQ file (local or received from pedal)
+    parser.add_argument("-d", "--dump",
         help="dump configuration to text",
         action="store_true", dest="dump")
-    parser.add_option("-s", "--summary",
+    parser.add_argument("-s", "--summary",
         help="summarized configuration in human readable form",
-    action="store_true", dest="summary")
-    parser.add_option("-b", "--build",
+        action="store_true", dest="summary")
+    parser.add_argument("-b", "--build",
         help="output commands required to build this FLTS_SEQ",
-        dest="build")
+        action="store_true", dest="build")
     
-    parser.add_option("-A", "--add",
+    parser.add_argument("-A", "--add",
         help="add effect to FLST_SEQ", dest="add")
-    parser.add_option("-v", "--ver",
+    parser.add_argument("-v", "--ver",
         help="effect version (use with --add)", dest="ver")
-    parser.add_option("-i", "--id",
+    parser.add_argument("-i", "--id",
         help="effect id (use with --add)", dest="id")
-    parser.add_option("-D", "--delete",
+    parser.add_argument("-D", "--delete",
     help="delete effect from FLST_SEQ", dest="delete")
     
-    parser.add_option("-t", "--toggle",
+    parser.add_argument("-t", "--toggle",
         help="toggle install/uninstall state of effect NAME in FLST_SEQ", dest="toggle")
 
-    parser.add_option("-w", "--write", dest="write",
+    parser.add_argument("-w", "--write", dest="write",
         help="write config back to same file", action="store_true")
     
     # interaction with attached device
-    parser.add_option("-R", "--receive",
+    parser.add_argument("-R", "--receive",
         help="Receive FLST_SEQ from attached device",
         action="store_true", dest="receive")
-    parser.add_option("-S", "--send",
+    parser.add_argument("-S", "--send",
         help="Send FLST_SEQ to attached device",
         action="store_true", dest="send")
-    parser.add_option("-I", "--install",
-        help="Install effect binary to attached device", dest="install")
-    parser.add_option("-U", "--uninstall",
-        help="Remove effect binary from attached device", dest="uninstall")
-    parser.add_option("-M", "--midiskip",
+
+    zd2 = parser.add_argument_group("ZD2", "Process ZDL2 file(s)").add_mutually_exclusive_group()
+    zd2.add_argument("-I", "--install",
+        help="Install effect binary to attached device, updating FLST_SEQ",
+        action="store_true", dest="install")
+    zd2.add_argument("-U", "--uninstall",
+        help="Remove effect binary from attached device, updating FLST_SEQ",
+        action="store_true", dest="uninstall")
+    zd2.add_argument("--install-only",
+        help="Install effect binary to attached device without affecting FLST_SEQ",
+        action="store_true", dest="installonly")
+    zd2.add_argument("--uninstall-only",
+        help="Remove effect binary from attached device WITHOUT affecting FLST_SEQ",
+        action="store_true", dest="uninstallonly")
+
+    # attached device's effect patches
+    patch = parser.add_argument_group("Patch", "Process patch file").add_mutually_exclusive_group()
+    patch.add_argument("-p", "--patchdown", type=int,
+        help="download specific patch (10..59)", dest="patchdown")
+    patch.add_argument("-P", "--patchup", type=int,
+        help="upload specific patch (10..59)", dest="patchup")
+
+    parser.add_argument("-M", "--midiskip",
         type=int, default=0, dest="midiskip",
         help="Skip devices when connecting, ie when you have multiple pedals")
 
-    # attached device's effect patches
-    parser.add_option("-p", "--patch",
-        help="download specific patch (10..59)", dest="patch")
-    parser.add_option("-P", "--upload",
-        help="upload specific patch (10..59)", dest="upload")
-
-    (options, args) = parser.parse_args()
+    options = parser.parse_args()
     
-    if len(args) != 1:
+    if not len(options.files):
         parser.error("FILE not specified")
 
-    if options.install and options.uninstall:
-        sys.exit("Cannot use 'install' and 'uninstall' at same time")
+    if options.patchdown:
+        if options.patchdown < 10 or options.patchdown > 59:
+            parser.error("Patch number should be between 10 and 59")
 
-    if options.patch:
-        if int(options.patch) < 10 or int(options.patch) > 59:
-            sys.exit("Patch number should be between 10 and 59")
+    if options.patchup:
+        if options.patchup < 10 or options.patchup > 59:
+            parser.error("Patch number should be between 10 and 59")
 
-    if options.upload:
-        if int(options.upload) < 10 or int(options.upload) > 59:
-            sys.exit("Patch number should be between 10 and 59")
-
-    if options.receive or options.send or options.install or options.patch or options.upload:
+    if options.receive or options.send or \
+            options.install or options.uninstall or \
+            options.installonly or options.uninstallonly or \
+            options.patchdown or options.patchup:
         if not pedal.connect(options.midiskip):
             sys.exit("Unable to find Pedal")
 
-    if options.patch:
-        data = pedal.patch_download(int(options.patch))
+    if options.patchdown:
+        data = pedal.patch_download(options.patchdown)
         pedal.disconnect()
 
-        outfile = open(args[0], "wb")
+        outfile = open(options.files[0], "wb")
         if not outfile:
             sys.exit("Unable to open FILE for writing")
 
@@ -559,8 +575,8 @@ def main():
         outfile.close()
         exit(0)
 
-    if options.upload:
-        infile = open(args[0], "rb")
+    if options.patchup:
+        infile = open(options.files[0], "rb")
         if not infile:
             sys.exit("Unable to open FILE for reading")
         else:
@@ -568,38 +584,32 @@ def main():
         infile.close()
 
         if len(data):
-            data = pedal.patch_upload(int(options.upload), data)
+            data = pedal.patch_upload(options.patchup, data)
         pedal.disconnect()
 
-        exit(0)
-
-    if options.receive:
-        pedal.file_check("FLST_SEQ.ZT2")
-        data = pedal.file_download("FLST_SEQ.ZT2")
+    if options.receive or options.install or options.uninstall:
+        if pedal.file_check("FLST_SEQ.ZT2"):
+            data = pedal.file_download("FLST_SEQ.ZT2")
         pedal.file_close()
-    else:
-        # Read data from file
-        infile = open(args[0], "rb")
+    elif not options.installonly and not options.uninstallonly:
+        # Read data from local file
+        infile = open(options.files[0], "rb")
         if not infile:
             sys.exit("Unable to open config FILE for reading")
         else:
             data = infile.read()
         infile.close()
 
-    if options.add and options.ver and options.id:
+    if data and options.add and options.ver and options.id:
         if options.id[:2] == "0x":
             data = pedal.add_effect(data, options.add, options.ver, int(options.id, 16))
         else:
             data = pedal.add_effect(data, options.add, options.ver, int(options.id))
 
-    if options.delete:
+    if data and options.delete:
         data = pedal.remove_effect(data, options.delete)
     
-    if options.dump and data:
-        config = ZT2.parse(data)
-        print(config)
-    
-    if options.toggle and data:
+    if data and options.toggle:
         config = ZT2.parse(data)
         groupnum=0
     
@@ -613,6 +623,43 @@ def main():
 
             groupnum = groupnum + 1
         data = ZT2.build(config)
+
+    if options.install or options.installonly:
+        for target in options.files:
+            binfile = open(target, "rb")
+            if binfile:
+                bindata = binfile.read()
+                binfile.close()
+        
+                print("Installing effect:", target)
+                if pedal.file_check(target):
+                    pedal.file_upload(target, bindata)
+                    pedal.file_close()
+
+                if data and options.install:
+                    data = pedal.add_effect_from_filename(data, target)
+
+    if options.uninstall or options.uninstallonly:
+        for target in options.files:
+            print("Uninstalling effect:", target)
+            if pedal.file_check(target):
+                pedal.file_delete(target)
+                pedal.file_close()
+
+                if data and options.uninstall:
+                    data = pedal.remove_effect(data, target)
+
+    if options.send or options.install or options.uninstall:
+        pedal.file_check("FLST_SEQ.ZT2")
+        pedal.file_upload("FLST_SEQ.ZT2", data)
+        pedal.file_close()
+    
+    if pedal.is_connected():
+        pedal.disconnect()
+    
+    if options.dump and data:
+        config = ZT2.parse(data)
+        print(config)
     
     if options.summary and data:
         config = ZT2.parse(data)
@@ -633,38 +680,13 @@ def main():
                     "-w", options.build)
 
     if options.write and data:
-       outfile = open(args[0], "wb")
+       outfile = open(options.files[0], "wb")
        if not outfile:
            sys.exit("Unable to open FILE for writing")
     
        outfile.write(data)
        outfile.close()
 
-    binfile = None
-    if options.install:
-        # Read data from file
-        binfile = open(options.install, "rb")
-        if infile:
-            bindata = binfile.read()
-            binfile.close()
-
-            pedal.file_check(options.install)
-            pedal.file_upload(options.install)
-
-    if options.uninstall:
-        pedal.file_check(options.uninstall)
-        pedal.file_delete(options.uninstall)
-
-    if options.send:
-        pedal.file_check("FLST_SEQ.ZT2")
-        pedal.file_upload("FLST_SEQ.ZT2", data)
-    
-    if options.send or options.install or options.uninstall:
-        pedal.file_close()
-    
-    if pedal.is_connected():
-        pedal.disconnect()
-    
 if __name__ == "__main__":
     main()
 
