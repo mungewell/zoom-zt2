@@ -481,6 +481,7 @@ def main():
 
     usage = "usage: %prog [options] FILENAME"
     parser = ArgumentParser(prog="zoom-zt2")
+
     parser.add_argument('files', metavar='FILE', nargs='+',
         help='File(s) to process')
 
@@ -494,7 +495,7 @@ def main():
     parser.add_argument("-b", "--build",
         help="output commands required to build this FLTS_SEQ",
         action="store_true", dest="build")
-    
+
     parser.add_argument("-A", "--add",
         help="add effect to FLST_SEQ", dest="add")
     parser.add_argument("-v", "--ver",
@@ -503,13 +504,13 @@ def main():
         help="effect id (use with --add)", dest="id")
     parser.add_argument("-D", "--delete",
     help="delete effect from FLST_SEQ", dest="delete")
-    
+
     parser.add_argument("-t", "--toggle",
         help="toggle install/uninstall state of effect NAME in FLST_SEQ", dest="toggle")
 
     parser.add_argument("-w", "--write", dest="write",
         help="write config back to same file", action="store_true")
-    
+
     # interaction with attached device
     parser.add_argument("-R", "--receive",
         help="Receive FLST_SEQ from attached device",
@@ -529,7 +530,7 @@ def main():
         help="Install effect binary to attached device without affecting FLST_SEQ",
         action="store_true", dest="installonly")
     zd2.add_argument("--uninstall-only",
-        help="Remove effect binary from attached device WITHOUT affecting FLST_SEQ",
+        help="Remove effect binary from attached device without affecting FLST_SEQ",
         action="store_true", dest="uninstallonly")
 
     # attached device's effect patches
@@ -544,7 +545,7 @@ def main():
         help="Skip devices when connecting, ie when you have multiple pedals")
 
     options = parser.parse_args()
-    
+
     if not len(options.files):
         parser.error("FILE not specified")
 
@@ -608,11 +609,11 @@ def main():
 
     if data and options.delete:
         data = pedal.remove_effect(data, options.delete)
-    
+
     if data and options.toggle:
         config = ZT2.parse(data)
         groupnum=0
-    
+
         for group in config[1]:
             for effect in dict(group)["effects"]:
                 if dict(effect)["effect"] == options.toggle:
@@ -630,11 +631,11 @@ def main():
             if binfile:
                 bindata = binfile.read()
                 binfile.close()
-        
+
                 print("Installing effect:", target)
                 if pedal.file_check(target):
                     pedal.file_upload(target, bindata)
-                    pedal.file_close()
+                pedal.file_close()
 
                 if data and options.install:
                     data = pedal.add_effect_from_filename(data, target)
@@ -644,23 +645,23 @@ def main():
             print("Uninstalling effect:", target)
             if pedal.file_check(target):
                 pedal.file_delete(target)
-                pedal.file_close()
+            pedal.file_close()
 
-                if data and options.uninstall:
-                    data = pedal.remove_effect(data, target)
+            if data and options.uninstall:
+                data = pedal.remove_effect(data, target)
 
     if options.send or options.install or options.uninstall:
         pedal.file_check("FLST_SEQ.ZT2")
         pedal.file_upload("FLST_SEQ.ZT2", data)
         pedal.file_close()
-    
+
     if pedal.is_connected():
         pedal.disconnect()
-    
+
     if options.dump and data:
         config = ZT2.parse(data)
         print(config)
-    
+
     if options.summary and data:
         config = ZT2.parse(data)
         for group in config[1]:
@@ -683,7 +684,7 @@ def main():
        outfile = open(options.files[0], "wb")
        if not outfile:
            sys.exit("Unable to open FILE for writing")
-    
+
        outfile.write(data)
        outfile.close()
 
