@@ -77,26 +77,29 @@ ZPTC = Padded(760, Struct(
 
 #--------------------------------------------------
 def main():
-    from optparse import OptionParser
+    from argparse import ArgumentParser
 
-    usage = "usage: %prog [options] FILENAME"
-    parser = OptionParser(usage)
-    parser.add_option("-d", "--dump",
+    parser = ArgumentParser(prog="decode_effect")
+    parser.add_argument('files', metavar='FILE', nargs=1,
+        help='File to process')
+
+    parser.add_argument("-d", "--dump",
         help="dump configuration to text",
         action="store_true", dest="dump")
-    parser.add_option("-s", "--summary",
+    parser.add_argument("-s", "--summary",
         help="summarize LINE in human readable form",
         action="store_true", dest="summary")
 
-    parser.add_option("-o", "--output", dest="outfile",
+    parser.add_argument("-o", "--output", dest="outfile",
         help="write data to OUTFILE")
 
-    (options, args) = parser.parse_args()
-    
-    if len(args) != 1:
+    options = parser.parse_args()
+
+    if not len(options.files):
         parser.error("FILE not specified")
 
-    infile = open(args[0], "rb")
+    # Read data from file
+    infile = open(options.files[0], "rb")
     if not infile:
         sys.exit("Unable to open FILE for reading")
     else:

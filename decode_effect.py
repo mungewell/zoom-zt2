@@ -8,37 +8,40 @@ import zoomzt2
 
 #--------------------------------------------------
 def main():
-    from optparse import OptionParser
+    from argparse import ArgumentParser
 
-    usage = "usage: %prog [options] FILENAME"
-    parser = OptionParser(usage)
-    parser.add_option("-d", "--dump",
+    parser = ArgumentParser(prog="decode_effect")
+    parser.add_argument('files', metavar='FILE', nargs=1,
+        help='File to process')
+
+    parser.add_argument("-d", "--dump",
         help="dump configuration to text",
         action="store_true", dest="dump")
-    parser.add_option("-s", "--summary",
+    parser.add_argument("-s", "--summary",
         help="summarized configuration in human readable form",
     action="store_true", dest="summary")
 
-    parser.add_option("-b", "--bitmap",
+    parser.add_argument("-b", "--bitmap",
     help="extract icon bitmap to FILE", dest="bitmap")
-    parser.add_option("-j", "--japan",
+    parser.add_argument("-j", "--japan",
         help="select Japanese version for export",
         action="store_true", dest="japan")
-    parser.add_option("-x", "--xml",
+    parser.add_argument("-x", "--xml",
     help="extract XML to FILE", dest="xml")
-    parser.add_option("-t", "--text",
+    parser.add_argument("-t", "--text",
     help="extract Text to FILE", dest="text")
-    parser.add_option("-i", "--info",
+    parser.add_argument("-i", "--info",
     help="extract Info to FILE", dest="info")
-    parser.add_option("-c", "--code",
+    parser.add_argument("-c", "--code",
     help="extract Code to FILE", dest="code")
 
-    (options, args) = parser.parse_args()
-    
-    if len(args) != 1:
+    options = parser.parse_args()
+
+    if not len(options.files):
         parser.error("FILE not specified")
 
-    infile = open(args[0], "rb")
+    # Read data from file
+    infile = open(options.files[0], "rb")
     if not infile:
         sys.exit("Unable to open FILE for reading")
     else:
@@ -52,7 +55,7 @@ def main():
     if options.summary and data:
         config = zoomzt2.ZD2.parse(data)
 
-        print("0x%8.8x : %s (v%s), %s" % (config['id'], config['name'], config['version'], args[0]))
+        print("0x%8.8x : %s (v%s), %s" % (config['id'], config['name'], config['version'], options.files[0]))
 
     if data and options.bitmap:
        outfile = open(options.bitmap, "wb")
