@@ -316,7 +316,7 @@ class MyApp(wx.App):
 # end of class MyApp
 
 if __name__ == "__main__":
-    parser = ArgumentParser(prog="zoom-zt2-gui")
+    parser = ArgumentParser(prog="zoomzt2-gui")
 
     parser.add_argument("-D", "--delete",
         help="enable button to delete files from device (use with care)",
