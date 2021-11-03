@@ -4,7 +4,7 @@
 # (c) Simon Wood, 10 May 2020
 #
 
-from optparse import OptionParser
+from argparse import ArgumentParser
 from construct import *
 
 #--------------------------------------------------
@@ -54,32 +54,35 @@ Pattern = Struct(
 
 #-------------------------------------------
 
-usage = "usage: %prog [options] FILENAME"
-parser = OptionParser(usage)
-parser.add_option("-d", "--dump", help="dump configuration to text",
+parser = ArgumentParser(prog="decode_patterns")
+parser.add_argument('files', metavar='FILE', nargs='1',
+    help='File to process')
+
+parser.add_argument("-d", "--dump", help="dump configuration to text",
     action="store_true", dest="dump")
 
-parser.add_option("-T", "--table",
+parser.add_argument("-T", "--table",
     help="offset to pattern table within '129' file (G1Four V2.00 use 407304)",
     dest="table")
-parser.add_option("-D", "--drums",
+parser.add_argument("-D", "--drums",
     help="offset to drum data within '129' file (G1Four V2.00 use 457078)",
     dest="drums")
 
-parser.add_option("-P", "--pointer",
+parser.add_argument("-P", "--pointer",
     help="print out the pointers to drum data as a sorted list",
     action="store_true", dest="pointer")
 
-parser.add_option("-p", "--pattern",
+parser.add_argument("-p", "--pattern",
     help="print drum data representation for a pattern", dest="pattern")
 
-(options, args) = parser.parse_args()
-if len(args) != 1:
+options = parser.parse_args()
+
+if not len(options.files):
     parser.error("FILE not specified")
 
 
 # Read data from file
-infile = open(args[0], "rb")
+infile = open(options.files[0], "rb")
 if not infile and not options.test:
     sys.exit("Unable to open config FILE for reading")
 else:

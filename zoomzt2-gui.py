@@ -7,7 +7,7 @@
 import wx
 import zoomzt2
 import os
-from optparse import OptionParser
+from argparse import ArgumentParser
 
 global options
 
@@ -316,16 +316,16 @@ class MyApp(wx.App):
 # end of class MyApp
 
 if __name__ == "__main__":
-    usage = "usage: %prog [options] FILENAME"
-    parser = OptionParser(usage)
-    parser.add_option("-D", "--delete",
+    parser = ArgumentParser(prog="zoom-zt2-gui")
+
+    parser.add_argument("-D", "--delete",
         help="enable button to delete files from device (use with care)",
         action="store_true", dest="delete")
-    parser.add_option("-M", "--midiskip",
-        type=int, default=0, dest="midiskip",
-        help="Skip devices when connecting, ie when you multiple pedals")
+    parser.add_argument("-M", "--midiskip",
+        help="Skip devices when connecting, ie when you multiple pedals",
+        type=int, default=0, dest="midiskip")
 
-    (options, args) = parser.parse_args()
+    options = parser.parse_args()
 
     App = MyApp(0)
     App.MainLoop()
