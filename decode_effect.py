@@ -23,17 +23,20 @@ def main():
 
     parser.add_argument("-b", "--bitmap",
     help="extract icon bitmap to FILE", dest="bitmap")
-    parser.add_argument("-j", "--japan",
-        help="select Japanese version for export",
-        action="store_true", dest="japan")
-    parser.add_argument("-x", "--xml",
-    help="extract XML to FILE", dest="xml")
-    parser.add_argument("-t", "--text",
-    help="extract Text to FILE", dest="text")
     parser.add_argument("-i", "--info",
     help="extract Info to FILE", dest="info")
     parser.add_argument("-c", "--code",
     help="extract Code to FILE", dest="code")
+
+    extract = parser.add_argument_group("Extract", \
+            "Extract either English or Japanese segments of the ZD2")
+    extract.add_argument("-j", "--japan",
+        help="select Japanese version for export",
+        action="store_true", dest="japan")
+    extract.add_argument("-x", "--xml",
+    help="extract XML to FILE", dest="xml")
+    extract.add_argument("-t", "--text",
+    help="extract Text to FILE", dest="text")
 
     options = parser.parse_args()
 
