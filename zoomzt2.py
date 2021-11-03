@@ -479,7 +479,7 @@ def main():
     data = bytearray(b"")
     pedal = zoomzt2()
 
-    parser = ArgumentParser(prog="zoom-zt2")
+    parser = ArgumentParser(prog="zoomzt2")
 
     parser.add_argument('files', metavar='FILE', nargs='+',
         help='File(s) to process')
