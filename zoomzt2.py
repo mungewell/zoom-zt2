@@ -518,7 +518,7 @@ def main():
         help="Send FLST_SEQ to attached device",
         action="store_true", dest="send")
 
-    zd2 = parser.add_argument_group("ZD2", "Process ZDL2 file(s)").add_mutually_exclusive_group()
+    zd2 = parser.add_argument_group("ZD2", "Process ZDL2 effect file(s)").add_mutually_exclusive_group()
     zd2.add_argument("-I", "--install",
         help="Install effect binary to attached device, updating FLST_SEQ",
         action="store_true", dest="install")
@@ -533,11 +533,11 @@ def main():
         action="store_true", dest="uninstallonly")
 
     # attached device's effect patches
-    patch = parser.add_argument_group("Patch", "Process patch file").add_mutually_exclusive_group()
-    patch.add_argument("-p", "--patchdown", type=int,
-        help="download specific patch (10..59)", dest="patchdown")
-    patch.add_argument("-P", "--patchup", type=int,
-        help="upload specific patch (10..59)", dest="patchup")
+    ztpc = parser.add_argument_group("ZTPC", "Process ZTPC patch file").add_mutually_exclusive_group()
+    ztpc.add_argument("-p", "--patchdown", type=int,
+        help="download specific ztpc (10..59)", dest="patchdown")
+    ztpc.add_argument("-P", "--patchup", type=int,
+        help="upload specific ztpc (10..59)", dest="patchup")
 
     parser.add_argument("-M", "--midiskip",
         type=int, default=0, dest="midiskip",
