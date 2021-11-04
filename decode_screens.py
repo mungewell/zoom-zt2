@@ -53,7 +53,7 @@ def main():
     from argparse import ArgumentParser
 
     parser = ArgumentParser(prog="decode_effect")
-    parser.add_argument('files', metavar='FILE', nargs='1',
+    parser.add_argument('files', metavar='FILE', nargs=1,
         help='File to process')
 
     parser.add_argument("-d", "--dump",

@@ -55,7 +55,7 @@ Pattern = Struct(
 #-------------------------------------------
 
 parser = ArgumentParser(prog="decode_patterns")
-parser.add_argument('files', metavar='FILE', nargs='1',
+parser.add_argument('files', metavar='FILE', nargs=1,
     help='File to process')
 
 parser.add_argument("-d", "--dump", help="dump configuration to text",
