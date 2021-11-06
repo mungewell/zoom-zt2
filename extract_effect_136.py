@@ -56,21 +56,19 @@ def main():
             if outfile:
                 outfile.close()
 
-            print(block["data"][0:4])
             if block["data"][0:4] == b"ZDLF":
                 suffix = ".ZD2"
             elif block["data"][0:3] == b">>>":
                 suffix = ".ZT2"
             else:
                 suffix = ""
-            print(suffix)
 
             print("Opening: %s" % (str(options.location + 6)+suffix))
             outfile = open(str(options.location + 6)+suffix, "wb")
             if not outfile:
                 sys.exit("Unable to open FILE for writing")
 
-        print("Writing: %d bytes" % block["length"])
+        #print("Writing: %d bytes" % block["length"])
         outfile.write(block["data"])
 
         # read next chunk
