@@ -37,21 +37,22 @@ short_ZD2 = Struct(
 
 #--------------------------------------------------
 def main():
-    from optparse import OptionParser
+    from argparse import ArgumentParser
     location = 0xf000
 
-    usage = "usage: %prog [options] FILENAME"
-    parser = OptionParser(usage)
+    parser = ArgumentParser(prog="extract_effect_136")
+    parser.add_argument('files', metavar='FILE', nargs=1,
+        help='File to process')
 
-    parser.add_option("-s", "--start",
+    parser.add_argument("-s", "--start",
         help="start location of ZDLF's",
         type=int, default=0xf000, dest="location")
 
-    parser.add_option("-z", "--zt2",
+    parser.add_argument("-z", "--zt2",
         help="get Id's from local ZT2 file and lookup ZD2 filenames",
         dest="zt2")
 
-    (options, args) = parser.parse_args()
+    options = parser.parse_args()
     
     ids = []
     if options.zt2:
@@ -69,10 +70,10 @@ def main():
 
             infile.close()
 
-    if len(args) != 1:
+    if not len(options.files):
         parser.error("FILE not specified")
 
-    infile = open(args[0], "rb")
+    infile = open(options.files[0], "rb")
     if not infile:
         sys.exit("Unable to open FILE for reading")
     outfile = None
