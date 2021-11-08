@@ -4,6 +4,8 @@
 # (c) Simon Wood, 6 Nov 2021
 #
 
+import zoomzt2
+
 from construct import *
 
 #--------------------------------------------------
@@ -22,6 +24,17 @@ Extract = Struct(
     ),
 )
 
+# short extract, just to lookup ID within the 1st 4096 bytes
+short_ZD2 = Struct(
+    Const(b"ZDLF"),
+    "length" / Int32ul,
+    "unknown" / Bytes(81),
+    "version" / PaddedString(4, "ascii"),
+    Const(b"\x00\x00"),
+    "group" / Byte,
+    "id" / Int32ul,
+)
+
 #--------------------------------------------------
 def main():
     from optparse import OptionParser
@@ -34,8 +47,28 @@ def main():
         help="start location of ZDLF's",
         type=int, default=0xf000, dest="location")
 
+    parser.add_option("-z", "--zt2",
+        help="get Id's from local ZT2 file and lookup ZD2 filenames",
+        dest="zt2")
+
     (options, args) = parser.parse_args()
     
+    ids = []
+    if options.zt2:
+        infile = open(options.zt2, "rb")
+        if not infile:
+            options.zt2 = None
+        else:
+            data = infile.read()
+            zt2 = zoomzt2.ZT2.parse(data)
+
+            # scan through effects remembering Ids and Effect names
+            for group in zt2[1]:
+                for effect in dict(group)["effects"]:
+                    ids.append([effect["id"], effect["effect"]])
+
+            infile.close()
+
     if len(args) != 1:
         parser.error("FILE not specified")
 
@@ -56,19 +89,26 @@ def main():
             if outfile:
                 outfile.close()
 
+            zd2 = None
             if block["data"][0:4] == b"ZDLF":
                 suffix = ".ZD2"
+                zd2 = short_ZD2.parse(block["data"])
             elif block["data"][0:3] == b">>>":
                 suffix = ".ZT2"
             else:
                 suffix = ""
 
-            print("Opening: %s" % (str(options.location + 6)+suffix))
-            outfile = open(str(options.location + 6)+suffix, "wb")
+            outname = (str(options.location + 6)+suffix)
+            if options.zt2 and zd2:
+                for check in ids:
+                    if check[0] == zd2['id']:
+                        outname = check[1]
+
+            print("Writing: %s" % outname)
+            outfile = open(outname, "wb")
             if not outfile:
                 sys.exit("Unable to open FILE for writing")
 
-        #print("Writing: %d bytes" % block["length"])
         outfile.write(block["data"])
 
         # read next chunk
