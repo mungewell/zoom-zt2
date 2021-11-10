@@ -117,17 +117,24 @@ ZD2 = Struct(
     "group" / Byte,
     "id" / Int32ul,
 
-    "name" / CString("ascii"),
-    "unknown2" / Bytes(lambda this: 10 - len(this.name)),
-
+    "aname" / Peek(CString("ascii")),
+    "bname" / Bytes(11),                # figure out how to write as PaddedString on rebuild
+    "name" / IfThenElse(lambda ctx: ctx.aname.__len__() < 11,
+        "name" / Computed(this.aname),
+        "name" / Computed(this.bname),
+    ),
     "groupname" / CString("ascii"),
-    "unknown3" / Bytes(lambda this: 16 - len(this.groupname)),
+
+    "unknown3" / Bytes(lambda this: 12 - len(this.groupname)),
+    "unknown4" / BitStruct("unknown4" / Array(8, BitsInteger(1))),
+    Const(b"\x00\x00\x00"),
 
     "ICON" / ICON,
     "TXJ1" / TXJ1,
     "TXE1" / TXE1,
     "INFO" / INFO,
     "DATA" / DATA,
+
     "PRMJ" / PRMJ,
     "PRME" / PRME,
 )

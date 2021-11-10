@@ -19,14 +19,14 @@ def main():
         action="store_true", dest="dump")
     parser.add_argument("-s", "--summary",
         help="summarized configuration in human readable form",
-    action="store_true", dest="summary")
+        action="store_true", dest="summary")
 
     parser.add_argument("-b", "--bitmap",
-    help="extract icon bitmap to FILE", dest="bitmap")
+        help="extract icon bitmap to FILE", dest="bitmap")
     parser.add_argument("-i", "--info",
-    help="extract Info to FILE", dest="info")
+        help="extract Info to FILE", dest="info")
     parser.add_argument("-c", "--code",
-    help="extract Code to FILE", dest="code")
+        help="extract Code to FILE", dest="code")
 
     extract = parser.add_argument_group("Extract", \
             "Extract either English or Japanese segments of the ZD2")
@@ -34,9 +34,32 @@ def main():
         help="select Japanese version for export",
         action="store_true", dest="japan")
     extract.add_argument("-x", "--xml",
-    help="extract XML to FILE", dest="xml")
+        help="extract XML to FILE", dest="xml")
     extract.add_argument("-t", "--text",
-    help="extract Text to FILE", dest="text")
+        help="extract Text to FILE", dest="text")
+
+    donor = parser.add_argument_group("Donor", \
+            "Take replacement sections from a donor")
+    donor.add_argument("-D", "--donor",
+        help="use sections from donor FILE", dest="donor")
+    donor.add_argument("-B", "--donor-bitmap",
+        help="extract icon bitmap from donor",
+        action="store_true", dest="dbitmap")
+    donor.add_argument("-T", "--donor-text",
+        help="extract Text from donor",
+        action="store_true", dest="dtext")
+    donor.add_argument("-I", "--donor-info",
+        help="extract Info from donor",
+        action="store_true", dest="dinfo")
+    donor.add_argument("-C", "--donor-code",
+        help="extract Code from donor",
+        action="store_true", dest="dcode")
+    donor.add_argument("-X", "--donor-xml",
+        help="extracy XML from donor",
+        action="store_true", dest="dxml")
+
+    donor.add_argument("-o", "--output",
+        help="output combined result to FILE", dest="output")
 
     options = parser.parse_args()
 
@@ -109,6 +132,38 @@ def main():
 
        config = zoomzt2.ZD2.parse(data)
        outfile.write(config["DATA"]["data"])
+       outfile.close()
+
+    if data and options.output:
+       outfile = open(options.output, "wb")
+       if not outfile:
+           sys.exit("Unable to open output FILE for writing")
+       config = zoomzt2.ZD2.parse(data)
+
+       if options.donor:
+           infile = open(options.donor, "rb")
+           if not infile:
+               sys.exit("Unable to open donor FILE for reading")
+           else:
+               ddata = infile.read()
+           infile.close()
+
+           dconfig = zoomzt2.ZD2.parse(ddata)
+           if options.dbitmap:
+               config["ICON"] = dconfig["ICON"]
+           if options.dtext:
+               config["TXJ1"] = dconfig["TXJ1"]
+               config["TXE1"] = dconfig["TXE1"]
+           if options.dinfo:
+               config["INFO"] = dconfig["INFO"]
+           if options.dcode:
+               config["DATA"] = dconfig["DATA"]
+           if options.dxml:
+               config["PRMJ"] = dconfig["PRMJ"]
+               config["PRME"] = dconfig["PRME"]
+
+       data = zoomzt2.ZD2.build(config)
+       outfile.write(data)
        outfile.close()
 
 if __name__ == "__main__":
