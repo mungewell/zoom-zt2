@@ -63,7 +63,13 @@ ZT2 = Padded(8502, Sequence(
     "header" / Header,
     "groups" / GreedyRange(Group),
 ))
+'''
+ZT2 = Sequence(
+    "header" / Header,
+    "groups" / GreedyRange(Group),
+)
 
+'''
 #--------------------------------------------------
 
 ICON = Struct(
@@ -500,7 +506,7 @@ def main():
         action="store_true", dest="summary")
     parser.add_argument("-b", "--build",
         help="output commands required to build this FLTS_SEQ",
-        action="store_true", dest="build")
+        dest="build")
 
     parser.add_argument("-A", "--add",
         help="add effect to FLST_SEQ", dest="add")

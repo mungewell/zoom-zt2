@@ -22,28 +22,28 @@ def main():
         action="store_true", dest="summary")
 
     parser.add_argument("-b", "--bitmap",
-        help="extract icon bitmap to FILE", dest="bitmap")
+        help="extract Icon/Bitmap to FILE", dest="bitmap")
     parser.add_argument("-i", "--info",
         help="extract Info to FILE", dest="info")
     parser.add_argument("-c", "--code",
         help="extract Code to FILE", dest="code")
 
-    extract = parser.add_argument_group("Extract", \
-            "Extract either English or Japanese segments of the ZD2")
-    extract.add_argument("-j", "--japan",
+    language = parser.add_argument_group("Language",
+        "Extract either English or Japanese segments")
+    language.add_argument("-j", "--japan",
         help="select Japanese version for export",
         action="store_true", dest="japan")
-    extract.add_argument("-x", "--xml",
+    language.add_argument("-x", "--xml",
         help="extract XML to FILE", dest="xml")
-    extract.add_argument("-t", "--text",
+    language.add_argument("-t", "--text",
         help="extract Text to FILE", dest="text")
 
-    donor = parser.add_argument_group("Donor", \
-            "Take replacement sections from a donor")
+    donor = parser.add_argument_group("Donor",
+        "Take replacement sections from a donor ZD2")
     donor.add_argument("-D", "--donor",
-        help="use sections from donor FILE", dest="donor")
+        help="specify donor ZD2 FILE", dest="donor")
     donor.add_argument("-B", "--donor-bitmap",
-        help="extract icon bitmap from donor",
+        help="extract Icon/Bitmap from donor",
         action="store_true", dest="dbitmap")
     donor.add_argument("-T", "--donor-text",
         help="extract Text from donor",
@@ -55,7 +55,7 @@ def main():
         help="extract Code from donor",
         action="store_true", dest="dcode")
     donor.add_argument("-X", "--donor-xml",
-        help="extracy XML from donor",
+        help="extract XML from donor",
         action="store_true", dest="dxml")
 
     donor.add_argument("-o", "--output",

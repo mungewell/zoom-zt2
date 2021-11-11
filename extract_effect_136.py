@@ -96,6 +96,8 @@ def main():
                 zd2 = short_ZD2.parse(block["data"])
             elif block["data"][0:3] == b">>>":
                 suffix = ".ZT2"
+            elif block["data"][0:4] == b"ZSPF":
+                suffix = ".ZSPF"
             else:
                 suffix = ""
 
