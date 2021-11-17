@@ -50,6 +50,8 @@ Group = Struct(
 	PEDAL = 11,
 	AG_MODEL = 20,
 	ACOUSTIC = 29,
+	RHYTHM = 30,
+	LOOPER = 31,
     ),
     Padding(21),
     "effects" / GreedyRange(Effect),
@@ -117,6 +119,7 @@ PRME = Struct(
 ZD2 = Struct(
     Const(b"ZDLF"),
     "length" / Int32ul,
+    "hex" / HexDump(Peek(Bytes(81))),
     "unknown" / Bytes(81),
     "version" / PaddedString(4, "ascii"),
     Const(b"\x00\x00"),
@@ -131,6 +134,7 @@ ZD2 = Struct(
     ),
     "groupname" / CString("ascii"),
 
+    "hex3" / HexDump(Peek(Bytes(lambda this: 12 - len(this.groupname)))),
     "unknown3" / Bytes(lambda this: 12 - len(this.groupname)),
     "unknown4" / BitStruct("unknown4" / Array(8, BitsInteger(1))),
     Const(b"\x00\x00\x00"),
