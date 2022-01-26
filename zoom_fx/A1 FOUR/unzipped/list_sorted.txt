@@ -1,0 +1,176 @@
+0x01000010 : Comp (v1.30), ./A1 FOUR/unzipped/COMP.ZD2
+0x01000020 : RackComp (v1.30), ./A1 FOUR/unzipped/RACKCOMP.ZD2
+0x01000030 : SlowATTCK (v1.40), ./A1 FOUR/unzipped/SLWATK.ZD2
+0x01000040 : ZNR (v1.40), ./A1 FOUR/unzipped/ZNR.ZD2
+0x01000050 : MuteSW (v1.30), ./A1 FOUR/unzipped/MUTESW.ZD2
+0x01000060 : GrayComp (v1.30), ./A1 FOUR/unzipped/GRAYCOMP.ZD2
+0x01000070 : NoiseGate (v1.30), ./A1 FOUR/unzipped/N_GATE.ZD2
+0x01000080 : OptComp (v1.40), ./A1 FOUR/unzipped/OPTCOMP.ZD2
+0x01800010 : BlackOpt (v1.30), ./A1 FOUR/unzipped/BLACKOPT.ZD2
+0x01800020 : LMT-76 (v1.40), ./A1 FOUR/unzipped/LMT1176.ZD2
+0x01800030 : 160 Comp (v1.30), ./A1 FOUR/unzipped/160_COMP.ZD2
+0x01800040 : DualComp (v1.30), ./A1 FOUR/unzipped/DUAL_CMP.ZD2
+0x01800050 : MB Comp (v1.30), ./A1 FOUR/unzipped/MB_COMP.ZD2
+0x01800060 : DYN Comp (v1.30), ./A1 FOUR/unzipped/DCOMP.ZD2
+0x01800070 : Glam Comp (v1.20), ./A1 FOUR/unzipped/GLAMCOMP.ZD2
+0x01a01000 : Adv.NR (v1.00), ./A1 FOUR/unzipped/ADVNR.ZD2
+0x02000010 : AutoWah (v1.30), ./A1 FOUR/unzipped/AUTOWAH.ZD2
+0x02000020 : Resonance (v1.30), ./A1 FOUR/unzipped/RESONANC.ZD2
+0x02000030 : Cry (v1.30), ./A1 FOUR/unzipped/CRY.ZD2
+0x02000040 : SeqFLTR (v1.40), ./A1 FOUR/unzipped/SEQFLTR.ZD2
+0x02000051 : Gt GEQ (v1.10), ./A1 FOUR/unzipped/GT_GEQ1U.ZD2
+0x02000054 : Gt GEQ 7 (v1.10), ./A1 FOUR/unzipped/GTGEQ71U.ZD2
+0x02000061 : St Gt GEQ (v1.10), ./A1 FOUR/unzipped/STGTGE1U.ZD2
+0x02000070 : ParaEQ (v1.30), ./A1 FOUR/unzipped/PARAEQ.ZD2
+0x02000071 : ParaEQx2 (v1.00), ./A1 FOUR/unzipped/PARAEQ2.ZD2
+0x02000090 : RndmFLTR (v1.30), ./A1 FOUR/unzipped/RNDMFLTR.ZD2
+0x020000a0 : LowPassFL (v1.30), ./A1 FOUR/unzipped/LOWPASSF.ZD2
+0x020000b0 : Exciter (v1.40), ./A1 FOUR/unzipped/EXCITER.ZD2
+0x020000c0 : Step (v1.30), ./A1 FOUR/unzipped/STEP.ZD2
+0x020000d0 : LFO FLTR (v1.30), ./A1 FOUR/unzipped/LFO_FLTR.ZD2
+0x02400001 : AG PU SEL (v1.00), ./A1 FOUR/unzipped/AG_PUSL.ZD2
+0x02400010 : BaDePiezo (v1.00), ./A1 FOUR/unzipped/DPZ_BA.ZD2
+0x02400020 : Fish EQ (v1.00), ./A1 FOUR/unzipped/FISH_EQ.ZD2
+0x02400030 : Baggs EQ (v1.01), ./A1 FOUR/unzipped/BAGGSEQ.ZD2
+0x02400040 : Bone EQ (v1.01), ./A1 FOUR/unzipped/BONE_EQ.ZD2
+0x02800010 : BassA-Wah (v1.30), ./A1 FOUR/unzipped/B_ATWAH.ZD2
+0x02800020 : Z Tron (v1.30), ./A1 FOUR/unzipped/Z_TRON.ZD2
+0x02800030 : A-Filter (v1.30), ./A1 FOUR/unzipped/A_FILTER.ZD2
+0x02800040 : Bass Cry (v1.30), ./A1 FOUR/unzipped/BA_CRY.ZD2
+0x02800051 : BassGEQ (v1.10), ./A1 FOUR/unzipped/BA_GEQ1U.ZD2
+0x02800061 : St Ba GEQ (v1.10), ./A1 FOUR/unzipped/STBGEQ1U.ZD2
+0x02800070 : BassPEQ (v1.30), ./A1 FOUR/unzipped/BA_PEQ.ZD2
+0x02800080 : Splitter (v1.30), ./A1 FOUR/unzipped/SPLITTER.ZD2
+0x02800090 : Low EQ (v1.30), ./A1 FOUR/unzipped/LOW_EQ.ZD2
+0x02800095 : High EQ (v1.20), ./A1 FOUR/unzipped/HIGH_EQ.ZD2
+0x028000a0 : EnvFilter (v1.20), ./A1 FOUR/unzipped/ENV_FLTR.ZD2
+0x02a00160 : Hm GEQ (v1.00), ./A1 FOUR/unzipped/EQ_HARM.ZD2
+0x02a00162 : Hm A.Wah (v1.00), ./A1 FOUR/unzipped/AWAH_HM.ZD2
+0x02a00164 : Hm Preamp (v1.00), ./A1 FOUR/unzipped/HARM_PRE.ZD2
+0x02a00166 : Hm Bullet (v1.00), ./A1 FOUR/unzipped/B_MIC.ZD2
+0x02a00280 : A.Vn GEQ (v1.00), ./A1 FOUR/unzipped/EQ_AVN.ZD2
+0x02a00282 : E.Vn GEQ (v1.00), ./A1 FOUR/unzipped/EQ_EVN.ZD2
+0x02a00284 : Vn A.Wah (v1.00), ./A1 FOUR/unzipped/AWAH_VN.ZD2
+0x02a00286 : VnDePiezo (v1.00), ./A1 FOUR/unzipped/PZPREVN.ZD2
+0x02a00380 : Tp GEQ (v1.00), ./A1 FOUR/unzipped/EQ_TP.ZD2
+0x02a00382 : Tp A.Wah (v1.00), ./A1 FOUR/unzipped/AWAH_TP.ZD2
+0x02a00410 : Sax GEQ (v1.00), ./A1 FOUR/unzipped/EQ_SAX.ZD2
+0x02a00412 : Sax A.Wah (v1.00), ./A1 FOUR/unzipped/AWAH_SAX.ZD2
+0x02a00414 : SaxAtkFlt (v1.00), ./A1 FOUR/unzipped/ATK_FLT.ZD2
+0x02fffff0 : Anti FB (v1.00), ./A1 FOUR/unzipped/ANTI_FB.ZD2
+0x03000010 : TS Drive (v1.30), ./A1 FOUR/unzipped/TS_DRIVE.ZD2
+0x03000030 : RC Boost (v1.40), ./A1 FOUR/unzipped/RCBOOST.ZD2
+0x03a00280 : Vn DIST (v1.00), ./A1 FOUR/unzipped/DIST_VN.ZD2
+0x04000028 : FD B-MAN (v1.10), ./A1 FOUR/unzipped/FDBMAN1U.ZD2
+0x0400002c : FD DLXR (v1.10), ./A1 FOUR/unzipped/FDDLXR1U.ZD2
+0x05000027 : FD-B4x10 (v1.30), ./A1 FOUR/unzipped/FDB4X10.ZD2
+0x0500002a : FD-DX1x12 (v1.30), ./A1 FOUR/unzipped/FDDX1X12.ZD2
+0x06000010 : Tremolo (v1.40), ./A1 FOUR/unzipped/TREMOLO.ZD2
+0x06000020 : Chorus (v1.40), ./A1 FOUR/unzipped/CHORUS.ZD2
+0x06000030 : StereoCho (v1.30), ./A1 FOUR/unzipped/STEREOCH.ZD2
+0x06000040 : Phaser (v1.40), ./A1 FOUR/unzipped/PHASER.ZD2
+0x06000050 : VinFLNGR (v1.30), ./A1 FOUR/unzipped/VINFLNGR.ZD2
+0x06000060 : TheVibe (v1.40), ./A1 FOUR/unzipped/THEVIBE.ZD2
+0x06000070 : Vibrato (v1.30), ./A1 FOUR/unzipped/VIBRATO.ZD2
+0x06000080 : Octave (v1.30), ./A1 FOUR/unzipped/OCTAVE.ZD2
+0x06000090 : RingMod (v1.30), ./A1 FOUR/unzipped/RINGMOD.ZD2
+0x060000a0 : Detune (v1.30), ./A1 FOUR/unzipped/DETUNE.ZD2
+0x060000b0 : PitchSHFT (v1.40), ./A1 FOUR/unzipped/PITCHSHF.ZD2
+0x060000c0 : MonoPitch (v1.30), ./A1 FOUR/unzipped/MONOPITC.ZD2
+0x060000d0 : HPS (v1.40), ./A1 FOUR/unzipped/HPS.ZD2
+0x060000f0 : Slicer (v1.30), ./A1 FOUR/unzipped/SLICER.ZD2
+0x06000100 : CloneCho (v1.30), ./A1 FOUR/unzipped/CLONECHO.ZD2
+0x06000110 : SuperCho (v1.60), ./A1 FOUR/unzipped/SUPERCHO.ZD2
+0x06000120 : StonePha (v1.40), ./A1 FOUR/unzipped/STONEPHA.ZD2
+0x06000131 : CoronaTri (v1.10), ./A1 FOUR/unzipped/CRNTRI3S.ZD2
+0x06000140 : BendCho (v1.30), ./A1 FOUR/unzipped/BENDCHO.ZD2
+0x06000150 : AnalogCho (v1.30), ./A1 FOUR/unzipped/ANA234CH.ZD2
+0x06000160 : WarpPhase (v1.30), ./A1 FOUR/unzipped/WRPPHASE.ZD2
+0x06000171 : Duo Phase (v1.10), ./A1 FOUR/unzipped/DUOPHA1U.ZD2
+0x06400000 : AG Detune (v1.00), ./A1 FOUR/unzipped/ACDETUNE.ZD2
+0x06400010 : AG Chorus (v1.00), ./A1 FOUR/unzipped/AC_TRCHO.ZD2
+0x06800020 : BassStCho (v1.30), ./A1 FOUR/unzipped/B_ST_CHO.ZD2
+0x06800040 : BaVinFLNG (v1.30), ./A1 FOUR/unzipped/B_VFLNG.ZD2
+0x06800050 : Ba Octave (v1.30), ./A1 FOUR/unzipped/B_OCTAVE.ZD2
+0x06800060 : Ba Detune (v1.30), ./A1 FOUR/unzipped/B_DETUNE.ZD2
+0x06800070 : BaMnPitch (v1.30), ./A1 FOUR/unzipped/B_PITCH.ZD2
+0x06800080 : BassPhase (v1.30), ./A1 FOUR/unzipped/BASS_PHA.ZD2
+0x06a00160 : Hm Chorus (v1.00), ./A1 FOUR/unzipped/CHOHM.ZD2
+0x06a00280 : Vn Chorus (v1.00), ./A1 FOUR/unzipped/CHOVN.ZD2
+0x06a00380 : Tp Chorus (v1.00), ./A1 FOUR/unzipped/CHOTP.ZD2
+0x06a00410 : SaxChorus (v1.00), ./A1 FOUR/unzipped/CHOSAX.ZD2
+0x06a00412 : Sax Growl (v1.00), ./A1 FOUR/unzipped/GROWL.ZD2
+0x06a01000 : PolyOctUp (v1.00), ./A1 FOUR/unzipped/POCT_UP.ZD2
+0x06a01001 : PolyOctDw (v1.00), ./A1 FOUR/unzipped/POCT_DWN.ZD2
+0x06a01010 : DualPitch (v1.00), ./A1 FOUR/unzipped/DUALPIT.ZD2
+0x06a01020 : Ensemble (v1.00), ./A1 FOUR/unzipped/ENSEMBLE.ZD2
+0x06a01030 : EnvPhaser (v1.00), ./A1 FOUR/unzipped/ENVPHA.ZD2
+0x06a01040 : RndPhaser (v1.00), ./A1 FOUR/unzipped/RNDMPHA.ZD2
+0x07000010 : Bomber (v1.40), ./A1 FOUR/unzipped/BOMBER.ZD2
+0x07000020 : AutoPan (v1.30), ./A1 FOUR/unzipped/AUTOPAN.ZD2
+0x07000041 : LoopRoll (v1.10), ./A1 FOUR/unzipped/LPROLL3S.ZD2
+0x07000050 : HotSpice (v1.20), ./A1 FOUR/unzipped/HOTSPICE.ZD2
+0x07800010 : StdSyn (v1.30), ./A1 FOUR/unzipped/STDSYN.ZD2
+0x07800020 : SynTlk (v1.30), ./A1 FOUR/unzipped/SYNTLK.ZD2
+0x07800031 : Z-Syn (v1.10), ./A1 FOUR/unzipped/Z_SYN_1U.ZD2
+0x07800040 : Defret (v1.30), ./A1 FOUR/unzipped/DEFRET.ZD2
+0x07800050 : PH+Dist (v1.30), ./A1 FOUR/unzipped/PH_DIST.ZD2
+0x08000011 : Delay (v1.10), ./A1 FOUR/unzipped/DELAY_3S.ZD2
+0x08000021 : AnalogDly (v1.10), ./A1 FOUR/unzipped/ANDLY_3S.ZD2
+0x08000030 : TapeEcho (v1.40), ./A1 FOUR/unzipped/TAPEECHO.ZD2
+0x08000041 : ReverseDL (v1.10), ./A1 FOUR/unzipped/RVRSDL3S.ZD2
+0x08000050 : ModDelay (v1.30), ./A1 FOUR/unzipped/MODDELAY.ZD2
+0x08000081 : P-P Delay (v1.10), ./A1 FOUR/unzipped/PPDLY_3S.ZD2
+0x08000090 : FilterDly (v1.30), ./A1 FOUR/unzipped/FLTRDLY.ZD2
+0x080000a1 : Dual DLY (v1.10), ./A1 FOUR/unzipped/DUALDL3S.ZD2
+0x080000b1 : Pitch DLY (v1.10), ./A1 FOUR/unzipped/PTCHDL3S.ZD2
+0x080000c1 : SlapBackD (v1.10), ./A1 FOUR/unzipped/SLPBKD3S.ZD2
+0x080000d1 : A-Pan DLY (v1.10), ./A1 FOUR/unzipped/APANDL3S.ZD2
+0x080000e1 : PhaseDly (v1.10), ./A1 FOUR/unzipped/PHASDL1U.ZD2
+0x080000f1 : TapeEcho3 (v1.10), ./A1 FOUR/unzipped/TPEC3_3S.ZD2
+0x08000101 : ICE Delay (v1.10), ./A1 FOUR/unzipped/ICEDLY3S.ZD2
+0x08000111 : SlwAtkDly (v1.10), ./A1 FOUR/unzipped/SLATDL3S.ZD2
+0x08000121 : SoftEcho (v1.10), ./A1 FOUR/unzipped/SOFTEC3S.ZD2
+0x08400000 : Ac TpEcho (v1.00), ./A1 FOUR/unzipped/AC_TPECH.ZD2
+0x08a01000 : PercusDly (v1.00), ./A1 FOUR/unzipped/PERCDLY.ZD2
+0x09000010 : Air (v1.40), ./A1 FOUR/unzipped/AIR.ZD2
+0x09000020 : Room (v1.40), ./A1 FOUR/unzipped/ROOM.ZD2
+0x09000030 : Hall (v1.40), ./A1 FOUR/unzipped/HALL.ZD2
+0x09000040 : HD Hall (v1.40), ./A1 FOUR/unzipped/HD_HALL.ZD2
+0x09000050 : Spring (v1.40), ./A1 FOUR/unzipped/SPRING.ZD2
+0x09000060 : FD Spring (v1.30), ./A1 FOUR/unzipped/FDSPRING.ZD2
+0x09000070 : Plate (v1.40), ./A1 FOUR/unzipped/PLATEREV.ZD2
+0x09000080 : EarlyRef (v1.30), ./A1 FOUR/unzipped/EARLYREF.ZD2
+0x090000a0 : Church (v1.30), ./A1 FOUR/unzipped/CHURCH.ZD2
+0x090000d0 : Chamber (v1.30), ./A1 FOUR/unzipped/CHAMBER.ZD2
+0x090000e0 : GateRev (v1.30), ./A1 FOUR/unzipped/GATE_REV.ZD2
+0x09400000 : ModReverb (v1.00), ./A1 FOUR/unzipped/MOD_REV.ZD2
+0x09a01000 : DryPlate (v1.00), ./A1 FOUR/unzipped/DRYPLATE.ZD2
+0x14400000 : D-28 (v1.00), ./A1 FOUR/unzipped/MDL_D28.ZD2
+0x14400010 : D-18 (v1.00), ./A1 FOUR/unzipped/MDL_D18.ZD2
+0x14400020 : D-45 (v1.00), ./A1 FOUR/unzipped/MDL_D45.ZD2
+0x14400030 : OOO-28 (v1.00), ./A1 FOUR/unzipped/MDL_O328.ZD2
+0x14400040 : OOO-18 (v1.00), ./A1 FOUR/unzipped/MDL_O318.ZD2
+0x14400050 : OM-28 (v1.00), ./A1 FOUR/unzipped/MDL_OM28.ZD2
+0x14400060 : OM-18 (v1.00), ./A1 FOUR/unzipped/MDL_OM18.ZD2
+0x14400070 : OM-42 (v1.00), ./A1 FOUR/unzipped/MDL_OM42.ZD2
+0x14400080 : OO-21 (v1.00), ./A1 FOUR/unzipped/MDL_OO21.ZD2
+0x14400090 : OO-18 (v1.00), ./A1 FOUR/unzipped/MDL_OO18.ZD2
+0x144000a0 : J-45 (v1.00), ./A1 FOUR/unzipped/MDL_J45.ZD2
+0x144000b0 : Adv.Jumbo (v1.00), ./A1 FOUR/unzipped/MDL_ADVJ.ZD2
+0x144000c0 : J-160E (v1.00), ./A1 FOUR/unzipped/MDL_J160.ZD2
+0x144000d0 : HumBird (v1.00), ./A1 FOUR/unzipped/MDL_HB.ZD2
+0x144000e0 : Dove (v1.00), ./A1 FOUR/unzipped/MDL_DOVE.ZD2
+0x144000f0 : SJ-200 (v1.00), ./A1 FOUR/unzipped/MDL_SJ20.ZD2
+0x14400100 : F-55 (v1.00), ./A1 FOUR/unzipped/MDL_F55.ZD2
+0x14400110 : LG-2 (v1.00), ./A1 FOUR/unzipped/MDL_LG2.ZD2
+0x14400120 : LG-0 (v1.00), ./A1 FOUR/unzipped/MDL_LG0.ZD2
+0x14400130 : 314ce (v1.00), ./A1 FOUR/unzipped/MDL_314.ZD2
+0x14400140 : LL36 (v1.00), ./A1 FOUR/unzipped/MDL_LL36.ZD2
+0x14400150 : LL66 (v1.00), ./A1 FOUR/unzipped/MDL_LL66.ZD2
+0x14400160 : Adamas (v1.00), ./A1 FOUR/unzipped/MDL_ADMS.ZD2
+0x14400170 : Legend (v1.00), ./A1 FOUR/unzipped/MDL_LGN.ZD2
+0x14400180 : Nylon (v1.00), ./A1 FOUR/unzipped/MDL_NYLN.ZD2
+0x14400190 : 12Strings (v1.00), ./A1 FOUR/unzipped/MDL_12ST.ZD2
+0x144001a0 : Resonator (v1.00), ./A1 FOUR/unzipped/MDL_RESO.ZD2
+0x144001b0 : UprightBa (v1.00), ./A1 FOUR/unzipped/MDL_UPBS.ZD2

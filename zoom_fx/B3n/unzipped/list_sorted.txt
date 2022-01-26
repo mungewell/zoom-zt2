@@ -1,0 +1,103 @@
+0x01000030 : SlowATTCK (v1.40), ./B3n/unzipped/SLWATK.ZD2
+0x01000040 : ZNR (v1.40), ./B3n/unzipped/ZNR.ZD2
+0x01000080 : OptComp (v1.40), ./B3n/unzipped/OPTCOMP.ZD2
+0x01800010 : BlackOpt (v1.30), ./B3n/unzipped/BLACKOPT.ZD2
+0x01800020 : LMT-76 (v1.40), ./B3n/unzipped/LMT1176.ZD2
+0x01800030 : 160 Comp (v1.30), ./B3n/unzipped/160_COMP.ZD2
+0x01800040 : DualComp (v1.30), ./B3n/unzipped/DUAL_CMP.ZD2
+0x01800050 : MB Comp (v1.30), ./B3n/unzipped/MB_COMP.ZD2
+0x01800060 : DYN Comp (v1.30), ./B3n/unzipped/DCOMP.ZD2
+0x01800070 : Glam Comp (v1.20), ./B3n/unzipped/GLAMCOMP.ZD2
+0x02000040 : SeqFLTR (v1.40), ./B3n/unzipped/SEQFLTR.ZD2
+0x02000080 : EG FLTR (v1.20), ./B3n/unzipped/EGFILTER.ZD2
+0x020000b0 : Exciter (v1.40), ./B3n/unzipped/EXCITER.ZD2
+0x02800010 : BassA-Wah (v1.30), ./B3n/unzipped/B_ATWAH.ZD2
+0x02800020 : Z Tron (v1.30), ./B3n/unzipped/Z_TRON.ZD2
+0x02800030 : A-Filter (v1.30), ./B3n/unzipped/A_FILTER.ZD2
+0x02800040 : Bass Cry (v1.30), ./B3n/unzipped/BA_CRY.ZD2
+0x02800050 : BassGEQ (v1.10), ./B3n/unzipped/BA_GEQ.ZD2
+0x02800060 : St Ba GEQ (v1.10), ./B3n/unzipped/ST_B_GEQ.ZD2
+0x02800070 : BassPEQ (v1.30), ./B3n/unzipped/BA_PEQ.ZD2
+0x02800080 : Splitter (v1.30), ./B3n/unzipped/SPLITTER.ZD2
+0x02800090 : Low EQ (v1.30), ./B3n/unzipped/LOW_EQ.ZD2
+0x02800095 : High EQ (v1.20), ./B3n/unzipped/HIGH_EQ.ZD2
+0x028000a0 : EnvFilter (v1.20), ./B3n/unzipped/ENV_FLTR.ZD2
+0x03000020 : EP Stomp (v1.30), ./B3n/unzipped/EP_STOMP.ZD2
+0x03000030 : RC Boost (v1.40), ./B3n/unzipped/RCBOOST.ZD2
+0x030000d0 : NYC Muff (v1.30), ./B3n/unzipped/NYC_MUFF.ZD2
+0x03000100 : TS+Boost (v1.20), ./B3n/unzipped/TS_BOOST.ZD2
+0x03000130 : Squeak (v1.20), ./B3n/unzipped/SQUEAK.ZD2
+0x03800010 : Bass DRV (v1.10), ./B3n/unzipped/BASSDRV.ZD2
+0x03800020 : D.I Plus (v1.10), ./B3n/unzipped/DI_PLUS.ZD2
+0x03800030 : Dark Pre (v1.10), ./B3n/unzipped/DARK_PRE.ZD2
+0x03800040 : Bass BB (v1.20), ./B3n/unzipped/BASS_BB.ZD2
+0x03800050 : DI-5 (v1.20), ./B3n/unzipped/DI5.ZD2
+0x03800060 : Bass Pre (v1.20), ./B3n/unzipped/BA_PRE.ZD2
+0x03800070 : Bass OD (v1.20), ./B3n/unzipped/B_OD.ZD2
+0x03800080 : BassTsDRV (v1.20), ./B3n/unzipped/BA_TSDRV.ZD2
+0x03800090 : Dark OD (v1.20), ./B3n/unzipped/DARK_OD.ZD2
+0x038000a0 : BlueB BOD (v1.20), ./B3n/unzipped/BBB_OD.ZD2
+0x038000b0 : VooDoo-B (v1.20), ./B3n/unzipped/VOODOO_B.ZD2
+0x038000c0 : BaFzSmile (v1.20), ./B3n/unzipped/BA_FZSML.ZD2
+0x038000d0 : BassMetal (v1.20), ./B3n/unzipped/BA_METAL.ZD2
+0x038000e0 : BassOctFZ (v1.20), ./B3n/unzipped/BA_OCTFZ.ZD2
+0x04800010 : AMPG SVT (v1.10), ./B3n/unzipped/SVT.ZD2
+0x04800020 : BMAN100 (v1.10), ./B3n/unzipped/BMAN100.ZD2
+0x04800030 : SMR400 (v1.10), ./B3n/unzipped/SWR400.ZD2
+0x04800040 : AG 750 (v1.10), ./B3n/unzipped/AG750.ZD2
+0x04800050 : TE400SMX (v1.10), ./B3n/unzipped/TE400SMX.ZD2
+0x04800060 : AC 370 (v1.10), ./B3n/unzipped/AC_370.ZD2
+0x04800070 : Mini MkB (v1.20), ./B3n/unzipped/MINIMARK.ZD2
+0x04800080 : EBH360 (v1.10), ./B3n/unzipped/EB_HD360.ZD2
+0x04800090 : FlipTop (v1.00), ./B3n/unzipped/B15N.ZD2
+0x05800010 : SVT8x10 (v1.20), ./B3n/unzipped/SVT_8X10.ZD2
+0x05800018 : SVT4x10TW (v1.10), ./B3n/unzipped/SV4X10TW.ZD2
+0x05800020 : FD-B4x12 (v1.20), ./B3n/unzipped/FD_B4X12.ZD2
+0x05800030 : SMR4x10TW (v1.20), ./B3n/unzipped/SWR_4X10.ZD2
+0x05800040 : AG4x10TW (v1.20), ./B3n/unzipped/AG4X10TW.ZD2
+0x05800050 : TE4x10 (v1.20), ./B3n/unzipped/TE_4X10.ZD2
+0x05800060 : AC1x18 (v1.20), ./B3n/unzipped/AC_1X18.ZD2
+0x05800070 : MkB2x8TW (v1.20), ./B3n/unzipped/MKB2X8TW.ZD2
+0x05800080 : EB4x10TW (v1.10), ./B3n/unzipped/EB4X10TW.ZD2
+0x05800090 : AM1x15 (v1.10), ./B3n/unzipped/AM1X15.ZD2
+0x06000010 : Tremolo (v1.40), ./B3n/unzipped/TREMOLO.ZD2
+0x06000040 : Phaser (v1.40), ./B3n/unzipped/PHASER.ZD2
+0x06000060 : TheVibe (v1.40), ./B3n/unzipped/THEVIBE.ZD2
+0x060000b0 : PitchSHFT (v1.40), ./B3n/unzipped/PITCHSHF.ZD2
+0x060000d0 : HPS (v1.40), ./B3n/unzipped/HPS.ZD2
+0x060000e0 : Kick FLNG (v1.20), ./B3n/unzipped/KICKFLNG.ZD2
+0x06000100 : CloneCho (v1.30), ./B3n/unzipped/CLONECHO.ZD2
+0x06000110 : SuperCho (v1.60), ./B3n/unzipped/SUPERCHO.ZD2
+0x06000130 : CoronaTri (v1.20), ./B3n/unzipped/CRN_TRI.ZD2
+0x06800020 : BassStCho (v1.30), ./B3n/unzipped/B_ST_CHO.ZD2
+0x06800040 : BaVinFLNG (v1.30), ./B3n/unzipped/B_VFLNG.ZD2
+0x06800050 : Ba Octave (v1.30), ./B3n/unzipped/B_OCTAVE.ZD2
+0x06800060 : Ba Detune (v1.30), ./B3n/unzipped/B_DETUNE.ZD2
+0x06800070 : BaMnPitch (v1.30), ./B3n/unzipped/B_PITCH.ZD2
+0x06800080 : BassPhase (v1.30), ./B3n/unzipped/BASS_PHA.ZD2
+0x07000010 : Bomber (v1.40), ./B3n/unzipped/BOMBER.ZD2
+0x07000040 : LoopRoll (v1.10), ./B3n/unzipped/LOOPROLL.ZD2
+0x07800010 : StdSyn (v1.30), ./B3n/unzipped/STDSYN.ZD2
+0x07800020 : SynTlk (v1.30), ./B3n/unzipped/SYNTLK.ZD2
+0x07800030 : Z-Syn (v1.10), ./B3n/unzipped/Z_SYN.ZD2
+0x07800040 : Defret (v1.30), ./B3n/unzipped/DEFRET.ZD2
+0x07800050 : PH+Dist (v1.30), ./B3n/unzipped/PH_DIST.ZD2
+0x08000010 : Delay (v1.20), ./B3n/unzipped/DELAY.ZD2
+0x08000020 : AnalogDly (v1.20), ./B3n/unzipped/ANALOGDL.ZD2
+0x08000030 : TapeEcho (v1.40), ./B3n/unzipped/TAPEECHO.ZD2
+0x08000040 : ReverseDL (v1.20), ./B3n/unzipped/REVERSED.ZD2
+0x08000050 : ModDelay (v1.30), ./B3n/unzipped/MODDELAY.ZD2
+0x08000060 : Hold DLY (v1.20), ./B3n/unzipped/HOLDDLY.ZD2
+0x080000a0 : Dual DLY (v1.10), ./B3n/unzipped/DUALDIGD.ZD2
+0x09000010 : Air (v1.40), ./B3n/unzipped/AIR.ZD2
+0x09000020 : Room (v1.40), ./B3n/unzipped/ROOM.ZD2
+0x09000030 : Hall (v1.40), ./B3n/unzipped/HALL.ZD2
+0x09000040 : HD Hall (v1.40), ./B3n/unzipped/HD_HALL.ZD2
+0x09000050 : Spring (v1.40), ./B3n/unzipped/SPRING.ZD2
+0x09000070 : Plate (v1.40), ./B3n/unzipped/PLATEREV.ZD2
+0x0b000010 : PDL Vol (v1.40), ./B3n/unzipped/PDL_VOL.ZD2
+0x0b800010 : BassWah (v1.40), ./B3n/unzipped/BASSWAH.ZD2
+0x0b800020 : PDL Reso (v1.50), ./B3n/unzipped/PDL_RESO.ZD2
+0x0b800030 : Ba PDLPit (v1.30), ./B3n/unzipped/B_PDLPIT.ZD2
+0x0b800040 : Ba PDLMnP (v1.30), ./B3n/unzipped/B_PDLMNP.ZD2
+0x0bfffff0 : Output VP (v1.20), ./B3n/unzipped/OUT_VP.ZD2

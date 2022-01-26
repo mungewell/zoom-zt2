@@ -1,0 +1,157 @@
+0x01000010 : Comp (v1.30), ./G3n/unzipped/COMP.ZD2
+0x01000020 : RackComp (v1.30), ./G3n/unzipped/RACKCOMP.ZD2
+0x01000030 : SlowATTCK (v1.40), ./G3n/unzipped/SLWATK.ZD2
+0x01000040 : ZNR (v1.40), ./G3n/unzipped/ZNR.ZD2
+0x01000050 : MuteSW (v1.30), ./G3n/unzipped/MUTESW.ZD2
+0x01000060 : GrayComp (v1.30), ./G3n/unzipped/GRAYCOMP.ZD2
+0x01000070 : NoiseGate (v1.30), ./G3n/unzipped/N_GATE.ZD2
+0x01000080 : OptComp (v1.40), ./G3n/unzipped/OPTCOMP.ZD2
+0x01800010 : BlackOpt (v1.30), ./G3n/unzipped/BLACKOPT.ZD2
+0x01800020 : LMT-76 (v1.40), ./G3n/unzipped/LMT1176.ZD2
+0x02000010 : AutoWah (v1.30), ./G3n/unzipped/AUTOWAH.ZD2
+0x02000020 : Resonance (v1.30), ./G3n/unzipped/RESONANC.ZD2
+0x02000030 : Cry (v1.30), ./G3n/unzipped/CRY.ZD2
+0x02000040 : SeqFLTR (v1.40), ./G3n/unzipped/SEQFLTR.ZD2
+0x02000050 : Gt GEQ (v1.10), ./G3n/unzipped/GT_GEQ.ZD2
+0x02000053 : Gt GEQ 7 (v1.10), ./G3n/unzipped/GT_GEQ_7.ZD2
+0x02000060 : St Gt GEQ (v1.10), ./G3n/unzipped/ST_GT_GE.ZD2
+0x02000070 : ParaEQ (v1.30), ./G3n/unzipped/PARAEQ.ZD2
+0x02000080 : EG FLTR (v1.20), ./G3n/unzipped/EGFILTER.ZD2
+0x02000090 : RndmFLTR (v1.30), ./G3n/unzipped/RNDMFLTR.ZD2
+0x020000a0 : LowPassFL (v1.30), ./G3n/unzipped/LOWPASSF.ZD2
+0x020000b0 : Exciter (v1.40), ./G3n/unzipped/EXCITER.ZD2
+0x020000c0 : Step (v1.30), ./G3n/unzipped/STEP.ZD2
+0x020000d0 : LFO FLTR (v1.30), ./G3n/unzipped/LFO_FLTR.ZD2
+0x03000010 : TS Drive (v1.30), ./G3n/unzipped/TS_DRIVE.ZD2
+0x03000020 : EP Stomp (v1.30), ./G3n/unzipped/EP_STOMP.ZD2
+0x03000030 : RC Boost (v1.40), ./G3n/unzipped/RCBOOST.ZD2
+0x03000040 : GoldDrive (v1.20), ./G3n/unzipped/GOLD_DRV.ZD2
+0x03000050 : SweetDrv (v1.20), ./G3n/unzipped/SWEETDRV.ZD2
+0x03000060 : DYN Drive (v1.20), ./G3n/unzipped/DYNDRIVE.ZD2
+0x03000070 : RedCrunch (v1.20), ./G3n/unzipped/REDCRUNC.ZD2
+0x03000080 : MetalWRLD (v1.20), ./G3n/unzipped/MTLWRLD.ZD2
+0x03000090 : TB MK1.5 (v1.20), ./G3n/unzipped/TB_MK15.ZD2
+0x030000a0 : OctFuzz (v1.20), ./G3n/unzipped/OCTFUZZ.ZD2
+0x030000b0 : SpotBoost (v1.20), ./G3n/unzipped/SPTBOOST.ZD2
+0x030000c0 : Aco.Sim (v1.20), ./G3n/unzipped/ACOSIM.ZD2
+0x030000d0 : NYC Muff (v1.30), ./G3n/unzipped/NYC_MUFF.ZD2
+0x030000e0 : HG THRTTL (v1.20), ./G3n/unzipped/BGTHRTTL.ZD2
+0x030000f0 : BG GRID (v1.20), ./G3n/unzipped/BG_GRID.ZD2
+0x03000100 : TS+Boost (v1.20), ./G3n/unzipped/TS_BOOST.ZD2
+0x03000110 : RedCR+BST (v1.10), ./G3n/unzipped/REDCRBST.ZD2
+0x03000120 : DIST 1 (v1.20), ./G3n/unzipped/DIST_1.ZD2
+0x03000130 : Squeak (v1.20), ./G3n/unzipped/SQUEAK.ZD2
+0x03000140 : UpOctBSTR (v1.10), ./G3n/unzipped/UPOCTBST.ZD2
+0x03000150 : OutputBST (v1.10), ./G3n/unzipped/OUT_BST.ZD2
+0x03000160 : DIST Plus (v1.10), ./G3n/unzipped/DISTPLUS.ZD2
+0x03000170 : Zen O.DRV (v1.10), ./G3n/unzipped/ZEN_DRV.ZD2
+0x03000190 : VioletDST (v1.10), ./G3n/unzipped/VIOLETDS.ZD2
+0x04000010 : MS 800 (v1.20), ./G3n/unzipped/MS800.ZD2
+0x04000018 : MS 1959 (v1.10), ./G3n/unzipped/MS1959.ZD2
+0x0400001a : MS 45os (v1.00), ./G3n/unzipped/JTM45OS.ZD2
+0x04000020 : FD TWNR (v1.20), ./G3n/unzipped/FD_TWINR.ZD2
+0x04000027 : FD B-MAN (v1.10), ./G3n/unzipped/FD_BMAN.ZD2
+0x0400002a : FD DLXR (v1.10), ./G3n/unzipped/FD_DLXR.ZD2
+0x0400002b : FD MASTER (v1.10), ./G3n/unzipped/FD_MSTR.ZD2
+0x04000030 : UK 30A (v1.10), ./G3n/unzipped/UK30A.ZD2
+0x04000040 : BG MK1 (v1.10), ./G3n/unzipped/BG_MK1.ZD2
+0x04000042 : BG MK3 (v1.20), ./G3n/unzipped/BG_MK3.ZD2
+0x04000050 : XtasyBlue (v1.20), ./G3n/unzipped/XTACYBLU.ZD2
+0x04000060 : HW 100 (v1.20), ./G3n/unzipped/HW100.ZD2
+0x04000070 : Recti ORG (v1.20), ./G3n/unzipped/RCT_ORG.ZD2
+0x04000080 : ORG120 (v1.10), ./G3n/unzipped/ORG_120.ZD2
+0x04000090 : DZ DRV (v1.10), ./G3n/unzipped/DZ_DRV.ZD2
+0x040000a0 : MATCH30 (v1.10), ./G3n/unzipped/MATCH_30.ZD2
+0x05000010 : MS4x12 (v1.20), ./G3n/unzipped/MS4X12.ZD2
+0x05000018 : MS4x12GB (v1.20), ./G3n/unzipped/MS4X12GB.ZD2
+0x0500001a : MS4x12AL (v1.10), ./G3n/unzipped/MS4X12AL.ZD2
+0x05000020 : FD2x12 (v1.20), ./G3n/unzipped/FD2X12.ZD2
+0x05000027 : FD-B4x10 (v1.30), ./G3n/unzipped/FDB4X10.ZD2
+0x0500002a : FD-DX1x12 (v1.30), ./G3n/unzipped/FDDX1X12.ZD2
+0x0500002b : FD MA2x12 (v1.20), ./G3n/unzipped/FDMA2X12.ZD2
+0x05000030 : UK2x12 (v1.20), ./G3n/unzipped/UK2X12.ZD2
+0x05000040 : MK1 1x12 (v1.20), ./G3n/unzipped/MK1_1X12.ZD2
+0x05000042 : MK3 1x12 (v1.20), ./G3n/unzipped/MK3_1X12.ZD2
+0x05000050 : BGN4x12 (v1.20), ./G3n/unzipped/BGN4X12.ZD2
+0x05000060 : HW4x12 (v1.20), ./G3n/unzipped/HW4X12.ZD2
+0x05000070 : RCT4x12 (v1.20), ./G3n/unzipped/RCT4X12.ZD2
+0x05000080 : ORG4x12 (v1.20), ./G3n/unzipped/ORG_4X12.ZD2
+0x05000090 : DZ4x12F (v1.20), ./G3n/unzipped/DZ4X12F.ZD2
+0x050000a0 : MA2x12 (v1.20), ./G3n/unzipped/MA2X12.ZD2
+0x06000010 : Tremolo (v1.40), ./G3n/unzipped/TREMOLO.ZD2
+0x06000020 : Chorus (v1.40), ./G3n/unzipped/CHORUS.ZD2
+0x06000030 : StereoCho (v1.30), ./G3n/unzipped/STEREOCH.ZD2
+0x06000040 : Phaser (v1.40), ./G3n/unzipped/PHASER.ZD2
+0x06000050 : VinFLNGR (v1.30), ./G3n/unzipped/VINFLNGR.ZD2
+0x06000060 : TheVibe (v1.40), ./G3n/unzipped/THEVIBE.ZD2
+0x06000070 : Vibrato (v1.30), ./G3n/unzipped/VIBRATO.ZD2
+0x06000080 : Octave (v1.30), ./G3n/unzipped/OCTAVE.ZD2
+0x06000090 : RingMod (v1.30), ./G3n/unzipped/RINGMOD.ZD2
+0x060000a0 : Detune (v1.30), ./G3n/unzipped/DETUNE.ZD2
+0x060000b0 : PitchSHFT (v1.40), ./G3n/unzipped/PITCHSHF.ZD2
+0x060000c0 : MonoPitch (v1.30), ./G3n/unzipped/MONOPITC.ZD2
+0x060000d0 : HPS (v1.40), ./G3n/unzipped/HPS.ZD2
+0x060000e0 : Kick FLNG (v1.20), ./G3n/unzipped/KICKFLNG.ZD2
+0x060000f0 : Slicer (v1.30), ./G3n/unzipped/SLICER.ZD2
+0x06000100 : CloneCho (v1.30), ./G3n/unzipped/CLONECHO.ZD2
+0x06000110 : SuperCho (v1.60), ./G3n/unzipped/SUPERCHO.ZD2
+0x06000120 : StonePha (v1.40), ./G3n/unzipped/STONEPHA.ZD2
+0x06000130 : CoronaTri (v1.20), ./G3n/unzipped/CRN_TRI.ZD2
+0x06000140 : BendCho (v1.30), ./G3n/unzipped/BENDCHO.ZD2
+0x06000150 : AnalogCho (v1.30), ./G3n/unzipped/ANA234CH.ZD2
+0x06000160 : WarpPhase (v1.30), ./G3n/unzipped/WRPPHASE.ZD2
+0x06000170 : Duo Phase (v1.00), ./G3n/unzipped/DUO_PHA.ZD2
+0x07000010 : Bomber (v1.40), ./G3n/unzipped/BOMBER.ZD2
+0x07000020 : AutoPan (v1.30), ./G3n/unzipped/AUTOPAN.ZD2
+0x07000040 : LoopRoll (v1.10), ./G3n/unzipped/LOOPROLL.ZD2
+0x07000050 : HotSpice (v1.20), ./G3n/unzipped/HOTSPICE.ZD2
+0x08000010 : Delay (v1.20), ./G3n/unzipped/DELAY.ZD2
+0x08000020 : AnalogDly (v1.20), ./G3n/unzipped/ANALOGDL.ZD2
+0x08000030 : TapeEcho (v1.40), ./G3n/unzipped/TAPEECHO.ZD2
+0x08000040 : ReverseDL (v1.20), ./G3n/unzipped/REVERSED.ZD2
+0x08000050 : ModDelay (v1.30), ./G3n/unzipped/MODDELAY.ZD2
+0x08000060 : Hold DLY (v1.20), ./G3n/unzipped/HOLDDLY.ZD2
+0x08000080 : P-P Delay (v1.10), ./G3n/unzipped/P_P_DLY.ZD2
+0x08000090 : FilterDly (v1.30), ./G3n/unzipped/FLTRDLY.ZD2
+0x080000a0 : Dual DLY (v1.10), ./G3n/unzipped/DUALDIGD.ZD2
+0x080000b0 : Pitch DLY (v1.10), ./G3n/unzipped/PITCHDLY.ZD2
+0x080000c0 : SlapBackD (v1.10), ./G3n/unzipped/SLAPBKD.ZD2
+0x080000d0 : A-Pan DLY (v1.10), ./G3n/unzipped/APANDLY.ZD2
+0x080000e0 : PhaseDly (v1.10), ./G3n/unzipped/PHASEDLY.ZD2
+0x080000f0 : TapeEcho3 (v1.20), ./G3n/unzipped/TAPEECH3.ZD2
+0x08000100 : ICE Delay (v1.00), ./G3n/unzipped/ICE_DLY.ZD2
+0x08000110 : SlwAtkDly (v1.00), ./G3n/unzipped/SLWATKDL.ZD2
+0x08000120 : SoftEcho (v1.00), ./G3n/unzipped/SOFTECHO.ZD2
+0x09000010 : Air (v1.40), ./G3n/unzipped/AIR.ZD2
+0x09000020 : Room (v1.40), ./G3n/unzipped/ROOM.ZD2
+0x09000030 : Hall (v1.40), ./G3n/unzipped/HALL.ZD2
+0x09000040 : HD Hall (v1.40), ./G3n/unzipped/HD_HALL.ZD2
+0x09000050 : Spring (v1.40), ./G3n/unzipped/SPRING.ZD2
+0x09000060 : FD Spring (v1.30), ./G3n/unzipped/FDSPRING.ZD2
+0x09000070 : Plate (v1.40), ./G3n/unzipped/PLATEREV.ZD2
+0x09000080 : EarlyRef (v1.30), ./G3n/unzipped/EARLYREF.ZD2
+0x09000090 : SpaceHole (v1.10), ./G3n/unzipped/SPC_HOLE.ZD2
+0x090000a0 : Church (v1.30), ./G3n/unzipped/CHURCH.ZD2
+0x090000b0 : Ambience (v1.10), ./G3n/unzipped/AMBIENCE.ZD2
+0x090000c0 : ParticleR (v1.20), ./G3n/unzipped/PARTICLE.ZD2
+0x090000d0 : Chamber (v1.30), ./G3n/unzipped/CHAMBER.ZD2
+0x090000e0 : GateRev (v1.30), ./G3n/unzipped/GATE_REV.ZD2
+0x090000f0 : HoldVerb (v1.00), ./G3n/unzipped/HOLDVERB.ZD2
+0x0b000010 : PDL Vol (v1.40), ./G3n/unzipped/PDL_VOL.ZD2
+0x0b000020 : BlackWah (v1.40), ./G3n/unzipped/BLCK_WAH.ZD2
+0x0b000030 : ChromeWah (v1.40), ./G3n/unzipped/CHRM_WAH.ZD2
+0x0b000040 : WAH100 (v1.40), ./G3n/unzipped/WH100.ZD2
+0x0b000050 : PDL Pitch (v1.30), ./G3n/unzipped/PDL_PIT.ZD2
+0x0b000060 : PDL MnPit (v1.30), ./G3n/unzipped/PDL_MNPT.ZD2
+0x0b000070 : PDL Vibe (v1.30), ./G3n/unzipped/PDL_VIBE.ZD2
+0x0b000080 : PDL Drive (v1.30), ./G3n/unzipped/PDL_DRV.ZD2
+0x0b000090 : PDL PHSR (v1.30), ./G3n/unzipped/PDL_PHA.ZD2
+0x0b0000a0 : PDL Delay (v1.10), ./G3n/unzipped/PDL_DLY.ZD2
+0x0b0000b0 : PDL Rev (v1.30), ./G3n/unzipped/PDL_REV.ZD2
+0x0b0000c0 : OSC Echo (v1.10), ./G3n/unzipped/OSC_ECHO.ZD2
+0x0b0000d0 : VoiceWah (v1.30), ./G3n/unzipped/VOICE_WH.ZD2
+0x0b0000e0 : PDL Roto (v1.10), ./G3n/unzipped/PDL_ROT.ZD2
+0x0b0000f0 : P-BitCRSH (v1.30), ./G3n/unzipped/PDL_BITC.ZD2
+0x0b000100 : PDL FLNGR (v1.30), ./G3n/unzipped/PDL_FLNG.ZD2
+0x0b800020 : PDL Reso (v1.50), ./G3n/unzipped/PDL_RESO.ZD2
+0x0bfffff0 : Output VP (v1.20), ./G3n/unzipped/OUT_VP.ZD2
