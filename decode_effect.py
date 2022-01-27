@@ -5,6 +5,7 @@
 #
 
 import zoomzt2
+import hashlib
 
 #--------------------------------------------------
 def main():
@@ -20,6 +21,9 @@ def main():
     parser.add_argument("-s", "--summary",
         help="summarized configuration in human readable form",
         action="store_true", dest="summary")
+    parser.add_argument("-m", "--md5sum",
+        help="include md5sum of file in summary report",
+        action="store_true", dest="md5sum")
 
     parser.add_argument("-b", "--bitmap",
         help="extract Icon/Bitmap to FILE", dest="bitmap")
@@ -81,7 +85,11 @@ def main():
     if options.summary and data:
         config = zoomzt2.ZD2.parse(data)
 
-        print("0x%8.8x : %s (v%s), %s" % (config['id'], config['name'], config['version'], options.files[0]))
+        if options.md5sum:
+            md5sum = hashlib.md5(data).hexdigest()
+            print("0x%8.8x : %s (v%s), 0x%s, %s" % (config['id'], config['name'], config['version'], md5sum, options.files[0]))
+        else:
+            print("0x%8.8x : %s (v%s), %s" % (config['id'], config['name'], config['version'], options.files[0]))
 
     if data and options.bitmap:
        outfile = open(options.bitmap, "wb")
