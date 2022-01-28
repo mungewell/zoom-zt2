@@ -35,8 +35,7 @@ EDTB2 = Struct( # Working with a Byte-reversed copy of data
         "param3" / BitsInteger(12),
         "param2" / BitsInteger(12),
         "param1" / BitsInteger(12),
-        "unknown" / Bit, # always '0', so far
-        "id" / BitsInteger(28),
+        "id" / BitsInteger(29),
         "enabled" / Flag,
     )),
 )
@@ -207,14 +206,14 @@ def main():
                                    % (id + 1, config['ids'][id], item[1]))
                             config['ids'][id] = item[1]
                             config['EDTB']['effects'][id]['reversed']['control']['id'] \
-                                    = item[1] & 0x0FFFFFFF
+                                    = item[1] & 0x1FFFFFFF
 
                         if options.convert2 and config['ids'][id] == item[1]:
                             print("Converting Effect %d : 0x%8.8X -> 0x%8.8X" \
                                    % (id + 1, config['ids'][id], item[0]))
                             config['ids'][id] = item[0]
                             config['EDTB']['effects'][id]['reversed']['control']['id'] \
-                                    = item[0] & 0x0FFFFFFF
+                                    = item[0] & 0x1FFFFFFF
 
             # need to rebuild EDTB's reversed data
             for id in range(config['fx_count']):
