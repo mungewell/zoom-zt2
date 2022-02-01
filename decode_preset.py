@@ -13,13 +13,13 @@ from construct import *
 
 TXJ1 = Struct(
     Const(b"TXJ1"),
-    "length" / Int32ul,
+    "length" / Rebuild(Int32ul, len_(this.data)),
     "data" / Bytes(this.length),
 )
 
 TXE1 = Struct(
     Const(b"TXE1"),
-    "length" / Int32ul,
+    "length" / Rebuild(Int32ul, len_(this.desc)),
     "desc" / PaddedString(this.length, "ascii"),
 )
 
@@ -49,7 +49,7 @@ EDTB1 = Struct(
 
 EDTB = Struct(
     Const(b"EDTB"),
-    "length" / Int32ul,
+    "length" / Rebuild(Int32ul, 24 * len_(this.effects)),
     "effects" / Array(this._.fx_count, EDTB1),
 )
 
@@ -74,9 +74,11 @@ PPRM = Struct(
 
 ZPTC = Struct(
     Const(b"PTCF"),
-    "length" / Int32ul,
+    "length" / Rebuild(Int32ul, 68 + (this.fx_count * 4) +\
+            this.TXJ1.length + this.TXE1.length + \
+            this.EDTB.length + this.PPRM.length),
     "version" / Int32ul, # ???
-    "fx_count" / Int32ul,
+    "fx_count" / Rebuild(Int32ul, len_(this.EDTB.effects)),
 
     "target" / Int32ul, # pedal that patch is for???
     "data" / Bytes(6),
@@ -228,7 +230,7 @@ def main():
                                     = item[0] & 0x1FFFFFFF
 
             # need to rebuild EDTB's reversed data
-            for id in range(config['fx_count']):
+            for id in range(len(config['EDTB']['effects'])):
                 blob = EDTB2.build(config['EDTB']['effects'][id]['reversed'])
                 config['EDTB']['effects'][id]['autorev'] = blob
 
@@ -236,6 +238,10 @@ def main():
             blob = PPRM12.build(config['PPRM']['reversed'])
             config['PPRM']['autorev'] = blob
 
+            data = ZPTC.build(config)
+
+            # double build to fix 'length' in top block
+            config = ZPTC.parse(data)
             data = ZPTC.build(config)
 
             if options.pad and options.pad > len(data):
