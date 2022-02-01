@@ -24,6 +24,7 @@ TXE1 = Struct(
 )
 
 EDTB2 = Struct( # Working with a Byte-reversed copy of data
+    #"dump" / Peek(HexDump(Bytes(24))),
     "unknown" / Bytes(9),
     "control" / Bitwise(Struct(
         "unknown" / BitsInteger(6),
@@ -52,12 +53,23 @@ EDTB = Struct(
     "effects" / Array(this._.fx_count, EDTB1),
 )
 
+PPRM12 = Struct(
+    #"dump" / Peek(HexDump(Bytes(12))),
+    "control" / Bitwise(Struct(
+        "unknown" / BitsInteger(26),
+        "volume" / BitsInteger(7),
+        "pad" / BitsInteger(7),
+    )),
+    "unknown" / Bytes(7),
+)
+
 PPRM = Struct(
     Const(b"PPRM"),
-    "length" / Int32ul,
-    #"pprm_dump" / Peek(HexDump(Bytes(this.length))),
-    # does this contain patch volume?
-    "pdata" / Bytes(this.length),
+    "length" / Rebuild(Int32ul, len_(this.autorev)),
+    #"dump" / Peek(HexDump(Bytes(this.length))),
+
+    "autorev" / ByteSwapped(Bytes(12)),                 # not sure all are 12bytes, but needs fixed len
+    "reversed" / RestreamData(this.autorev, PPRM12),    # this does not allow re-build of data :-(
 )
 
 ZPTC = Struct(
@@ -217,9 +229,12 @@ def main():
 
             # need to rebuild EDTB's reversed data
             for id in range(config['fx_count']):
-                #config['EDTB']['effect'][id]['reversed']['control']['enabled'] = False
                 blob = EDTB2.build(config['EDTB']['effects'][id]['reversed'])
                 config['EDTB']['effects'][id]['autorev'] = blob
+
+            # rebuild PPRM's reverse data
+            blob = PPRM12.build(config['PPRM']['reversed'])
+            config['PPRM']['autorev'] = blob
 
             data = ZPTC.build(config)
 
