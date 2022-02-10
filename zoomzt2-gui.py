@@ -266,6 +266,7 @@ class _479389042__675845753_MyFrame(wx.Frame):
 
     def ConnectPedal(self):
         if self.pedal.connect(options.midiskip):
+            self.pedal.pcmode_on()
             self.ReadEffects()
             self.ReadFiles()
             self.UpdateButtons()

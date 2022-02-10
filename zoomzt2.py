@@ -510,7 +510,7 @@ class zoomzt2(object):
 
         # decode received data
         packet = msg.data
-        data = self.unpack(packet[4:-1])
+        data = self.unpack(packet[4:])
 
         return(data)
 

@@ -57,7 +57,7 @@ PPRM12 = Struct(
     #"dump" / Peek(HexDump(Bytes(12))),
     "control" / Bitwise(Struct(
         "punknown" / BitsInteger(23),
-        "slot" / BitsInteger(3), # active/editing slot 0..4
+        "editslot" / BitsInteger(3), # active/editing slot 0..4 on G1Four/etc
         "volume" / BitsInteger(7),
         "pad" / BitsInteger(7),
     )),
