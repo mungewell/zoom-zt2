@@ -165,6 +165,8 @@ else:
 class zoomzt2(object):
     inport = None
     outport = None
+    editor = False
+    pcmode = False
 
     def is_connected(self):
         if self.inport == None or self.outport == None:
@@ -194,19 +196,38 @@ class zoomzt2(object):
         if self.inport == None or self.outport == None:
             #print("Unable to find Pedal")
             return(False)
-
-        # Enable PC Mode
-        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x52])
-        self.outport.send(msg); sleep(0); msg = self.inport.receive()
         return(True)
 
     def disconnect(self):
-        # Disable PC Mode
-        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x53])
-        self.outport.send(msg); sleep(0); msg = self.inport.receive()
+        if self.pcmode:
+            self.pcmode_off()
 
         self.inport = None
         self.outport = None
+
+    def pcmode_on(self):
+        # Enable PC Mode
+        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x52])
+        self.outport.send(msg); sleep(0); msg = self.inport.receive()
+        self.pcmode = True
+
+    def pcmode_off(self):
+        # Disable PC Mode
+        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x53])
+        self.outport.send(msg); sleep(0); msg = self.inport.receive()
+        self.pcmode = False
+
+    def editor_on(self):
+        # Enable Editor Mode
+        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x50])
+        self.outport.send(msg); sleep(0); msg = self.inport.receive()
+        self.editor = True
+
+    def editor_off(self):
+        # Disable Editor Mode
+        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x51])
+        self.outport.send(msg); sleep(0); msg = self.inport.receive()
+        self.editor = False
 
     def pack(self, data):
         # Pack 8bit data into 7bit, MSB's in first byte followed
@@ -481,10 +502,19 @@ class zoomzt2(object):
         msg = mido.Message("sysex", data = packet)
         self.outport.send(msg); sleep(0); msg = self.inport.receive()
 
-    '''
     def patch_download_current(self):
         packet = bytearray(b"\x52\x00\x6e\x29")
 
+        msg = mido.Message("sysex", data = packet)
+        self.outport.send(msg); sleep(0); msg = self.inport.receive()
+
+        # decode received data
+        packet = msg.data
+        data = self.unpack(packet[4:-1])
+
+        return(data)
+
+    '''
     def patch_upload_current(self, data):
         packet = bytearray(b"\x52\x00\x6e\x28")
     '''
@@ -555,6 +585,8 @@ def main():
         help="download specific ztpc (10..59)", dest="patchdown")
     ztpc.add_argument("-P", "--patchup", type=int,
         help="upload specific ztpc (10..59)", dest="patchup")
+    ztpc.add_argument("-c", "--curdown", action="store_true", 
+        help="download current ztpc", dest="curdown")
 
     parser.add_argument("-M", "--midiskip",
         type=int, default=0, dest="midiskip",
@@ -573,12 +605,33 @@ def main():
         if options.patchup < 10 or options.patchup > 59:
             parser.error("Patch number should be between 10 and 59")
 
+    if options.curdown:
+        # do this first as we do not need PC mode,
+        # which would cancel unsaved changes
+        if not pedal.connect(options.midiskip):
+            sys.exit("Unable to find Pedal")
+
+        pedal.editor_on()
+        data = pedal.patch_download_current()
+        pedal.editor_off()
+        pedal.disconnect()
+
+        outfile = open(options.files[0], "wb")
+        if not outfile:
+            sys.exit("Unable to open FILE for writing")
+
+        outfile.write(data)
+        outfile.close()
+        exit(0)
+
     if options.receive or options.send or \
             options.install or options.uninstall or \
             options.installonly or options.uninstallonly or \
             options.patchdown or options.patchup:
         if not pedal.connect(options.midiskip):
             sys.exit("Unable to find Pedal")
+        else:
+            pedal.pcmode_on()
 
     if options.patchdown:
         data = pedal.patch_download(options.patchdown)

@@ -56,7 +56,8 @@ EDTB = Struct(
 PPRM12 = Struct(
     #"dump" / Peek(HexDump(Bytes(12))),
     "control" / Bitwise(Struct(
-        "punknown" / BitsInteger(26),
+        "punknown" / BitsInteger(23),
+        "slot" / BitsInteger(3), # active/editing slot 0..4
         "volume" / BitsInteger(7),
         "pad" / BitsInteger(7),
     )),
