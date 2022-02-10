@@ -56,7 +56,7 @@ EDTB = Struct(
 PPRM12 = Struct(
     #"dump" / Peek(HexDump(Bytes(12))),
     "control" / Bitwise(Struct(
-        "unknown" / BitsInteger(26),
+        "punknown" / BitsInteger(26),
         "volume" / BitsInteger(7),
         "pad" / BitsInteger(7),
     )),
@@ -196,6 +196,7 @@ def main():
 
         if options.summary:
             print("Name: %s" % config['name'])
+            print("Patch Volume: %s" % config['PPRM']['reversed']['control']['volume'])
             for id in range(config['fx_count']):
                 print("Effect %d: 0x%8.8X" % (id+1, config['ids'][id]))
 
