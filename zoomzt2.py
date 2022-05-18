@@ -229,6 +229,10 @@ class zoomzt2(object):
         self.outport.send(msg); sleep(0); msg = self.inport.receive()
         self.editor = False
 
+    def tuner_on_off(self):
+        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x64, 0x0b])
+        self.outport.send(msg); sleep(0); msg = self.inport.receive()
+
     def pack(self, data):
         # Pack 8bit data into 7bit, MSB's in first byte followed
         # by 7 bytes (bits 6..0).
