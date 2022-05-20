@@ -156,11 +156,7 @@ import mido
 import binascii
 from time import sleep
 
-if sys.platform == 'win32':
-    mido.set_backend('mido.backends.rtmidi_python')
-    midiname = b"ZOOM G"
-else:
-    midiname = "ZOOM G"
+midiname = "ZOOM G"
 
 class zoomzt2(object):
     inport = None
@@ -228,10 +224,6 @@ class zoomzt2(object):
         msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x51])
         self.outport.send(msg); sleep(0); msg = self.inport.receive()
         self.editor = False
-
-    def tuner_on_off(self):
-        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x64, 0x0b])
-        self.outport.send(msg); sleep(0); msg = self.inport.receive()
 
     def pack(self, data):
         # Pack 8bit data into 7bit, MSB's in first byte followed

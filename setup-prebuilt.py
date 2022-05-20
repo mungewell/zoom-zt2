@@ -4,7 +4,7 @@ base = None
 
 executables = [Executable("zoomzt2-gui.py", base=base)]
 
-packages = ["construct", "os", "argparse", "sys", "binascii", "mido", "rtmidi_python"]
+packages = ["construct", "os", "argparse", "sys", "binascii", "mido", "rtmidi"]
 options = {
     'build_exe': {    
         'packages':packages,
