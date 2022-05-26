@@ -134,7 +134,7 @@ class _479389042__675845753_MyFrame(wx.Frame):
         event.Skip()
 
     def butSelect(self, event):  # wxGlade: _479389042__675845753_MyFrame.<event_handler>
-        dlg = wx.FileDialog(self, "Select Effect", wildcard="*.ZD2",
+        dlg = wx.FileDialog(self, "Select Effect", wildcard="Effects (*.zd2,*.ZD2)|*.zd2;*.ZD2",
                        style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
 
         if dlg.ShowModal() == wx.ID_CANCEL:
