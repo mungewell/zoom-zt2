@@ -20,6 +20,19 @@ VAR = Struct(
     "data" / Bytes(this.length),
 )
 
+ModelEnum = Enum(Byte,
+    G5N     = 0x00,
+    G3N     = 0x02,
+    G3XN    = 0x03,
+    B3N     = 0x04,
+    G1FOUR  = 0x0C,
+    G1XFOUR = 0x0D,
+    B1FOUR  = 0x0E,
+    B1XFOUR = 0x0F,
+    A1FOUR  = 0x15,
+    A1XFOUR = 0x16,
+)
+
 HDIF = Struct(
     Const(b"HDIF"),
     "length" / Bitwise(Struct(
@@ -28,7 +41,10 @@ HDIF = Struct(
         Padding(24),
     )),
 
-    "unknown" / Bytes(0x20),
+    "hexdump" / HexDump(Peek(Bytes(32))),
+
+    "model" / ModelEnum,
+    "unknown" / Bytes(31),
     "data" / Array(this.length.length, VAR),
 )
 
