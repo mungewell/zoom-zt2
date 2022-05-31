@@ -119,7 +119,9 @@ PRME = Struct(
 ZD2 = Struct(
     Const(b"ZDLF"),
     "length" / Int32ul,
-    "hex" / HexDump(Peek(Bytes(81))),
+
+    "hexdump" / HexDump(Peek(Bytes(81))),
+
     "unknown" / Bytes(81),
     "version" / PaddedString(4, "ascii"),
     Const(b"\x00\x00"),
@@ -450,10 +452,27 @@ class zoomzt2(object):
         msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x09])
         self.outport.send(msg); sleep(0); msg = self.inport.receive()
 
+    def patch_check(self):
+        packet = bytearray(b"\x52\x00\x6e\x44")
+
+        msg = mido.Message("sysex", data = packet)
+        self.outport.send(msg); sleep(0); msg = self.inport.receive()
+
+        # decode received data
+        packet = msg.data
+        count = packet[5] * 127 + packet[4]
+        psize = packet[7] * 127 + packet[6]
+        bsize = packet[11] * 127 + packet[10]
+
+        return(count, psize, bsize)
+
     def patch_download(self, location):
+        (count, psize, bsize) = self.patch_check()
+
         packet = bytearray(b"\x52\x00\x6e\x09\x00")
-        packet.append(int(location/10)-1)
-        packet.append(location % 10)
+        bank = int((location - 1) / bsize)
+        packet.append(bank)
+        packet.append(location - (bank * bsize) - 1)
 
         msg = mido.Message("sysex", data = packet)
         self.outport.send(msg); sleep(0); msg = self.inport.receive()
@@ -475,9 +494,12 @@ class zoomzt2(object):
         return(data)
 
     def patch_upload(self, location, data):
+        (count, psize, bsize) = self.patch_check()
+
         packet = bytearray(b"\x52\x00\x6e\x08\x00")
-        packet.append(int(location/10)-1)
-        packet.append(location % 10)
+        bank = int((location - 1) / bsize)
+        packet.append(bank)
+        packet.append(location - (bank * bsize) - 1)
 
         length = len(data)
         packet.append(length & 0x7f)
@@ -578,9 +600,9 @@ def main():
     # attached device's effect patches
     ztpc = parser.add_argument_group("ZTPC", "Process ZTPC patch file").add_mutually_exclusive_group()
     ztpc.add_argument("-p", "--patchdown", type=int,
-        help="download specific ztpc (10..59)", dest="patchdown")
+        help="download specific ztpc", dest="patchdown")
     ztpc.add_argument("-P", "--patchup", type=int,
-        help="upload specific ztpc (10..59)", dest="patchup")
+        help="upload specific ztpc", dest="patchup")
     ztpc.add_argument("-c", "--curdown", action="store_true", 
         help="download current ztpc", dest="curdown")
 
@@ -592,14 +614,6 @@ def main():
 
     if not len(options.files):
         parser.error("FILE not specified")
-
-    if options.patchdown:
-        if options.patchdown < 10 or options.patchdown > 59:
-            parser.error("Patch number should be between 10 and 59")
-
-    if options.patchup:
-        if options.patchup < 10 or options.patchup > 59:
-            parser.error("Patch number should be between 10 and 59")
 
     if options.curdown:
         # do this first as we do not need PC mode,
@@ -630,6 +644,10 @@ def main():
             pedal.pcmode_on()
 
     if options.patchdown:
+        (count, size, banks) = pedal.patch_check()
+        if options.patchdown < 1 or options.patchdown > count:
+            sys.exit("Patch number should be between 1 and " + str(count))
+
         data = pedal.patch_download(options.patchdown)
         pedal.disconnect()
 
@@ -642,6 +660,10 @@ def main():
         exit(0)
 
     if options.patchup:
+        (count, size, banks) = pedal.patch_check()
+        if options.patchup < 1 or options.patchup > count:
+            sys.exit("Patch number should be between 1 and " + str(count))
+
         infile = open(options.files[0], "rb")
         if not infile:
             sys.exit("Unable to open FILE for reading")
