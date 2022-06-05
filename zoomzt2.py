@@ -460,9 +460,9 @@ class zoomzt2(object):
 
         # decode received data
         packet = msg.data
-        count = packet[5] * 127 + packet[4]
-        psize = packet[7] * 127 + packet[6]
-        bsize = packet[11] * 127 + packet[10]
+        count = packet[5] * 128 + packet[4]
+        psize = packet[7] * 128 + packet[6]
+        bsize = packet[11] * 128 + packet[10]
 
         return(count, psize, bsize)
 
@@ -646,6 +646,7 @@ def main():
     if options.patchdown:
         (count, size, banks) = pedal.patch_check()
         if options.patchdown < 1 or options.patchdown > count:
+            pedal.disconnect()
             sys.exit("Patch number should be between 1 and " + str(count))
 
         data = pedal.patch_download(options.patchdown)
@@ -662,10 +663,12 @@ def main():
     if options.patchup:
         (count, size, banks) = pedal.patch_check()
         if options.patchup < 1 or options.patchup > count:
+            pedal.disconnect()
             sys.exit("Patch number should be between 1 and " + str(count))
 
         infile = open(options.files[0], "rb")
         if not infile:
+            pedal.disconnect()
             sys.exit("Unable to open FILE for reading")
         else:
             data = infile.read()
@@ -674,6 +677,7 @@ def main():
         if len(data):
             data = pedal.patch_upload(options.patchup, data)
         pedal.disconnect()
+        exit(0)
 
     if options.receive or options.install or options.uninstall:
         if pedal.file_check("FLST_SEQ.ZT2"):
