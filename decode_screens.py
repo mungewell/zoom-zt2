@@ -60,6 +60,10 @@ def main():
         help="dump configuration to text",
         action="store_true", dest="dump")
 
+    parser.add_argument("-a", "--all",
+        help="display all parameters (include 'Dummy')",
+        action="store_true", dest="all")
+
     options = parser.parse_args()
 
     if not len(options.files):
@@ -93,7 +97,7 @@ def main():
                     if on_off:
                         print("Effect: %s (%s)" % (info['name'], on_off))
                 else:
-                    if info['name'] != "Dummy":
+                    if info['name'] != "Dummy" or options.all:
                         print("%s : %s" % (info['name'], info['value']))
 
 
