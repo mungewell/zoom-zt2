@@ -537,6 +537,33 @@ class zoomzt2(object):
         packet = bytearray(b"\x52\x00\x6e\x28")
     '''
 
+    def tuner(self, on = 0):
+        packet = bytearray(b"\x52\x00\x6e\x64")
+
+        if on:
+            packet.append(0x0b)
+        else:
+            packet.append(0x0c)
+
+        msg = mido.Message("sysex", data = packet)
+        self.outport.send(msg); #sleep(0); msg = self.inport.receive()
+
+    def tuner_read(self):
+        note = None
+        delta = 0
+
+        notes = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "-"]
+
+        for msg in self.inport.iter_pending():
+            if msg.type == "control_change":
+                if msg.control == 98:
+                    if msg.value < 13:
+                        note = notes[msg.value]
+                if msg.control == 99:
+                    delta = msg.value - 8
+
+        return(note, delta)
+
 #--------------------------------------------------
 def main():
     from argparse import ArgumentParser
