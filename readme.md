@@ -178,7 +178,7 @@ Configure Current Patch Effect(s)
 $ amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 01  02 3d 17 00 00 00 f7'
                                                     ^^ ^^ value lo/hi
                                                  ^^ param
-                                             ^^ display slot (0..8)
+                                             ^^ config effect in slot (0..8)
 param 0: effect on/off (0,1)
 param 1: effect type
 param 2: dial 1 (left most)
@@ -206,13 +206,16 @@ Change Current Patch Name (character by character)
 ```
 $ amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 09  02 3d 00 00 00 00 f7'
                                                     ^^ ASCII character
-                                                 ^^ nth position (0..9)
+                                                 ^^ n-th position (0..9)
+                                             09 = Patch ASCII name
 ```
 
 Change Current Patch Volume Level (seen under 'Settings'/'Patch')
 ```
 $ amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 0a  00 3d 00 00 00 00 f7'
-                                                    ^^ Patch Level
+                                                    ^^ Value
+                                                 00 = Patch volume level
+                                             0a = System setting
 ```
 
 ### Other Settings
@@ -220,13 +223,17 @@ $ amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 0a  00 3d 00 00 00 00 f7'
 Change Tempo (for Rythm/Looper)
 ```
 $ amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 0a  02 3d 00 00 00 00 f7'
-                                                    ^^ ^^ Tempo
+                                                    ^^ ^^ Value
+                                                 02 = Tempo
+                                             0a = System setting
 ```
 
 Change Autosave
 ```
 $ amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 0a  0f 01 00 00 00 00 f7'
-                                                    ^^ Autosave (0..1)
+                                                    ^^ Off/On (0..1)
+                                                 0f = Autosave
+                                             0a = System setting
 ```
 
 ### Patch Files
