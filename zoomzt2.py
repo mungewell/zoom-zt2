@@ -95,7 +95,8 @@ TXE1 = Struct(
 INFO = Struct(
     Const(b"INFO"),
     "length" / Int32ul,
-    "data" / Bytes(this.length),
+    "data" / Bytes(this.length - 4),
+    "dspload" / Float32l,
 )
 
 DATA = Struct(
