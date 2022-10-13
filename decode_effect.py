@@ -87,9 +87,13 @@ def main():
 
         if options.md5sum:
             md5sum = hashlib.md5(data).hexdigest()
-            print("0x%8.8x : %s (v%s), 0x%s, %s" % (config['id'], config['name'], config['version'], md5sum, options.files[0]))
+            print("0x%8.8x : %s (v%s, %2.2f%%), 0x%s, %s" % (config['id'], \
+                    config['name'], config['version'], config['INFO']['dspload']/2.5, \
+                    md5sum, options.files[0]))
         else:
-            print("0x%8.8x : %s (v%s), %s" % (config['id'], config['name'], config['version'], options.files[0]))
+            print("0x%8.8x : %s (v%s, %2.2f%%), %s" % (config['id'], \
+                    config['name'], config['version'], config['INFO']['dspload']/2.5, \
+                    options.files[0]))
 
     if data and options.bitmap:
        outfile = open(options.bitmap, "wb")
