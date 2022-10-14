@@ -6,6 +6,7 @@
 
 import zoomzt2
 import hashlib
+import crcmod
 
 #--------------------------------------------------
 def main():
@@ -62,6 +63,13 @@ def main():
         help="extract XML from donor",
         action="store_true", dest="dxml")
 
+    donor.add_argument("-v", "--crc",
+        help="validate CRC32 checksum",
+        action="store_true", dest="crc")
+    donor.add_argument("-V", "--recalc",
+        help="recalculate CRC32 checksum",
+        action="store_true", dest="recalc")
+
     donor.add_argument("-o", "--output",
         help="output combined result to FILE", dest="output")
 
@@ -77,6 +85,15 @@ def main():
     else:
         data = infile.read()
     infile.close()
+
+    if options.crc and data:
+        config = zoomzt2.ZD2.parse(data)
+
+        crc32 = crcmod.Crc(0x104c11db7, rev=True, initCrc=0x00000000, xorOut=0xFFFFFFFF)
+        crc32.update(data[12:-16])
+
+        if (config['checksum'] == crc32.crcValue ^ 0xffffffff):
+            print("Checksum Validated: 0x%8.8x" % config['checksum'])
 
     if options.dump and data:
         config = zoomzt2.ZD2.parse(data)
@@ -175,6 +192,15 @@ def main():
                config["PRME"] = dconfig["PRME"]
 
        data = zoomzt2.ZD2.build(config)
+
+       if options.recalc and data:
+           crc32 = crcmod.Crc(0x104c11db7, rev=True, initCrc=0x00000000, xorOut=0xFFFFFFFF)
+           crc32.update(data[12:-16])
+
+           config['checksum'] = crc32.crcValue ^ 0xffffffff
+           print("Checksum Recalculated: 0x%8.8x" % config['checksum'])
+           data = zoomzt2.ZD2.build(config)
+
        outfile.write(data)
        outfile.close()
 

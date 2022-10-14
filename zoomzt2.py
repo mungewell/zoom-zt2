@@ -120,10 +120,11 @@ PRME = Struct(
 ZD2 = Struct(
     Const(b"ZDLF"),
     "length" / Int32ul,
+    "checksum" / Int32ul,
 
-    "hexdump" / HexDump(Peek(Bytes(81))),
+    #"hexdump" / HexDump(Peek(Bytes(77))),
 
-    "unknown" / Bytes(81),
+    "unknown" / Bytes(77),
     "version" / PaddedString(4, "ascii"),
     Const(b"\x00\x00"),
     "group" / Byte,
@@ -150,6 +151,9 @@ ZD2 = Struct(
 
     "PRMJ" / PRMJ,
     "PRME" / PRME,
+
+    #"tail" / HexDump(Peek(Bytes(16))),
+    "unknown5" / Bytes(16),
 )
 
 #--------------------------------------------------
