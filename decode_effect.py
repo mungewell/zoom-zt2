@@ -63,6 +63,9 @@ def main():
     donor.add_argument("-X", "--donor-xml",
         help="extract XML from donor",
         action="store_true", dest="dxml")
+    donor.add_argument("-F", "--donor-final",
+        help="extract FinalBytes from donor",
+        action="store_true", dest="dfinal")
 
     donor.add_argument("-V", "--crc",
         help="validate CRC32 checksum",
@@ -191,6 +194,8 @@ def main():
            if options.dxml:
                config["PRMJ"] = dconfig["PRMJ"]
                config["PRME"] = dconfig["PRME"]
+           if options.dfinal:
+               config["unknown5"] = dconfig["unknown5"]
 
        data = zoomzt2.ZD2.build(config)
 
