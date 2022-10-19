@@ -122,9 +122,9 @@ ZD2 = Struct(
     "length" / Int32ul,
     "checksum" / Int32ul,
 
-    #"hexdump" / HexDump(Peek(Bytes(77))),
-
+    "hex1" / HexDump(Peek(Bytes(77))),
     "unknown" / Bytes(77),
+
     "version" / PaddedString(4, "ascii"),
     Const(b"\x00\x00"),
     "group" / Byte,
@@ -152,7 +152,7 @@ ZD2 = Struct(
     "PRMJ" / PRMJ,
     "PRME" / PRME,
 
-    #"tail" / HexDump(Peek(Bytes(16))),
+    "hex5" / HexDump(Peek(Bytes(16))),
     "unknown5" / Bytes(16),
 )
 

@@ -7,6 +7,7 @@
 import zoomzt2
 import hashlib
 import crcmod
+from sys import exit
 
 #--------------------------------------------------
 def main():
@@ -63,12 +64,9 @@ def main():
         help="extract XML from donor",
         action="store_true", dest="dxml")
 
-    donor.add_argument("-v", "--crc",
+    donor.add_argument("-V", "--crc",
         help="validate CRC32 checksum",
         action="store_true", dest="crc")
-    donor.add_argument("-V", "--recalc",
-        help="recalculate CRC32 checksum",
-        action="store_true", dest="recalc")
 
     donor.add_argument("-o", "--output",
         help="output combined result to FILE", dest="output")
@@ -94,6 +92,9 @@ def main():
 
         if (config['checksum'] == crc32.crcValue ^ 0xffffffff):
             print("Checksum Validated: 0x%8.8x" % config['checksum'])
+        else:
+            exit("Checksum Invalid: 0x%8.8x, should be 0x%8.8x" % \
+                    (config['checksum'], crc32.crcValue ^ 0xffffffff))
 
     if options.dump and data:
         config = zoomzt2.ZD2.parse(data)
@@ -115,7 +116,7 @@ def main():
     if data and options.bitmap:
        outfile = open(options.bitmap, "wb")
        if not outfile:
-           sys.exit("Unable to open FILE for writing")
+           exit("Unable to open FILE for writing")
 
        config = zoomzt2.ZD2.parse(data)
        outfile.write(config["ICON"]["data"])
@@ -124,7 +125,7 @@ def main():
     if data and options.xml:
        outfile = open(options.xml, "wb")
        if not outfile:
-           sys.exit("Unable to open FILE for writing")
+           exit("Unable to open FILE for writing")
 
        config = zoomzt2.ZD2.parse(data)
        if options.japan:
@@ -136,7 +137,7 @@ def main():
     if data and options.text:
        outfile = open(options.text, "wb")
        if not outfile:
-           sys.exit("Unable to open FILE for writing")
+           exit("Unable to open FILE for writing")
 
        config = zoomzt2.ZD2.parse(data)
        if options.japan:
@@ -148,7 +149,7 @@ def main():
     if data and options.info:
        outfile = open(options.info, "wb")
        if not outfile:
-           sys.exit("Unable to open FILE for writing")
+           exit("Unable to open FILE for writing")
 
        config = zoomzt2.ZD2.parse(data)
        outfile.write(config["INFO"]["data"])
@@ -157,7 +158,7 @@ def main():
     if data and options.code:
        outfile = open(options.code, "wb")
        if not outfile:
-           sys.exit("Unable to open FILE for writing")
+           exit("Unable to open FILE for writing")
 
        config = zoomzt2.ZD2.parse(data)
        outfile.write(config["DATA"]["data"])
@@ -166,13 +167,13 @@ def main():
     if data and options.output:
        outfile = open(options.output, "wb")
        if not outfile:
-           sys.exit("Unable to open output FILE for writing")
+           exit("Unable to open output FILE for writing")
        config = zoomzt2.ZD2.parse(data)
 
        if options.donor:
            infile = open(options.donor, "rb")
            if not infile:
-               sys.exit("Unable to open donor FILE for reading")
+               exit("Unable to open donor FILE for reading")
            else:
                ddata = infile.read()
            infile.close()
@@ -193,13 +194,13 @@ def main():
 
        data = zoomzt2.ZD2.build(config)
 
-       if options.recalc and data:
-           crc32 = crcmod.Crc(0x104c11db7, rev=True, initCrc=0x00000000, xorOut=0xFFFFFFFF)
-           crc32.update(data[12:-16])
+       # recalc the CRC32
+       crc32 = crcmod.Crc(0x104c11db7, rev=True, initCrc=0x00000000, xorOut=0xFFFFFFFF)
+       crc32.update(data[12:-16])
 
-           config['checksum'] = crc32.crcValue ^ 0xffffffff
-           print("Checksum Recalculated: 0x%8.8x" % config['checksum'])
-           data = zoomzt2.ZD2.build(config)
+       config['checksum'] = crc32.crcValue ^ 0xffffffff
+       print("Checksum Recalculated: 0x%8.8x" % config['checksum'])
+       data = zoomzt2.ZD2.build(config)
 
        outfile.write(data)
        outfile.close()
