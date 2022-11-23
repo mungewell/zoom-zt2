@@ -70,6 +70,12 @@ class _479389042__675845753_MyFrame(wx.Frame):
         self.list_box_2.SetMinSize((398, 300))
         sizer_6.Add(self.list_box_2, 0, wx.EXPAND, 0)
 
+        self.gauge_1 = wx.Gauge(self, wx.ID_ANY, 100)
+        self.gauge_1.SetMinSize((398, 10))
+        self.gauge_1.SetToolTip(wx.ToolTip("Disk Usage"))
+        self.gauge_1.Hide()
+        sizer_2.Add(self.gauge_1, 0, wx.EXPAND, 0)
+
         sizer_3 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_2.Add(sizer_3, 0, wx.EXPAND, 0)
 
@@ -201,6 +207,10 @@ class _479389042__675845753_MyFrame(wx.Frame):
             self.ReadEffects()
             self.ReadFiles()
 
+            usage = int(self.pedal.disk_usage())
+            wx.CallAfter(self.gauge_1.SetValue, usage)
+            wx.CallAfter(self.gauge_1.SetToolTip, "Usage: "+str(usage)+"%")
+
         event.Skip()
 
     def butRemove(self, event):  # wxGlade: _479389042__675845753_MyFrame.<event_handler>
@@ -222,6 +232,10 @@ class _479389042__675845753_MyFrame(wx.Frame):
             self.ReadEffects()
             self.ReadFiles()
 
+            usage = int(self.pedal.disk_usage())
+            wx.CallAfter(self.gauge_1.SetValue, usage)
+            wx.CallAfter(self.gauge_1.SetToolTip, "Usage: "+str(usage)+"%")
+
         if index >= self.list_box_1.Count:
             index -= 1
         self.list_box_1.SetSelection(index)
@@ -236,6 +250,10 @@ class _479389042__675845753_MyFrame(wx.Frame):
             self.pedal.file_close()
 
             self.ReadFiles()
+
+            usage = int(self.pedal.disk_usage())
+            wx.CallAfter(self.gauge_1.SetValue, usage)
+            wx.CallAfter(self.gauge_1.SetToolTip, "Usage: "+str(usage)+"%")
 
         event.Skip()
 
@@ -263,7 +281,13 @@ class _479389042__675845753_MyFrame(wx.Frame):
 
         if self.pedal.is_connected():
             self.button_2.Hide()
+
+            usage = int(self.pedal.disk_usage())
+            wx.CallAfter(self.gauge_1.SetValue, usage)
+            wx.CallAfter(self.gauge_1.SetToolTip, "Usage: "+str(usage)+"%")
+            self.gauge_1.Show()
         else:
+            self.gauge_1.Hide()
             self.button_2.Show()
             self.Layout()
             return
