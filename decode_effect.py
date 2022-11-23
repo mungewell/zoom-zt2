@@ -93,6 +93,7 @@ def main():
         crc32 = crcmod.Crc(0x104c11db7, rev=True, initCrc=0x00000000, xorOut=0xFFFFFFFF)
         crc32.update(data[12:-16])
 
+        print(config['hex1'])
         if (config['checksum'] == crc32.crcValue ^ 0xffffffff):
             print("Checksum Validated: 0x%8.8x" % config['checksum'])
         else:

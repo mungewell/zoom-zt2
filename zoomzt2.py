@@ -457,6 +457,26 @@ class zoomzt2(object):
         msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x09])
         self.outport.send(msg); sleep(0); msg = self.inport.receive()
 
+    def disk_usage(self):
+        msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x29, 0x00, 0x00, 0x00, 0x00, 0x00])
+        self.outport.send(msg); sleep(0); msg = self.inport.receive()
+
+        packet = bytes(msg.data)
+        #print(binascii.hexlify(packet))
+        #b'52 00 6e 60 04 29 01 00 08 00 34 16 07 07 00 26 7c 12 04 00 00 0000000'
+        #                          Max   XX XX XX XX XX YY YY YY YY YY Available
+
+        maximum = int(packet[10]) + int(packet[11])*127 + int(packet[12])*127*127 +\
+                    int(packet[13])*127*127*127 + int(packet[14])*127*127*127*127
+        available = int(packet[15]) + int(packet[16])*127 + int(packet[17])*127*127 +\
+                    int(packet[18])*127*127*127 + int(packet[19])*127*127*127*127
+
+        if available and maximum:       # prevent div by zero
+            return((1 - (available/maximum)) * 100)
+        else:
+            return(0)
+
+
     def patch_check(self):
         packet = bytearray(b"\x52\x00\x6e\x44")
 
@@ -628,6 +648,9 @@ def main():
     zd2.add_argument("--uninstall-only",
         help="Remove effect binary from attached device without affecting FLST_SEQ",
         action="store_true", dest="uninstallonly")
+    parser.add_argument("-a", "--available",
+        help="Print out the available diskspace after action",
+        action="store_true", dest="available")
 
     # attached device's effect patches
     ztpc = parser.add_argument_group("ZTPC", "Process ZTPC patch file").add_mutually_exclusive_group()
@@ -758,7 +781,11 @@ def main():
                 print("Installing effect:", target)
                 if pedal.file_check(target):
                     pedal.file_upload(target, bindata)
+
                 pedal.file_close()
+
+                if options.available:
+                    print("Percentage disk use:", pedal.disk_usage())
 
                 if data and options.install:
                     data = pedal.add_effect_from_filename(data, target)
@@ -768,7 +795,11 @@ def main():
             print("Uninstalling effect:", target)
             if pedal.file_check(target):
                 pedal.file_delete(target)
+
             pedal.file_close()
+
+            if options.available:
+                print("Percentage disk use:", pedal.disk_usage())
 
             if data and options.uninstall:
                 data = pedal.remove_effect(data, target)
