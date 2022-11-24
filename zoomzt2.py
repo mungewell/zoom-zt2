@@ -464,18 +464,17 @@ class zoomzt2(object):
         packet = bytes(msg.data)
         #print(binascii.hexlify(packet))
         #b'52 00 6e 60 04 29 01 00 08 00 34 16 07 07 00 26 7c 12 04 00 00 0000000'
-        #                          Max   XX XX XX XX XX YY YY YY YY YY Available
+        #                          Max = XX XX XX XX XX,YY YY YY YY YY = Available
 
-        maximum = int(packet[10]) + int(packet[11])*127 + int(packet[12])*127*127 +\
-                    int(packet[13])*127*127*127 + int(packet[14])*127*127*127*127
-        available = int(packet[15]) + int(packet[16])*127 + int(packet[17])*127*127 +\
-                    int(packet[18])*127*127*127 + int(packet[19])*127*127*127*127
+        maximum = int(packet[10]) + int(packet[11])*128 + int(packet[12])*128*128 +\
+                    int(packet[13])*128*128*128 + int(packet[14])*128*128*128*128
+        available = int(packet[15]) + int(packet[16])*128 + int(packet[17])*128*128 +\
+                    int(packet[18])*128*128*128 + int(packet[19])*128*128*128*128
 
         if available and maximum:       # prevent div by zero
-            return((1 - (available/maximum)) * 100)
+            return((1 - (float(available)/maximum)) * 100)
         else:
             return(0)
-
 
     def patch_check(self):
         packet = bytearray(b"\x52\x00\x6e\x44")
