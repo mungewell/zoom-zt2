@@ -149,8 +149,9 @@ ZD2 = Struct(
     "INFO" / INFO,
     "DATA" / DATA,
 
-    "PRMJ" / PRMJ,
-    "PRME" / PRME,
+    # these do not appear in the effects from AC-2 and AC-3
+    "PRMJ" / Optional(PRMJ),
+    "PRME" / Optional(PRME),
 
     "hex5" / HexDump(Peek(Bytes(16))),
     "unknown5" / Bytes(16),
