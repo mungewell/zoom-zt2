@@ -66,6 +66,9 @@ def main():
     donor.add_argument("-F", "--donor-final",
         help="extract FinalBytes from donor",
         action="store_true", dest="dfinal")
+    donor.add_argument("-E", "--donor-elf",
+        help="replace Code with ELF file (ie whole file)",
+        action="store_true", dest="delf")
 
     donor.add_argument("-V", "--crc",
         help="validate CRC32 checksum",
@@ -182,21 +185,25 @@ def main():
                ddata = infile.read()
            infile.close()
 
-           dconfig = zoomzt2.ZD2.parse(ddata)
-           if options.dbitmap:
-               config["ICON"] = dconfig["ICON"]
-           if options.dtext:
-               config["TXJ1"] = dconfig["TXJ1"]
-               config["TXE1"] = dconfig["TXE1"]
-           if options.dinfo:
-               config["INFO"] = dconfig["INFO"]
-           if options.dcode:
-               config["DATA"] = dconfig["DATA"]
-           if options.dxml:
-               config["PRMJ"] = dconfig["PRMJ"]
-               config["PRME"] = dconfig["PRME"]
-           if options.dfinal:
-               config["unknown5"] = dconfig["unknown5"]
+           if options.delf:
+               config["DATA"]["length"] = len(ddata)
+               config["DATA"]["data"] = ddata
+           else:
+                dconfig = zoomzt2.ZD2.parse(ddata)
+                if options.dbitmap:
+                    config["ICON"] = dconfig["ICON"]
+                if options.dtext:
+                    config["TXJ1"] = dconfig["TXJ1"]
+                    config["TXE1"] = dconfig["TXE1"]
+                if options.dinfo:
+                    config["INFO"] = dconfig["INFO"]
+                if options.dcode:
+                    config["DATA"] = dconfig["DATA"]
+                if options.dxml:
+                    config["PRMJ"] = dconfig["PRMJ"]
+                    config["PRME"] = dconfig["PRME"]
+                if options.dfinal:
+                    config["unknown5"] = dconfig["unknown5"]
 
        data = zoomzt2.ZD2.build(config)
 
