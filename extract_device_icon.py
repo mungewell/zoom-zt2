@@ -1,11 +1,6 @@
 # Extract images embedded in the ELF/Code section of ZD2 file
 
 from PIL import Image
-from argparse import ArgumentParser
-from sys import exit
-import zoomzt2
-from pwn import *
-import re
 
 def destripe(src, stripes=4, width=None, height=None):
     x, y = src.size
@@ -26,6 +21,14 @@ def destripe(src, stripes=4, width=None, height=None):
 
 #--------------------------------------------------
 def main():
+    from argparse import ArgumentParser
+    from sys import exit
+    from re import match
+    import zoomzt2
+
+    # from https://github.com/sashs/filebytes
+    from filebytes.elf import ELF
+
     parser = ArgumentParser(prog="extract_device_icon")
 
     parser.add_argument('files', metavar='FILE', nargs=1,
@@ -41,7 +44,7 @@ def main():
         default = "_*picTotalDisplay_.*",
         help="regex to describe target icon", dest="target")
     parser.add_argument("-s", "--stripes",
-        default = 4,
+        default = 4, type=int,
         help="number of 'stripes' in image", dest="stripes")
 
     parser.add_argument("-o", "--output",
@@ -57,50 +60,49 @@ def main():
         # Read data from 'code' section of ZD2 file
         infile = open(options.files[0], "rb")
         if not infile:
-            sys.exit("Unable to open FILE for reading")
+            exit("Unable to open FILE for reading")
         else:
             data = infile.read()
         infile.close()
 
         config = zoomzt2.ZD2.parse(data)
-        e = ELF.__something__(config["DATA"]["data"])
+        e = ELF("fake-elf", config["DATA"]["data"])
 
     if not e:
-        sys.exit("Error in reading ELF file")
+        exit("Error in reading ELF file")
 
-    keys = e.symbols.keys()
-    if options.list:
-        print(keys)
-    r = re.compile(options.target)
-    found  = list(filter(r.match, keys))
+    a = None
+    l = None
+    rawData = None
 
-    if not len(found):
-        sys.exit("Target not found:" + options.target)
+    for s in e.sections:
+        if s.name == '.symtab':
+            if options.list:
+                for z in s.symbols:
+                    print(z.name)
+                quit()
 
-    print("Extracting symbol:", found[0])
-    sort = sorted(e.symbols.items(), key=lambda x: x[1])
+            for z in s.symbols:
+                if match(options.target, z.name):
+                    print("Target matched:", z.name)
+                    a = z.header.st_value
+                    l = z.header.st_size
+                    break
 
-    # iterate through looking for start and end address
-    start = e.symbols[found[0]]
-    end = False
-    found = False
-    for (a,b) in sort:
-        if found:
-            if b != start:
-                end = b
-                break
-        else:
-            if b == start:
-                found = True
-                
-    if end:
-        print("From Address: 0x%8.8X to 0x%8.8X" % (start, end))
-        rawData = e.read(start, end - start)
+    if not l:
+        exit("Target not found: " + options.target)
 
+    for s in e.segments:
+        if a >= s.vaddr and a < (s.vaddr + len(s.bytes)): 
+            print("Symbol located:", hex(a))
+            rawData = bytes(s.bytes[a - s.vaddr : a - s.vaddr + l])
+            break
+
+    if rawData:
         imgSize = (8, len(rawData))
         img = Image.frombytes('1', imgSize, rawData, 'raw', '1;I')
 
-        img2 = destripe(img, int(options.stripes))
+        img2 = destripe(img, options.stripes)
 
         if options.output:
             img2.save(options.output)
