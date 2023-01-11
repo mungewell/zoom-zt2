@@ -43,11 +43,19 @@ Mostly effect binaries are common between the G1Four and the G3n/G5n, although i
 that some effects are imcompatible due to hardware differences - these appear to be denoted with
 '1U' (only one screen on G1Four) and '3S' suffixes on the filenames.
 
-The is also a 'GUARDZDL.ZT2' file within the F/W which blacklists some effects from the
-G3/G5.
+Regarding the nomenclature `{effect-name-tag}{suffix}.ZD2`:
+
+|suffix|meaning|details
+|------|-------|-----------
+| 1U   | single unit (screen)| on one-screen units the wide-effects, which have 8 parameters (controlled by 4 knobs), need to be paged over 3pages: (3params + Dummy), (3params+Dummy), (2params + Dummy); the Dummy parameters are used for paging.
+| 3S | 3000ms (delay)| the big-boy units in G Series are able to process 4000ms delays/reverb effects but the G1/B1/A1 FOUR units are able to handle only up to 3000ms (3sec). This is likely due to memory or processing power limits. Asking these units to produce over 3sec delay results in kinda noisy whoosh.
+
+For these reasons, Zoom engineers created the respective 1U, 3S versions of _most_ but not all corresponding modules and put the respective names of the "unrestricted" modules into `GUARDZDL.ZT2` to avoid possible problems if anyone tried to load such modules on the restricted hardware. 
 
 The AC-2 and AC-3 use a similar '.ZD2' effects, but they do not have a LCD display
 and all effects are in a special 'group 29'.
+
+
 
 ## Command Line Options
 
