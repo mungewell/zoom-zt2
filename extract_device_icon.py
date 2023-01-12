@@ -14,7 +14,10 @@ def destripe(src, stripes=4, width=None, height=None):
     dest = Image.new('1', (width, height),"white")
 
     for s in range(stripes):
-        copy = src.crop((0, s * h, 8, (s + 1) * h)).transpose(Image.ROTATE_90)
+        try:
+            copy = src.crop((0, s * h, 8, (s + 1) * h)).transpose(Image.ROTATE_90)
+        except:
+            copy = src.crop((0, s * h, 8, (s + 1) * h)).transpose(Image.Transpose.ROTATE_90)
         dest.paste(copy, (0, s * 8, h, (s + 1) * 8))
 
     return(dest)
