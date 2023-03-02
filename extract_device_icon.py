@@ -50,6 +50,9 @@ def main():
         default = 4, type=int,
         help="number of 'stripes' in image", dest="stripes")
 
+    parser.add_argument("-r", "--raw",
+        help="saw as raw bytes",
+        action="store_true", dest="raw")
     parser.add_argument("-o", "--output",
         help="output image to FILE", dest="output")
 
@@ -102,15 +105,23 @@ def main():
             break
 
     if rawData:
-        imgSize = (8, len(rawData))
-        img = Image.frombytes('1', imgSize, rawData, 'raw', '1;I')
-
-        img2 = destripe(img, options.stripes)
-
-        if options.output:
-            img2.save(options.output)
+        if options.raw:
+            if options.output:
+                output = open(options.output, "wb")
+            else:
+                output = open("raw.bin", "wb")
+            output.write(rawData)
+            output.close()
         else:
-            img2.save("icon.png")
+            imgSize = (8, len(rawData))
+            img = Image.frombytes('1', imgSize, rawData, 'raw', '1;I')
+
+            img2 = destripe(img, options.stripes)
+
+            if options.output:
+                img2.save(options.output)
+            else:
+                img2.save("icon.png")
 
 if __name__ == "__main__":
     main()
