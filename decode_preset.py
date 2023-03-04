@@ -175,6 +175,8 @@ def main():
     parser.add_argument("-2", "--convert2",
         help="convert patch to use '2 screen' effects",
         action="store_true", dest="convert2")
+    parser.add_argument("-E", "--effect",
+        help="force effects (value in hex)", dest="effect")
 
     options = parser.parse_args()
 
@@ -230,6 +232,14 @@ def main():
                             config['ids'][id] = item[0]
                             config['EDTB']['effects'][id]['reversed']['control']['id'] \
                                     = item[0] & 0x1FFFFFFF
+            # force effect
+            if options.effect:
+                effect = int(options.effect, 16)
+                for id in range(config['fx_count']):
+                    for item in convert:
+                        config['ids'][id] = effect
+                        config['EDTB']['effects'][id]['reversed']['control']['id'] \
+                                = effect & 0x1FFFFFFF
 
             # need to rebuild EDTB's reversed data
             for id in range(len(config['EDTB']['effects'])):
