@@ -192,8 +192,8 @@ class _479389042__675845753_MyFrame(wx.Frame):
 
             binconfig = zoomzt2.ZD2.parse(bindata)
 
-            self.pedal.file_check(self.effect)
-            self.pedal.file_upload(self.effect, bindata)
+            if not self.pedal.file_check(self.effect):
+                self.pedal.file_upload(self.effect, bindata)
             self.pedal.file_close()
 
             data = self.pedal.add_effect_from_filename(data, self.effect)
@@ -217,8 +217,8 @@ class _479389042__675845753_MyFrame(wx.Frame):
         index = self.list_box_1.GetSelection()
         name = self.list_box_1.GetString(index)
         if name :
-            self.pedal.file_check(name)
-            self.pedal.file_delete(name)
+            if self.pedal.file_check(name):
+                self.pedal.file_delete(name)
 
             self.pedal.file_check("FLST_SEQ.ZT2")
             data = self.pedal.file_download("FLST_SEQ.ZT2")

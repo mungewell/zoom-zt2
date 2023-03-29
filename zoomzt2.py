@@ -347,11 +347,14 @@ class zoomzt2(object):
         self.filename(packet, tail)
 
         msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x05, 0x00])
-        self.outport.send(msg); sleep(0); msg = self.inport.receive()
+        self.outport.send(msg); sleep(0); resp = self.inport.receive()
         
         msg = mido.Message("sysex", data = [0x52, 0x00, 0x6e, 0x60, 0x27])
         self.outport.send(msg); sleep(0); msg = self.inport.receive()
-        return(True)
+
+        if bytes(resp.data[-5:]) == b'\x00\x00\x00\x00\x00':
+            return(True)
+        return(False)
     
     def file_wild(self, first):
         if first:
@@ -779,7 +782,8 @@ def main():
                 binfile.close()
 
                 print("Installing effect:", target)
-                if pedal.file_check(target):
+                if not pedal.file_check(target):
+                    print("uploading...")
                     pedal.file_upload(target, bindata)
 
                 pedal.file_close()
