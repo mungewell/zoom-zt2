@@ -73,6 +73,9 @@ def main():
     donor.add_argument("-V", "--crc",
         help="validate CRC32 checksum",
         action="store_true", dest="crc")
+    donor.add_argument("--force-id",
+        help="Force the ID to a particular value (in Hex)",
+        dest="force_id")
 
     donor.add_argument("-o", "--output",
         help="output combined result to FILE", dest="output")
@@ -204,6 +207,9 @@ def main():
                     config["PRME"] = dconfig["PRME"]
                 if options.dfinal:
                     config["unknown5"] = dconfig["unknown5"]
+
+       if options.force_id:
+           config['id'] = int(options.force_id, 16)
 
        data = zoomzt2.ZD2.build(config)
 
