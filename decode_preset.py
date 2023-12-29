@@ -93,6 +93,62 @@ ZPTC = Struct(
     "PPRM" / PPRM,
 )
 
+#--------------------------------------------------
+# Allow for decoding of SysEx Packets
+
+# Midi is 7bit stuffed - each byte max 0x7F
+class Midi2u(Adapter):
+    def _decode(self, obj, context, path):
+        return((obj & 0x7f) + ((obj & 0x7f00) >> 1))
+    def _encode(self, obj, context, path):
+        return((obj & 0x7f) + ((obj & 0x3f80) << 1))
+
+# Current patch, ie starts...
+# 00000000  f0 52 00 6e 64 12 01 40  06 04 50 54 43 46 3c 01  |.R.nd..@..PTCF<.|
+#                                       [<- start of packed data
+#                                ^^  ^^ length
+
+Midi_64 = Struct(
+    "header" / Const(b"\xf0\x52\x00\x6e\x64\x12\x01"),
+    "length" / Midi2u(Int16ul),
+    "data" / Bytes(this.length),
+    #"footer" / Const(b"\xf7"),
+    )
+
+# Specific/Numbered patch, ie starts...
+# 00000000  f0 52 00 6e 45 00 00 00  00 00 00 40 06 04 50 54  |.R.nE......@..PT|
+#                                                   [<- start of packed data
+#                                             ^^ ^^ length
+
+Midi_45 = Struct(
+    "header" / Const(b"\xf0\x52\x00\x6e\x45\x00\x00\x00\x00\x00\x00"),
+    "length" / Midi2u(Int16ul),
+    "data" / Bytes(this.length),
+    #"footer" / Const(b"\xf7"),
+    )
+
+
+def unpack(packet):
+    # Unpack data 7bit to 8bit, MSBs in first byte
+    data = bytearray(b"")
+    loop = -1
+    hibits = 0
+
+    for byte in packet:
+        if loop !=-1:
+            if (hibits & (2**loop)):
+                data.append(128 + byte)
+            else:
+                data.append(byte)
+            loop = loop - 1
+        else:
+            hibits = byte
+            # do we need to acount for short sets (at end of block block)?
+            loop = 6
+
+    return(data)
+
+#--------------------------------------------------
 # Convert Patches between Effects with 1 or 2screen versions
 convert = [ # 2screen -> 1screen
         [0x02000050, 0x02000051], # Gt GEQ
@@ -161,6 +217,9 @@ def main():
     parser.add_argument("-s", "--summary",
         help="summarize LINE in human readable form",
         action="store_true", dest="summary")
+    parser.add_argument("-m", "--midi",
+        help="read file from midi SysEx packet format",
+        action="store_true", dest="midi")
 
     parser.add_argument("-o", "--output", dest="outfile",
         help="write data to OUTFILE")
@@ -190,6 +249,16 @@ def main():
     else:
         data = infile.read()
     infile.close()
+
+    if options.midi:
+        midi = data
+
+        if midi[4] == 0x45:
+            packet = Midi_45.parse(data)
+            data = unpack(packet['data'])
+        if midi[4] == 0x64:
+            packet = Midi_64.parse(data)
+            data = unpack(packet['data'])
 
     if data:
         config = ZPTC.parse(data)
