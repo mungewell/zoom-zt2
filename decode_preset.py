@@ -73,11 +73,27 @@ PPRM = Struct(
     "reversed" / RestreamData(this.autorev, PPRM12),    # this does not allow re-build of data :-(
 )
 
+PRM2 = Struct(
+    Const(b"PRM2"),
+    "length" / Rebuild(Int32ul, len_(this.unknown)),
+    #"dump" / Peek(HexDump(Bytes(this.length))),
+
+    "unknown" / Bytes(this.length),
+)
+
+NAME = Struct(
+    Const(b"NAME"),
+    "length" / Rebuild(Int32ul, len_(this.name)),
+    #"dump" / Peek(HexDump(Bytes(this.length))),
+
+    "name" / PaddedString(this.length, "ascii"),
+)
+
 ZPTC = Struct(
     Const(b"PTCF"),
     "length" / Rebuild(Int32ul, 68 + (this.fx_count * 4) +\
             this.TXJ1.length + this.TXE1.length + \
-            this.EDTB.length + this.PPRM.length),
+            this.EDTB.length + this.PPRM.length), # + this.NAME.length),
     "version" / Int32ul, # ???
     "fx_count" / Rebuild(Int32ul, len_(this.EDTB.effects)),
 
@@ -90,7 +106,11 @@ ZPTC = Struct(
     "TXJ1" / TXJ1,
     "TXE1" / TXE1,
     "EDTB" / EDTB,
-    "PPRM" / PPRM,
+    "PPRM" / IfThenElse(this.version > 1,
+        PRM2,
+        PPRM
+    ),
+    "NAME" / If(this.version > 1, NAME),
 )
 
 #--------------------------------------------------
@@ -121,7 +141,8 @@ Midi_64 = Struct(
 #                                             ^^ ^^ length
 
 Midi_45 = Struct(
-    "header" / Const(b"\xf0\x52\x00\x6e\x45\x00\x00\x00\x00\x00\x00"),
+    "header" / Const(b"\xf0\x52\x00\x6e\x45\x00\x00"),
+    "patch" / Bytes(4),
     "length" / Midi2u(Int16ul),
     "data" / Bytes(this.length),
     #"footer" / Const(b"\xf7"),
