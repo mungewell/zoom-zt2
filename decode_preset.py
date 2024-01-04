@@ -73,10 +73,10 @@ PPRM = Struct(
     "reversed" / RestreamData(this.autorev, PPRM12),    # this does not allow re-build of data :-(
 )
 
-PRM2 = Struct(
+PPRM_v2 = Struct(
     Const(b"PRM2"),
     "length" / Rebuild(Int32ul, len_(this.unknown)),
-    #"dump" / Peek(HexDump(Bytes(this.length))),
+    "dump" / Peek(HexDump(Bytes(this.length))),
 
     "unknown" / Bytes(this.length),
 )
@@ -89,12 +89,25 @@ NAME = Struct(
     "name" / PaddedString(this.length, "ascii"),
 )
 
+PEEK = Struct(
+    "l" / Int32ul,
+    "v" / Int32ul,
+)
+
 ZPTC = Struct(
     Const(b"PTCF"),
-    "length" / Rebuild(Int32ul, 68 + (this.fx_count * 4) +\
-            this.TXJ1.length + this.TXE1.length + \
-            this.EDTB.length + this.PPRM.length), # + this.NAME.length),
-    "version" / Int32ul, # ???
+
+    "p" / Peek(PEEK),           # need to peek ahead for the version
+
+    "length" / IfThenElse(this.p.v> 1,
+            Rebuild(Int32ul, 68 + (this.fx_count * 4) + \
+                this.TXJ1.length + this.TXE1.length + \
+                this.EDTB.length + this.PPRM.length + this.NAME.length),    # V2
+            Rebuild(Int32ul, 68 + (this.fx_count * 4) + \
+                this.TXJ1.length + this.TXE1.length + \
+                this.EDTB.length + this.PPRM.length),                       # V1
+            ),
+    "version" / Int32ul,
     "fx_count" / Rebuild(Int32ul, len_(this.EDTB.effects)),
 
     "target" / Int32ul, # pedal that patch is for???
@@ -106,8 +119,9 @@ ZPTC = Struct(
     "TXJ1" / TXJ1,
     "TXE1" / TXE1,
     "EDTB" / EDTB,
+
     "PPRM" / IfThenElse(this.version > 1,
-        PRM2,
+        PPRM_v2,
         PPRM
     ),
     "NAME" / If(this.version > 1, NAME),
@@ -337,8 +351,9 @@ def main():
                 config['EDTB']['effects'][id]['autorev'] = blob
 
             # rebuild PPRM's reverse data
-            blob = PPRM12.build(config['PPRM']['reversed'])
-            config['PPRM']['autorev'] = blob
+            if config['version'] == 1:
+                blob = PPRM12.build(config['PPRM']['reversed'])
+                config['PPRM']['autorev'] = blob
 
             data = ZPTC.build(config)
 
