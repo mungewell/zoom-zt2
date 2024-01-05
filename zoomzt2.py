@@ -494,7 +494,7 @@ class zoomzt2(object):
 
         return(count, psize, bsize)
 
-    def patch_download(self, location):
+    def patch_download_old(self, location):
         (count, psize, bsize) = self.patch_check()
 
         packet = bytearray(b"\x52\x00\x6e\x09\x00")
@@ -521,7 +521,7 @@ class zoomzt2(object):
 
         return(data)
 
-    def patch_upload(self, location, data):
+    def patch_upload_old(self, location, data):
         (count, psize, bsize) = self.patch_check()
 
         packet = bytearray(b"\x52\x00\x6e\x08\x00")
@@ -656,13 +656,16 @@ def main():
         action="store_true", dest="available")
 
     # attached device's effect patches
-    ztpc = parser.add_argument_group("ZTPC", "Process ZTPC patch file").add_mutually_exclusive_group()
-    ztpc.add_argument("-p", "--patchdown", type=int,
-        help="download specific ztpc", dest="patchdown")
-    ztpc.add_argument("-P", "--patchup", type=int,
-        help="upload specific ztpc", dest="patchup")
-    ztpc.add_argument("-c", "--curdown", action="store_true", 
-        help="download current ztpc", dest="curdown")
+    zptc = parser.add_argument_group("ZPTC", "Process ZPTC patch file").add_mutually_exclusive_group()
+    zptc.add_argument("-p", "--patchdown", type=int,
+        help="download specific zptc", dest="patchdown")
+    zptc.add_argument("-P", "--patchup", type=int,
+        help="upload specific zptc", dest="patchup")
+    zptc.add_argument("-c", "--curdown", action="store_true", 
+        help="download current zptc", dest="curdown")
+    parser.add_argument("--old-patch",
+        help="Use the 'old' method for reading patches",
+        action="store_true", dest="oldpatch")
 
     parser.add_argument("-M", "--midiskip",
         type=int, default=0, dest="midiskip",
@@ -707,7 +710,8 @@ def main():
             pedal.disconnect()
             sys.exit("Patch number should be between 1 and " + str(count))
 
-        data = pedal.patch_download(options.patchdown)
+        if options.oldpatch:
+            data = pedal.patch_download_old(options.patchdown)
         pedal.disconnect()
 
         outfile = open(options.files[0], "wb")
@@ -733,7 +737,8 @@ def main():
         infile.close()
 
         if len(data):
-            data = pedal.patch_upload(options.patchup, data)
+            if options.oldpatch:
+                data = pedal.patch_upload_old(options.patchup, data)
         pedal.disconnect()
         exit(0)
 
