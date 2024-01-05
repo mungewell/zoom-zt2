@@ -5,6 +5,7 @@
 #
 
 from construct import *
+from hexdump import *
 
 #--------------------------------------------------
 # Define ZT2/ZD2 file format using Construct (v2.9)
@@ -494,6 +495,39 @@ class zoomzt2(object):
 
         return(count, psize, bsize)
 
+    def patch_download(self, location):
+        (count, psize, bsize) = self.patch_check()
+
+        packet = bytearray(b"\x52\x00\x6e\x46\x00\x00")
+        bank = int((location - 1) / bsize)
+        loc = location - (bank * bsize) - 1
+
+        packet.append(bank & 0x7F)
+        packet.append(bank >> 7)
+        packet.append(loc & 0x7F)
+        packet.append(loc >> 7)
+
+        print(hexdump(bytes(packet)))
+        msg = mido.Message("sysex", data = packet)
+        self.outport.send(msg); sleep(0); msg = self.inport.receive()
+
+        # decode received data
+        packet = msg.data
+        print(hexdump(bytes(packet)))
+        length = int(packet[11]) * 128 + int(packet[10])
+        if length == 0:
+            return()
+        data = self.unpack(packet[12:12 + length + int(length/7) + 1])
+
+        # confirm checksum (last 5 bytes of packet)
+        checksum = packet[-5] + (packet[-4] << 7) + (packet[-3] << 14) \
+                + (packet[-2] << 21) + ((packet[-1] & 0x0F) << 28) 
+
+        if (checksum ^ 0xFFFFFFFF) != binascii.crc32(data):
+            print("Checksum error", hex(checksum))
+
+        return(data)
+
     def patch_download_old(self, location):
         (count, psize, bsize) = self.patch_check()
 
@@ -712,6 +746,8 @@ def main():
 
         if options.oldpatch:
             data = pedal.patch_download_old(options.patchdown)
+        else:
+            data = pedal.patch_download(options.patchdown)
         pedal.disconnect()
 
         outfile = open(options.files[0], "wb")
