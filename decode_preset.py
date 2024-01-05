@@ -110,7 +110,22 @@ ZPTC = Struct(
     "version" / Int32ul,
     "fx_count" / Rebuild(Int32ul, len_(this.EDTB.effects)),
 
-    "target" / Int32ul, # pedal that patch is for???
+    "targets" / Peek(BitsSwapped(Bitwise(Struct(    # Informational, does not rebuild
+        "g5n"       / BitsInteger(1),   # 0x01
+        "g3n"       / BitsInteger(1),   # 0x02
+        "g3xn"      / BitsInteger(1),   # 0x04
+        "b3n"       / BitsInteger(1),   # 0x08
+        "g1four"    / BitsInteger(1),   # 0x10
+        "g1xfour"   / BitsInteger(1),   # 0x20
+        "b1four"    / BitsInteger(1),   # 0x40
+        "b1xfour"   / BitsInteger(1),   # 0x80
+        "a1four"    / BitsInteger(1),   # 0x100
+        "a1xfour"   / BitsInteger(1),   # 0x200
+        Padding(6),
+        "b2four"    / BitsInteger(1),   # 0x10000
+        Padding(15),
+    )))),
+    "target" / Int32ul, # pedal that patch is for
     "data" / Bytes(6),
 
     "name" / PaddedString(10, "ascii"),
@@ -260,8 +275,8 @@ def main():
         help="write data to OUTFILE")
     parser.add_argument("-p", "--pad", type=int,
         help="pad output size to PAD bytes", dest="pad")
-    parser.add_argument("-t", "--target", type=int,
-        help="set the target pedal value", dest="target")
+    parser.add_argument("-t", "--target",
+        help="set the target pedal (value in hex)", dest="target")
 
     parser.add_argument("-1", "--convert1",
         help="convert patch to use '1 screen' effects",
@@ -317,7 +332,7 @@ def main():
             outfile = open(options.outfile, "wb")
 
             if options.target:
-                config['target'] = options.target
+                config['target'] = effect = int(options.target, 16)
 
             # Convert between 1 and 2 screen versions of effects
             if options.convert1 or options.convert2:
