@@ -284,6 +284,11 @@ def main():
     parser.add_argument("-2", "--convert2",
         help="convert patch to use '2 screen' effects",
         action="store_true", dest="convert2")
+    parser.add_argument("-b", "--bypass",
+        help="move Bypass effects to end of patch",
+        action="store_true", dest="bypass")
+    parser.add_argument("-l", "--limit", type=int,
+        help="limit the number of effects", dest="limit")
     parser.add_argument("-E", "--effect",
         help="force effects (value in hex)", dest="effect")
 
@@ -332,7 +337,24 @@ def main():
             outfile = open(options.outfile, "wb")
 
             if options.target:
-                config['target'] = effect = int(options.target, 16)
+                config['target'] = int(options.target, 16)
+
+            # Move Bypass to end
+            if options.bypass:
+                for c in range(config['fx_count']-1):
+                    if config['ids'][c] == 1:       # Bypass effect
+                        e = config['EDTB']['effects'][c]
+                        for m in range(c+1, config['fx_count']):
+                            config['ids'][m-1] = config['ids'][m]
+                            config['EDTB']['effects'][m-1] = config['EDTB']['effects'][m]
+                        config['ids'][m] = 1
+                        config['EDTB']['effects'][m] = e
+
+            # Limit the number of effects
+            if options.limit and options.limit < config['fx_count']:
+                config['fx_count'] = options.limit
+                config['ids'] = config['ids'][:options.limit]
+                config['EDTB']['effects'] = config['EDTB']['effects'][:options.limit]
 
             # Convert between 1 and 2 screen versions of effects
             if options.convert1 or options.convert2:
