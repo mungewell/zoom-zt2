@@ -5,7 +5,6 @@
 #
 
 from construct import *
-from hexdump import *
 
 #--------------------------------------------------
 # Define ZT2/ZD2 file format using Construct (v2.9)
@@ -507,13 +506,11 @@ class zoomzt2(object):
         packet.append(loc & 0x7F)
         packet.append(loc >> 7)
 
-        print(hexdump(bytes(packet)))
         msg = mido.Message("sysex", data = packet)
         self.outport.send(msg); sleep(0); msg = self.inport.receive()
 
         # decode received data
         packet = msg.data
-        print(hexdump(bytes(packet)))
         length = int(packet[11]) * 128 + int(packet[10])
         if length == 0:
             return()
@@ -527,6 +524,35 @@ class zoomzt2(object):
             print("Checksum error", hex(checksum))
 
         return(data)
+
+    def patch_upload(self, location, data):
+        (count, psize, bsize) = self.patch_check()
+
+        packet = bytearray(b"\x52\x00\x6e\x45\x00\x00")
+        bank = int((location - 1) / bsize)
+        loc = location - (bank * bsize) - 1
+
+        packet.append(bank & 0x7F)
+        packet.append(bank >> 7)
+        packet.append(loc & 0x7F)
+        packet.append(loc >> 7)
+
+        length = len(data)
+        packet.append(length & 0x7f)
+        packet.append((length >> 7) & 0x7f)
+
+        packet = packet + self.pack(data[:length])
+
+        # Compute CRC32
+        crc = binascii.crc32(data[:length]) ^ 0xFFFFFFFF
+        packet.append(crc & 0x7f)
+        packet.append((crc >> 7) & 0x7f)
+        packet.append((crc >> 14) & 0x7f)
+        packet.append((crc >> 21) & 0x7f)
+        packet.append((crc >> 28) & 0x0f)
+
+        msg = mido.Message("sysex", data = packet)
+        self.outport.send(msg); sleep(0); msg = self.inport.receive()
 
     def patch_download_old(self, location):
         (count, psize, bsize) = self.patch_check()
@@ -576,8 +602,6 @@ class zoomzt2(object):
         packet.append((crc >> 14) & 0x7f)
         packet.append((crc >> 21) & 0x7f)
         packet.append((crc >> 28) & 0x0f)
-
-        #print(hex(len(packet)), binascii.hexlify(packet))
 
         msg = mido.Message("sysex", data = packet)
         self.outport.send(msg); sleep(0); msg = self.inport.receive()
@@ -775,6 +799,8 @@ def main():
         if len(data):
             if options.oldpatch:
                 data = pedal.patch_upload_old(options.patchup, data)
+            else:
+                data = pedal.patch_upload(options.patchup, data)
         pedal.disconnect()
         exit(0)
 
