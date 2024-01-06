@@ -121,7 +121,8 @@ ZPTC = Struct(
         "b1xfour"   / BitsInteger(1),   # 0x80
         "a1four"    / BitsInteger(1),   # 0x100
         "a1xfour"   / BitsInteger(1),   # 0x200
-        Padding(6),
+        "g11"       / BitsInteger(1),   # 0x400
+        Padding(5),
         "b2four"    / BitsInteger(1),   # 0x10000
         Padding(15),
     )))),
@@ -139,7 +140,7 @@ ZPTC = Struct(
         PPRM_v2,
         PPRM
     ),
-    "NAME" / If(this.version > 1, NAME),
+    "NAME" / If(this.version > 1, Optional(NAME)),
 )
 
 #--------------------------------------------------
