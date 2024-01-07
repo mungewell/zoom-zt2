@@ -273,7 +273,7 @@ class zoomzt2(object):
 
         return(data)
 
-    def add_effect(self, data, name, version, id):
+    def add_effect(self, data, name, version, id, installed=True):
         config = ZT2.parse(data)
         head, tail = os.path.split(name)
         
@@ -290,12 +290,12 @@ class zoomzt2(object):
                         del effects[slice]
                     slice = slice + 1
 
-                new = dict(effect=tail, version=version, id=id)
+                new = dict(effect=tail, version=version, id=id, installed=installed)
                 effects.append(new)
 
         if not group_found:
             effects = []
-            new = dict(effect=tail, version=version, id=id, group=group_new)
+            new = dict(effect=tail, version=version, id=id, installed=installed, group=group_new)
             effects.append(new)
             new = dict(group=group_new, groupname=group_new, effects=effects, groupend=group_new)
             config[1].append(new)
@@ -681,6 +681,8 @@ def main():
         help="effect id (use with --add)", dest="id")
     parser.add_argument("-D", "--delete",
     help="delete effect from FLST_SEQ", dest="delete")
+    parser.add_argument("-N", "--not-add", action="store_true",
+        help="add effect to FLST_SEQ, but as uninstalled", dest="notadd")
 
     parser.add_argument("-t", "--toggle",
         help="toggle install/uninstall state of effect NAME in FLST_SEQ", dest="toggle")
@@ -819,9 +821,9 @@ def main():
 
     if data and options.add and options.ver and options.id:
         if options.id[:2] == "0x":
-            data = pedal.add_effect(data, options.add, options.ver, int(options.id, 16))
+            data = pedal.add_effect(data, options.add, options.ver, int(options.id, 16), not options.notadd)
         else:
-            data = pedal.add_effect(data, options.add, options.ver, int(options.id))
+            data = pedal.add_effect(data, options.add, options.ver, int(options.id), not options.notadd)
 
     if data and options.delete:
         data = pedal.remove_effect(data, options.delete)
@@ -901,9 +903,14 @@ def main():
         config = ZT2.parse(data)
         for group in config[1]:
             for effect in dict(group)["effects"]:
-                print("python3 zoomzt2.py -i ", hex(dict(effect)["id"]), \
-                    "-A", dict(effect)["effect"], "-v", dict(effect)["version"], \
-                    "-w", options.build)
+                if dict(effect)["installed"]:
+                    print("python3 zoomzt2.py -i ", hex(dict(effect)["id"]), \
+                        "-A", dict(effect)["effect"], "-v", dict(effect)["version"], \
+                        "-w", options.build)
+                else:
+                    print("python3 zoomzt2.py -i ", hex(dict(effect)["id"]), \
+                        "-N -A", dict(effect)["effect"], "-v", dict(effect)["version"], \
+                        "-w", options.build)
 
     if options.write and data:
        outfile = open(options.files[0], "wb")
