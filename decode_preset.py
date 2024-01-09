@@ -119,11 +119,15 @@ ZPTC = Struct(
         "g1xfour"   / BitsInteger(1),   # 0x20
         "b1four"    / BitsInteger(1),   # 0x40
         "b1xfour"   / BitsInteger(1),   # 0x80
-        "a1four"    / BitsInteger(1),   # 0x100
-        "a1xfour"   / BitsInteger(1),   # 0x200
-        "g11"       / BitsInteger(1),   # 0x400
-        Padding(5),
-        "b2four"    / BitsInteger(1),   # 0x10000
+        "a1four"    / BitsInteger(1),   # 0x0100
+        "a1xfour"   / BitsInteger(1),   # 0x0200
+        "g11"       / BitsInteger(1),   # 0x0400
+        "h8"        / BitsInteger(1),   # 0x0800
+        "g6"        / BitsInteger(1),   # 0x1000
+        "b6"        / BitsInteger(1),   # 0x2000
+        "r20"       / BitsInteger(1),   # 0x4000
+        Padding(1),
+        "b2four"    / BitsInteger(1),   # 0x010000
         Padding(15),
     )))),
     "target" / Int32ul, # pedal that patch is for
