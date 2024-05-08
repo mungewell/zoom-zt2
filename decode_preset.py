@@ -128,7 +128,9 @@ ZPTC = Struct(
         "r20"       / BitsInteger(1),   # 0x4000
         Padding(1),
         "b2four"    / BitsInteger(1),   # 0x010000
-        Padding(15),
+        Padding(1),
+        "ms-50+"    / BitsInteger(1),   # 0x040000
+        Padding(13),
     )))),
     "target" / Int32ul, # pedal that patch is for
     "data" / Bytes(6),
@@ -328,7 +330,8 @@ def main():
 
         if options.summary:
             print("Name: %s" % config['name'])
-            print("Patch Volume: %s" % config['PPRM']['reversed']['control']['volume'])
+            if config['version'] == 1:
+                print("Patch Volume: %s" % config['PPRM']['reversed']['control']['volume'])
             for id in range(config['fx_count']):
                 print("Effect %d: 0x%8.8X" % (id+1, config['ids'][id]))
 
