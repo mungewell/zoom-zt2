@@ -23,6 +23,12 @@ def main():
     parser.add_argument("-s", "--summary",
         help="summarized configuration in human readable form",
         action="store_true", dest="summary")
+    parser.add_argument("-n", "--id",
+        help="output the effect's numerical ID (in hex)",
+        action="store_true", dest="id")
+    parser.add_argument("-v", "--version",
+        help="output the effect's version",
+        action="store_true", dest="version")
     parser.add_argument("-m", "--md5sum",
         help="include md5sum of file in summary report",
         action="store_true", dest="md5sum")
@@ -49,22 +55,22 @@ def main():
     donor.add_argument("-D", "--donor",
         help="specify donor ZD2 FILE", dest="donor")
     donor.add_argument("-B", "--donor-bitmap",
-        help="extract Icon/Bitmap from donor",
+        help="inject Icon/Bitmap from donor",
         action="store_true", dest="dbitmap")
     donor.add_argument("-T", "--donor-text",
-        help="extract Text from donor",
+        help="inject Text from donor",
         action="store_true", dest="dtext")
     donor.add_argument("-I", "--donor-info",
-        help="extract Info from donor",
+        help="inject Info from donor",
         action="store_true", dest="dinfo")
     donor.add_argument("-C", "--donor-code",
-        help="extract Code from donor",
+        help="inject Code from donor",
         action="store_true", dest="dcode")
     donor.add_argument("-X", "--donor-xml",
-        help="extract XML from donor",
+        help="inject XML from donor",
         action="store_true", dest="dxml")
     donor.add_argument("-F", "--donor-final",
-        help="extract FinalBytes from donor",
+        help="inject FinalBytes from donor",
         action="store_true", dest="dfinal")
     donor.add_argument("-E", "--donor-elf",
         help="replace Code with ELF file (ie whole file)",
@@ -122,6 +128,14 @@ def main():
             print("0x%8.8x : %s (v%s, %2.2f%%), %s" % (config['id'], \
                     config['name'], config['version'], config['INFO']['dspload']/2.5, \
                     options.files[0]))
+
+    if options.id and data:
+        config = zoomzt2.ZD2.parse(data)
+        print("0x%8.8x" % (config['id']))
+
+    if options.version and data:
+        config = zoomzt2.ZD2.parse(data)
+        print("%s" % (config['version']))
 
     if data and options.bitmap:
        outfile = open(options.bitmap, "wb")
