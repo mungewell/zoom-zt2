@@ -895,9 +895,9 @@ def main():
             print("Group", dict(group)["group"], ":", dict(group)["groupname"])
     
             for effect in dict(group)["effects"]:
-                print("   ", dict(effect)["effect"], "(ver=", dict(effect)["version"], \
-                    "), group=", dict(effect)["group"], ", id=", hex(dict(effect)["id"]), \
-                    ", installed=", dict(effect)["installed"])
+                print("0x%8.8x : %s, (v%s %d)" % (dict(effect)['id'], \
+                    dict(effect)["effect"], dict(effect)["version"], \
+                    dict(effect)["installed"]))
 
     if options.build and data:
         config = ZT2.parse(data)

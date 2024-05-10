@@ -7,6 +7,7 @@
 import zoomzt2
 import hashlib
 import crcmod
+import os
 from sys import exit
 
 #--------------------------------------------------
@@ -121,13 +122,14 @@ def main():
 
         if options.md5sum:
             md5sum = hashlib.md5(data).hexdigest()
-            print("0x%8.8x : %s (v%s, %2.2f%%), 0x%s, %s" % (config['id'], \
+            print("0x%8.8x : %s, %s (v%s %2.2f%%), %s" % (config['id'], \
+                    os.path.split(options.files[0])[-1], \
                     config['name'], config['version'], config['INFO']['dspload']/2.5, \
-                    md5sum, options.files[0]))
+                    md5sum))
         else:
-            print("0x%8.8x : %s (v%s, %2.2f%%), %s" % (config['id'], \
-                    config['name'], config['version'], config['INFO']['dspload']/2.5, \
-                    options.files[0]))
+            print("0x%8.8x : %s, %s (v%s %2.2f%%)" % (config['id'], \
+                    os.path.split(options.files[0])[-1], \
+                    config['name'], config['version'], config['INFO']['dspload']/2.5))
 
     if options.id and data:
         config = zoomzt2.ZD2.parse(data)
