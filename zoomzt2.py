@@ -164,7 +164,8 @@ import mido
 import binascii
 from time import sleep
 
-midiname = "ZOOM G"
+
+midinames = ["ZOOM G", "ZOOM MS Plus Series"]
 
 class zoomzt2(object):
     inport = None
@@ -179,23 +180,31 @@ class zoomzt2(object):
             return(True)
 
     def connect(self, midiskip = 0):
+        self.inport = None
         skip = midiskip
         for port in mido.get_input_names():
-            if port[:len(midiname)]==midiname:
-                if not skip:
-                    self.inport = mido.open_input(port)
-                    break
-                else:
-                    skip = skip - 1
+            for midiname in midinames:
+                if port[:len(midiname)]==midiname:
+                    if not skip:
+                        self.inport = mido.open_input(port)
+                        break
+                    else:
+                        skip = skip - 1
+            if self.inport != None:
+                break
 
+        self.outport = None
         skip = midiskip
         for port in mido.get_output_names():
-            if port[:len(midiname)]==midiname:
-                if not skip:
-                    self.outport = mido.open_output(port)
-                    break
-                else:
-                    skip = skip - 1
+            for midiname in midinames:
+                if port[:len(midiname)]==midiname:
+                    if not skip:
+                        self.outport = mido.open_output(port)
+                        break
+                    else:
+                        skip = skip - 1
+            if self.outport != None:
+                break
 
         if self.inport == None or self.outport == None:
             #print("Unable to find Pedal")
