@@ -338,6 +338,23 @@ class zoomzt2(object):
 
         return ZT2.build(config)
 
+    def download_and_save_file(self, name):
+        data = bytearray(b"")
+        if self.file_check(name):
+            data = self.file_download(name)
+            self.file_close()
+        else:
+            print("File \"" + name + "\" was not found on the pedal" )
+
+        if data:
+            outfile = open(name, "wb")
+            if outfile:
+                outfile.write(data)
+                outfile.close()
+            else:
+                print("Unable to open FILE \"" + name + "\" for writing")
+        return data
+
     def filename(self, packet, name):
         # send filename (with different packet headers)
         head, tail = os.path.split(name)
@@ -720,6 +737,12 @@ def main():
     zd2.add_argument("--uninstall-only",
         help="Remove effect binary from attached device without affecting FLST_SEQ",
         action="store_true", dest="uninstallonly")
+    zd2.add_argument("-e", "--effectdown",
+        help="Download effect binary with name FILE",
+        action="store_true", dest="effectdown")
+    parser.add_argument("--include-zic",
+        help="When downloading effect binary, include the corrsponding .ZIC icon file",
+        action="store_true", dest="includezic")
     parser.add_argument("-a", "--available",
         help="Print out the available diskspace after action",
         action="store_true", dest="available")
@@ -767,7 +790,8 @@ def main():
     if options.receive or options.send or \
             options.install or options.uninstall or \
             options.installonly or options.uninstallonly or \
-            options.patchdown or options.patchup:
+            options.patchdown or options.patchup or \
+            options.effectdown:
         if not pedal.connect(options.midiskip):
             sys.exit("Unable to find Pedal")
         else:
@@ -812,6 +836,19 @@ def main():
                 data = pedal.patch_upload_old(options.patchup, data)
             else:
                 data = pedal.patch_upload(options.patchup, data)
+        pedal.disconnect()
+        exit(0)
+    
+    if options.effectdown:
+        print("Downloading effect: \"" + options.files[0] + "\"" )
+        data = pedal.download_and_save_file(options.files[0])
+ 
+        if options.includezic:
+            filename, extension = os.path.splitext(options.files[0])
+            zicfilename = filename + ".ZIC"
+            print("Downloading icon:   \"" + zicfilename + "\"" )
+            data = pedal.download_and_save_file(zicfilename)
+
         pedal.disconnect()
         exit(0)
 
