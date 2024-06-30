@@ -338,7 +338,7 @@ class zoomzt2(object):
 
         return ZT2.build(config)
 
-    def download_and_save_file(self, name):
+    def download_and_save_file(self, name, outname = ""):
         data = bytearray(b"")
         if self.file_check(name):
             data = self.file_download(name)
@@ -347,13 +347,28 @@ class zoomzt2(object):
             print("File \"" + name + "\" was not found on the pedal" )
 
         if data:
-            outfile = open(name, "wb")
+            if outname == "":
+                outname = name
+            outfile = open(outname, "wb")
             if outfile:
                 outfile.write(data)
                 outfile.close()
             else:
                 print("Unable to open FILE \"" + name + "\" for writing")
         return data
+
+    def download_and_save_all_files(self, dirname):
+        files = []
+        name = self.file_wild(True)
+
+        while name:
+            files.append(name)
+            name = self.file_wild(False)
+
+        for name in files:
+            fullname = os.path.join(dirname, name)
+            print("Downloading file " + name.ljust(12) + " -> " + fullname)
+            self.download_and_save_file(name, fullname)
 
     def filename(self, packet, name):
         # send filename (with different packet headers)
@@ -723,7 +738,10 @@ def main():
     parser.add_argument("-S", "--send",
         help="Send FLST_SEQ to attached device",
         action="store_true", dest="send")
-
+    parser.add_argument("--download-all",
+        help="Download all files on pedal to directory FILE",
+        action="store_true", dest="downloadall")
+    
     zd2 = parser.add_argument_group("ZD2", "Process ZDL2 effect file(s)").add_mutually_exclusive_group()
     zd2.add_argument("-I", "--install",
         help="Install effect binary to attached device, updating FLST_SEQ",
@@ -791,7 +809,7 @@ def main():
             options.install or options.uninstall or \
             options.installonly or options.uninstallonly or \
             options.patchdown or options.patchup or \
-            options.effectdown:
+            options.effectdown or options.downloadall:
         if not pedal.connect(options.midiskip):
             sys.exit("Unable to find Pedal")
         else:
@@ -841,14 +859,25 @@ def main():
     
     if options.effectdown:
         print("Downloading effect: \"" + options.files[0] + "\"" )
-        data = pedal.download_and_save_file(options.files[0])
+        pedal.download_and_save_file(options.files[0])
  
         if options.includezic:
             filename, extension = os.path.splitext(options.files[0])
             zicfilename = filename + ".ZIC"
             print("Downloading icon:   \"" + zicfilename + "\"" )
-            data = pedal.download_and_save_file(zicfilename)
+            pedal.download_and_save_file(zicfilename)
 
+        pedal.disconnect()
+        exit(0)
+
+    if options.downloadall:
+        dirname = options.files[0]
+        print("Downloading all files to directory \"" + dirname + "\"" )
+
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
+
+        pedal.download_and_save_all_files(dirname)
         pedal.disconnect()
         exit(0)
 
