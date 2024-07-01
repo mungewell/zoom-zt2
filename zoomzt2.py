@@ -997,6 +997,30 @@ def main():
             if data and options.uninstall:
                 data = pedal.remove_effect(data, target)
 
+            filename, extension = os.path.splitext(target)
+
+            if options.includezic:
+                zicfilename = filename + ".ZIC"
+                if pedal.file_check(zicfilename):
+                    print("Uninstalling icon:", zicfilename)
+                    pedal.file_delete(zicfilename)
+
+                pedal.file_close()
+
+                if options.available:
+                    print("Percentage disk use:", pedal.disk_usage())
+
+            if options.includezir:
+                zirfilename = filename + ".ZIR"
+                if pedal.file_check(zirfilename):
+                    print("Uninstalling IR  :", zirfilename)
+                    pedal.file_delete(zirfilename)
+
+                pedal.file_close()
+
+                if options.available:
+                    print("Percentage disk use:", pedal.disk_usage())
+
     if options.send or options.install or options.uninstall:
         pedal.file_check("FLST_SEQ.ZT2")
         pedal.file_upload("FLST_SEQ.ZT2", data)
