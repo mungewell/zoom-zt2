@@ -660,6 +660,40 @@ class zoomzt2(object):
         return(note, delta)
 
 #--------------------------------------------------
+
+def download_and_save_file(pedal, name, outname = ""):
+    data = bytearray(b"")
+    if pedal.file_check(name):
+        data = pedal.file_download(name)
+        pedal.file_close()
+    else:
+        print("File \"" + name + "\" was not found on the pedal" )
+
+    if data:
+        if outname == "":
+            outname = name
+        outfile = open(outname, "wb")
+        if outfile:
+            outfile.write(data)
+            outfile.close()
+        else:
+            print("Unable to open FILE \"" + name + "\" for writing")
+    return data
+
+def download_and_save_all_files(pedal, dirname):
+    files = []
+    name = pedal.file_wild(True)
+
+    while name:
+        files.append(name)
+        name = pedal.file_wild(False)
+
+    for name in files:
+        fullname = os.path.join(dirname, name)
+        print("Downloading file " + name.ljust(12) + " -> " + fullname)
+        download_and_save_file(pedal, name, fullname)
+
+
 def main():
     from argparse import ArgumentParser
 
@@ -706,7 +740,10 @@ def main():
     parser.add_argument("-S", "--send",
         help="Send FLST_SEQ to attached device",
         action="store_true", dest="send")
-
+    parser.add_argument("--download-all",
+        help="Download all files on pedal to directory FILE",
+        action="store_true", dest="downloadall")
+    
     zd2 = parser.add_argument_group("ZD2", "Process ZDL2 effect file(s)").add_mutually_exclusive_group()
     zd2.add_argument("-I", "--install",
         help="Install effect binary to attached device, updating FLST_SEQ",
@@ -720,6 +757,15 @@ def main():
     zd2.add_argument("--uninstall-only",
         help="Remove effect binary from attached device without affecting FLST_SEQ",
         action="store_true", dest="uninstallonly")
+    zd2.add_argument("-e", "--effectdown",
+        help="Download effect binary with name FILE",
+        action="store_true", dest="effectdown")
+    parser.add_argument("--include-zic",
+        help="When downloading or uploading effect binary, include the corrsponding .ZIC icon file",
+        action="store_true", dest="includezic")
+    parser.add_argument("--include-zir",
+        help="When downloading or uploading effect binary, include the corrsponding .ZIR impulse response file",
+        action="store_true", dest="includezir")
     parser.add_argument("-a", "--available",
         help="Print out the available diskspace after action",
         action="store_true", dest="available")
@@ -767,7 +813,8 @@ def main():
     if options.receive or options.send or \
             options.install or options.uninstall or \
             options.installonly or options.uninstallonly or \
-            options.patchdown or options.patchup:
+            options.patchdown or options.patchup or \
+            options.effectdown or options.downloadall:
         if not pedal.connect(options.midiskip):
             sys.exit("Unable to find Pedal")
         else:
@@ -812,6 +859,36 @@ def main():
                 data = pedal.patch_upload_old(options.patchup, data)
             else:
                 data = pedal.patch_upload(options.patchup, data)
+        pedal.disconnect()
+        exit(0)
+    
+    if options.effectdown:
+        print("Downloading effect: \"" + options.files[0] + "\"" )
+        download_and_save_file(pedal, options.files[0])
+ 
+        filename, extension = os.path.splitext(options.files[0])
+
+        if options.includezic:
+            zicfilename = filename + ".ZIC"
+            print("Downloading icon:   \"" + zicfilename + "\"" )
+            download_and_save_file(pedal, zicfilename)
+
+        if options.includezir:
+            zirfilename = filename + ".ZIR"
+            print("Downloading IR:     \"" + zirfilename + "\"" )
+            download_and_save_file(pedal, zirfilename)
+
+        pedal.disconnect()
+        exit(0)
+
+    if options.downloadall:
+        dirname = options.files[0]
+        print("Downloading all files to directory \"" + dirname + "\"" )
+
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
+
+        download_and_save_all_files(pedal, dirname)
         pedal.disconnect()
         exit(0)
 
@@ -872,6 +949,40 @@ def main():
                 if data and options.install:
                     data = pedal.add_effect_from_filename(data, target)
 
+            filename, extension = os.path.splitext(target)
+
+            if options.includezic:
+                zicfilename = filename + ".ZIC"
+                binfile = open(zicfilename, "rb")
+                if binfile:
+                    bindata = binfile.read()
+                    binfile.close()
+
+                    if not pedal.file_check(zicfilename):
+                        print("Uploading icon:", zicfilename)
+                        pedal.file_upload(zicfilename, bindata)
+
+                    pedal.file_close()
+
+                    if options.available:
+                        print("Percentage disk use:", pedal.disk_usage())
+
+            if options.includezir:
+                zirfilename = filename + ".ZIR"
+                binfile = open(zicfilename, "rb")
+                if binfile:
+                    bindata = binfile.read()
+                    binfile.close()
+
+                    if not pedal.file_check(zirfilename):
+                        print("Uploading impulse response:", zirfilename)
+                        pedal.file_upload(zirfilename, bindata)
+
+                    pedal.file_close()
+
+                    if options.available:
+                        print("Percentage disk use:", pedal.disk_usage())
+
     if options.uninstall or options.uninstallonly:
         for target in options.files:
             print("Uninstalling effect:", target)
@@ -885,6 +996,30 @@ def main():
 
             if data and options.uninstall:
                 data = pedal.remove_effect(data, target)
+
+            filename, extension = os.path.splitext(target)
+
+            if options.includezic:
+                zicfilename = filename + ".ZIC"
+                if pedal.file_check(zicfilename):
+                    print("Uninstalling icon:", zicfilename)
+                    pedal.file_delete(zicfilename)
+
+                pedal.file_close()
+
+                if options.available:
+                    print("Percentage disk use:", pedal.disk_usage())
+
+            if options.includezir:
+                zirfilename = filename + ".ZIR"
+                if pedal.file_check(zirfilename):
+                    print("Uninstalling IR  :", zirfilename)
+                    pedal.file_delete(zirfilename)
+
+                pedal.file_close()
+
+                if options.available:
+                    print("Percentage disk use:", pedal.disk_usage())
 
     if options.send or options.install or options.uninstall:
         pedal.file_check("FLST_SEQ.ZT2")
