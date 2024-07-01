@@ -338,38 +338,6 @@ class zoomzt2(object):
 
         return ZT2.build(config)
 
-    def download_and_save_file(self, name, outname = ""):
-        data = bytearray(b"")
-        if self.file_check(name):
-            data = self.file_download(name)
-            self.file_close()
-        else:
-            print("File \"" + name + "\" was not found on the pedal" )
-
-        if data:
-            if outname == "":
-                outname = name
-            outfile = open(outname, "wb")
-            if outfile:
-                outfile.write(data)
-                outfile.close()
-            else:
-                print("Unable to open FILE \"" + name + "\" for writing")
-        return data
-
-    def download_and_save_all_files(self, dirname):
-        files = []
-        name = self.file_wild(True)
-
-        while name:
-            files.append(name)
-            name = self.file_wild(False)
-
-        for name in files:
-            fullname = os.path.join(dirname, name)
-            print("Downloading file " + name.ljust(12) + " -> " + fullname)
-            self.download_and_save_file(name, fullname)
-
     def filename(self, packet, name):
         # send filename (with different packet headers)
         head, tail = os.path.split(name)
@@ -692,6 +660,40 @@ class zoomzt2(object):
         return(note, delta)
 
 #--------------------------------------------------
+
+def download_and_save_file(pedal, name, outname = ""):
+    data = bytearray(b"")
+    if pedal.file_check(name):
+        data = pedal.file_download(name)
+        pedal.file_close()
+    else:
+        print("File \"" + name + "\" was not found on the pedal" )
+
+    if data:
+        if outname == "":
+            outname = name
+        outfile = open(outname, "wb")
+        if outfile:
+            outfile.write(data)
+            outfile.close()
+        else:
+            print("Unable to open FILE \"" + name + "\" for writing")
+    return data
+
+def download_and_save_all_files(pedal, dirname):
+    files = []
+    name = pedal.file_wild(True)
+
+    while name:
+        files.append(name)
+        name = pedal.file_wild(False)
+
+    for name in files:
+        fullname = os.path.join(dirname, name)
+        print("Downloading file " + name.ljust(12) + " -> " + fullname)
+        download_and_save_file(pedal, name, fullname)
+
+
 def main():
     from argparse import ArgumentParser
 
@@ -862,19 +864,19 @@ def main():
     
     if options.effectdown:
         print("Downloading effect: \"" + options.files[0] + "\"" )
-        pedal.download_and_save_file(options.files[0])
+        download_and_save_file(pedal, options.files[0])
  
         filename, extension = os.path.splitext(options.files[0])
 
         if options.includezic:
             zicfilename = filename + ".ZIC"
             print("Downloading icon:   \"" + zicfilename + "\"" )
-            pedal.download_and_save_file(zicfilename)
+            download_and_save_file(pedal, zicfilename)
 
         if options.includezir:
             zirfilename = filename + ".ZIR"
             print("Downloading IR:     \"" + zirfilename + "\"" )
-            pedal.download_and_save_file(zirfilename)
+            download_and_save_file(pedal, zirfilename)
 
         pedal.disconnect()
         exit(0)
@@ -886,7 +888,7 @@ def main():
         if not os.path.exists(dirname):
             os.makedirs(dirname)
 
-        pedal.download_and_save_all_files(dirname)
+        download_and_save_all_files(pedal, dirname)
         pedal.disconnect()
         exit(0)
 
