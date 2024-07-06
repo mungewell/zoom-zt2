@@ -41,7 +41,7 @@ class MyFrame(wx.Frame):
         self.gauge_2.SetValue(10)
         self.gauge_1.SetBarColor(wx.WHITE)
         self.gauge_1.SetBackgroundColour(wx.BLUE)
-        self.gauge_2.SetBarColor(wx.BLUE)
+        self.gauge_2.SetBarColor(wx.RED)
         self.gauge_2.SetBackgroundColour(wx.WHITE)
 
         self.label_1 = wx.StaticText(self, wx.ID_ANY, "A", style=wx.ALIGN_CENTER)
@@ -111,7 +111,7 @@ class MyFrame(wx.Frame):
                     wx.CallAfter(self.gauge_2.SetBarColor, wx.GREEN)
                 else:
                     wx.CallAfter(self.gauge_1.SetBackgroundColour, wx.BLUE)
-                    wx.CallAfter(self.gauge_2.SetBarColor, wx.BLUE)
+                    wx.CallAfter(self.gauge_2.SetBarColor, wx.RED)
 
                     if note != "-":
                         if delta < 0:

@@ -44,8 +44,11 @@ def main():
         help="list available symbols",
         action="store_true", dest="list")
     parser.add_argument("-t", "--target",
-        default = "_*picTotalDisplay_.*",
-        help="regex to describe target icon", dest="target")
+        default = "_*picTotalDisplay_.*", dest="target",
+        help="regex to describe target icon (_*picTotalDisplay_.*)")
+    parser.add_argument("-S", "--skip",
+        default = 0, type=int,
+        help="skip a number of targets when found", dest="skip")
     parser.add_argument("-s", "--stripes",
         default = 4, type=int,
         help="number of 'stripes' in image", dest="stripes")
@@ -91,9 +94,12 @@ def main():
             for z in s.symbols:
                 if match(options.target, z.name):
                     print("Target matched:", z.name)
-                    a = z.header.st_value
-                    l = z.header.st_size
-                    break
+                    if options.skip:
+                        options.skip -= 1
+                    elif z.header.st_size:
+                        a = z.header.st_value
+                        l = z.header.st_size
+                        break
 
     if not l:
         exit("Target not found: " + options.target)

@@ -184,7 +184,8 @@ Note: in PC mode the only function on pedal is to change Lo/Mid/Hi tone, and Vol
 Configure Current Patch Effect(s)
 ```
 $ amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 01  02 3d 17 00 00 00 f7'
-                                                    ^^ ^^ value lo/hi
+                                                    ^^ ^^ ^^ ^^ ^^ value
+                                                    (7bit little endian)
                                                  ^^ param
                                              ^^ config effect in slot (0..8)
 param 0: effect on/off (0,1)
@@ -198,6 +199,12 @@ param 7: dial 6
 param 8: dial 7
 param 9: dial 8
 ```
+
+Note: The parameter value is converted to 7bit to allow sending over midi,
+this means values need to be adjusted. For example setting slot 0 to an effect
+of 0x01000010 (COMP.ZD2) would be sent as:
+
+`amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 00 01 10 00 00 08 00 f7'`
 
 The 'display slot' is nominally 0 through 4. However if the patch includes
 'large effects' (with more that 4 active parameters) they will consume 2 slots
