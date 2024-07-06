@@ -743,7 +743,7 @@ def main():
     parser.add_argument("--download-all",
         help="Download all files on pedal to directory FILE",
         action="store_true", dest="downloadall")
-    
+
     zd2 = parser.add_argument_group("ZD2", "Process ZDL2 effect file(s)").add_mutually_exclusive_group()
     zd2.add_argument("-I", "--install",
         help="Install effect binary to attached device, updating FLST_SEQ",
@@ -861,11 +861,11 @@ def main():
                 data = pedal.patch_upload(options.patchup, data)
         pedal.disconnect()
         exit(0)
-    
+
     if options.effectdown:
         print("Downloading effect: \"" + options.files[0] + "\"" )
         download_and_save_file(pedal, options.files[0])
- 
+
         filename, extension = os.path.splitext(options.files[0])
 
         if options.includezic:
