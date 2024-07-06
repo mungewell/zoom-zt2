@@ -740,9 +740,6 @@ def main():
     parser.add_argument("-S", "--send",
         help="Send FLST_SEQ to attached device",
         action="store_true", dest="send")
-    parser.add_argument("--download-all",
-        help="Download all files on pedal to directory FILE",
-        action="store_true", dest="downloadall")
 
     zd2 = parser.add_argument_group("ZD2", "Process ZDL2 effect file(s)").add_mutually_exclusive_group()
     zd2.add_argument("-I", "--install",
@@ -760,13 +757,16 @@ def main():
     zd2.add_argument("-e", "--effectdown",
         help="Download effect binary with name FILE",
         action="store_true", dest="effectdown")
-    parser.add_argument("--include-zic",
+    zd2.add_argument("--include-zic",
         help="When downloading or uploading effect binary, include the corrsponding .ZIC icon file",
         action="store_true", dest="includezic")
-    parser.add_argument("--include-zir",
+    zd2.add_argument("--include-zir",
         help="When downloading or uploading effect binary, include the corrsponding .ZIR impulse response file",
         action="store_true", dest="includezir")
-    parser.add_argument("-a", "--available",
+    zd2.add_argument("--download-all",
+        help="Download all files on pedal to directory FILE",
+        action="store_true", dest="downloadall")
+    zd2.add_argument("-a", "--available",
         help="Print out the available diskspace after action",
         action="store_true", dest="available")
 
@@ -778,7 +778,7 @@ def main():
         help="upload specific zptc", dest="patchup")
     zptc.add_argument("-c", "--curdown", action="store_true", 
         help="download current zptc", dest="curdown")
-    parser.add_argument("--old-patch",
+    zptc.add_argument("--old-patch",
         help="Use the 'old' method for reading patches",
         action="store_true", dest="oldpatch")
 
