@@ -76,6 +76,15 @@ class _479389042__675845753_MyFrame(wx.Frame):
         self.gauge_1.Hide()
         sizer_2.Add(self.gauge_1, 0, wx.EXPAND, 0)
 
+        sizer_includes = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_2.Add(sizer_includes, 0, wx.ALIGN_RIGHT, 0)
+
+        self.checkbox_include_zic = wx.CheckBox(self, wx.ID_ANY, "Include icon")
+        sizer_includes.Add(self.checkbox_include_zic, 0, 0, 0)
+
+        self.checkbox_include_zir = wx.CheckBox(self, wx.ID_ANY, "Include impulse response")
+        sizer_includes.Add(self.checkbox_include_zir, 0, 0, 0)
+
         sizer_3 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_2.Add(sizer_3, 0, wx.EXPAND, 0)
 
@@ -166,6 +175,16 @@ class _479389042__675845753_MyFrame(wx.Frame):
             self.button_6.SetLabel(tail)
             self.button_3.Enable()
 
+        filename, extension = os.path.splitext(self.effect)
+        zicfilename = filename + ".ZIC"
+        if os.path.isfile(zicfilename):
+            path, justname = os.path.split(zicfilename)
+            self.text_ctrl_1.AppendText("\n\nIcon file: " + justname)
+        zirfilename = filename + ".ZIR"
+        if os.path.isfile(zirfilename):
+            path, justname = os.path.split(zirfilename)
+            self.text_ctrl_1.AppendText("\n\nIR file:   " + justname)
+
         event.Skip()
 
     def butQuit(self, event):  # wxGlade: _479389042__675845753_MyFrame.<event_handler>
@@ -204,6 +223,45 @@ class _479389042__675845753_MyFrame(wx.Frame):
 
             self.text_ctrl_1.AppendText("\n\nEffect installed!")
             self.button_3.Disable()
+
+            # Install .zic-file if it exists and if option is enabled
+            if self.checkbox_include_zic.IsChecked:
+                filename, extension = os.path.splitext(self.effect)
+                zicfilename = filename + ".ZIC"
+                if os.path.isfile(zicfilename):
+                    path, justname = os.path.split(zicfilename)
+                    binfile = open(zicfilename, "rb")
+                    if binfile:
+                        bindata = binfile.read()
+                        binfile.close()
+
+                        if not self.pedal.file_check(zicfilename):
+                            self.pedal.file_upload(zicfilename, bindata)
+                            self.text_ctrl_1.AppendText("\nIcon installed!")
+                        else:
+                            self.text_ctrl_1.AppendText("\nIcon file " + justname + " already exists on pedal, skipping install")
+
+                        self.pedal.file_close()
+
+            # Install .zir-file if it exists and if option is enabled
+            if self.checkbox_include_zir.IsChecked:
+                filename, extension = os.path.splitext(self.effect)
+                zirfilename = filename + ".ZIR"
+                if os.path.isfile(zirfilename):
+                    path, justname = os.path.split(zirfilename)
+                    binfile = open(zirfilename, "rb")
+                    if binfile:
+                        bindata = binfile.read()
+                        binfile.close()
+
+                        if not self.pedal.file_check(zirfilename):
+                            self.pedal.file_upload(zirfilename, bindata)
+                            self.text_ctrl_1.AppendText("\nImpulse response installed!")
+                        else:
+                            self.text_ctrl_1.AppendText("\nImpulse response file " + justname + " already exists on pedal, skipping install")
+
+                        self.pedal.file_close()
+
             self.ReadEffects()
             self.ReadFiles()
 
@@ -228,6 +286,22 @@ class _479389042__675845753_MyFrame(wx.Frame):
             self.pedal.file_check("FLST_SEQ.ZT2")
             self.pedal.file_upload("FLST_SEQ.ZT2", data)
             self.pedal.file_close()
+
+            # Remove .zic-file if it exists and if option is enabled
+            if self.checkbox_include_zic.IsChecked:
+                filename, extension = os.path.splitext(name)
+                zicfilename = filename + ".ZIC"
+                if self.pedal.file_check(zicfilename):
+                    self.pedal.file_delete(zicfilename)
+                self.pedal.file_close()
+
+            # Remove .zir-file if it exists and if option is enabled
+            if self.checkbox_include_zir.IsChecked:
+                filename, extension = os.path.splitext(name)
+                zirfilename = filename + ".ZIR"
+                if self.pedal.file_check(zirfilename):
+                    self.pedal.file_delete(zirfilename)
+                self.pedal.file_close()
 
             self.ReadEffects()
             self.ReadFiles()
@@ -278,6 +352,8 @@ class _479389042__675845753_MyFrame(wx.Frame):
         self.button_4.Hide()
         self.button_7.Hide()
         self.button_5.Hide()
+        self.checkbox_include_zic.Hide()
+        self.checkbox_include_zir.Hide()
 
         if self.pedal.is_connected():
             self.button_2.Hide()
@@ -295,8 +371,16 @@ class _479389042__675845753_MyFrame(wx.Frame):
         page = self.notebook_1.GetSelection()
         if page == 0:
             self.button_3.Show()
+            self.checkbox_include_zic.LabelText = "Install icon"
+            self.checkbox_include_zic.Show()
+            self.checkbox_include_zir.LabelText = "Install impulse response"
+            self.checkbox_include_zir.Show()
         if page == 1:
             self.button_4.Show()
+            self.checkbox_include_zic.LabelText = "Remove icon"
+            self.checkbox_include_zic.Show()
+            self.checkbox_include_zir.LabelText = "Remove impulse response"
+            self.checkbox_include_zir.Show()
         if page == 2:
             if options.delete:
                 self.button_7.Show()
