@@ -434,6 +434,7 @@ class MyApp(wx.App):
     def OnInit(self):
         self.frame = _479389042__675845753_MyFrame(None, wx.ID_ANY, "")
         self.SetTopWindow(self.frame)
+        self.frame.UpdateButtons()
         self.frame.Show()
         return True
 
