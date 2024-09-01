@@ -129,8 +129,9 @@ ZPTC = Struct(
         Padding(1),
         "b2four"    / BitsInteger(1),   # 0x010000
         Padding(1),
-        "ms-50+"    / BitsInteger(1),   # 0x040000
-        Padding(13),
+        "ms-50g+"   / BitsInteger(1),   # 0x040000
+        "ms-60b+"   / BitsInteger(1),   # 0x080000
+        Padding(12),
     )))),
     "target" / Int32ul, # pedal that patch is for
     "data" / Bytes(6),
