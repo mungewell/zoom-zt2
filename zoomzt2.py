@@ -136,10 +136,9 @@ ZD2 = Struct(
         "name" / Computed(this.aname),
         "name" / Computed(this.bname),
     ),
-    "groupname" / CString("ascii"),
+    "groupname" / PaddedString(11, "ascii"),
 
-    "hex3" / HexDump(Peek(Bytes(lambda this: 12 - len(this.groupname)))),
-    "unknown3" / Bytes(lambda this: 12 - len(this.groupname)),
+    "unknown3" / Bytes(2),
     "unknown4" / BitStruct("unknown4" / Array(8, BitsInteger(1))),
     Const(b"\x00\x00\x00"),
 
