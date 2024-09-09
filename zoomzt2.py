@@ -136,9 +136,17 @@ ZD2 = Struct(
         "name" / Computed(this.aname),
         "name" / Computed(this.bname),
     ),
-    "groupname" / PaddedString(11, "ascii"),
 
-    "unknown3" / Bytes(2),
+    "grouppeek" / Peek(FixedSized(11, CString("ascii"))),
+    "groupname" / IfThenElse(lambda ctx: ctx.grouppeek == None,
+        "groupname" / PaddedString(11,"ascii"),
+        "groupname" / CString("ascii"),
+    ),
+    "unknown3" / IfThenElse(lambda ctx: ctx.grouppeek == None,
+        "unknown3" / Bytes(2),
+        "unknown3" / Bytes(lambda this: 12 - len(this.groupname)),
+    ),
+
     "unknown4" / BitStruct("unknown4" / Array(8, BitsInteger(1))),
     Const(b"\x00\x00\x00"),
 
