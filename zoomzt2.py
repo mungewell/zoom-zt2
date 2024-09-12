@@ -623,6 +623,28 @@ class zoomzt2(object):
         self.outport.send(msg); sleep(0); msg = self.inport.receive()
 
     def patch_download_current(self):
+        packet = bytearray(b"\x52\x00\x6e\x64\x13")
+
+        msg = mido.Message("sysex", data = packet)
+        self.outport.send(msg); sleep(0); msg = self.inport.receive()
+
+        # decode received data
+        packet = msg.data
+        length = int(packet[7]) * 128 + int(packet[6])
+        if length == 0:
+            return()
+        data = self.unpack(packet[8:8 + length + int(length/7) + 1])
+
+        # confirm checksum (last 5 bytes of packet)
+        checksum = packet[-5] + (packet[-4] << 7) + (packet[-3] << 14) \
+                + (packet[-2] << 21) + ((packet[-1] & 0x0F) << 28) 
+
+        if (checksum ^ 0xFFFFFFFF) != binascii.crc32(data):
+            print("Checksum error", hex(checksum))
+
+        return(data)
+
+    def patch_download_current_old(self):
         packet = bytearray(b"\x52\x00\x6e\x29")
 
         msg = mido.Message("sysex", data = packet)
@@ -785,7 +807,7 @@ def main():
         help="upload specific zptc", dest="patchup")
     zptc.add_argument("-c", "--curdown", action="store_true", 
         help="download current zptc", dest="curdown")
-    zptc.add_argument("--old-patch",
+    parser.add_argument("--old-patch",
         help="Use the 'old' method for reading patches",
         action="store_true", dest="oldpatch")
 
@@ -804,9 +826,13 @@ def main():
         if not pedal.connect(options.midiskip):
             sys.exit("Unable to find Pedal")
 
-        pedal.editor_on()
-        data = pedal.patch_download_current()
-        pedal.editor_off()
+        if options.oldpatch:
+            pedal.editor_on()
+            data = pedal.patch_download_current_old()
+            pedal.editor_off()
+        else:
+            data = pedal.patch_download_current()
+
         pedal.disconnect()
 
         outfile = open(options.files[0], "wb")
