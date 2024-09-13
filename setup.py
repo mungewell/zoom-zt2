@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name = "zoomzt2",
-    version = "0.6.0",
+    version = "1.0.0",
     author = "Simon Wood",
     author_email = "simon@mungewell.org",
     description = 'Script for Upload Effects/Configuration to ZOOM G Series Pedals',
