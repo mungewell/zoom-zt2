@@ -1,6 +1,6 @@
 
 This repo contains a Python script and associated files for uploading effects to 
-the ZOOM G Series pedals (G1Four and possibly others).
+the ZOOM G Series pedals (G1Four and possibly others), and the new 'MS-plus' pedals.
 
 Inspired by another project, which allows for the re-packing of effects into the
 ZOOM F/W Installer binary. Unfortunately that technique proved unsuccessful on the 
@@ -31,13 +31,27 @@ The 'Info' window will show some basic parameters for the effect. Click 'Install
 and the effect will be uploaded to the pedal. The 'Effects' and 'Files' tabs allow
 you to see what is already present on the pedal.
 
+Note: For MS-Plus pedals ensure the tick boxes for 'include-ZIC' (ICON) and 
+'include-ZIR' (IR) are selected, where appropriate. If the icon file is missing
+you will find a blank space in the library and you will not be able to identify
+which effect it represents.
+
 The 'zoomzt2.py' script can alternatively be used from the command line to modify
 a 'FLST_SEQ.ZT2' file and/or to install/remove effects from a pedal.
+
+__WARNING__: There is no online resource for MS-plus effects (zd2/icon/ir) files, a factory 
+reset __WILL NOT RESTORE__ removed/deleted files! Please take back-ups of anything
+you indend to remove/delete from the pedal.
 
 ## Effects
 
 The effects used by the G1Four are '.ZD2' format, these are also used on the G3n and G5n 
 pedals. They are not compatible with the '.ZDL' effects used on the 'MultiStomp' pedals.
+
+Each effect is identified by a 32bit ID, the upper 8bits are a group ID. The ID/Group for
+the MS-plus pedals use a different ID/Group schema to the G1Four/etc.
+
+Note: it is not yet know whether MS-plus ZD2 are compatible with G1Four/etc, or vice-versa.
 
 Mostly effect binaries are common between the G1Four and the G3n/G5n, although it would appear 
 that some effects are imcompatible due to hardware differences - these appear to be denoted with
@@ -63,34 +77,57 @@ The 'zoomzt2.py' script is controlled via command line options. Primarily it use
 the contents of '.zt2' files, but it also allows for upload/download to the pedal.
 
 ```
-$ python3 zoomzt2.py -h
-Usage: zoomzt2.py [options] FILENAME
+$ python3 zoomzt2.py --help
+usage: zoomzt2 [-h] [-d] [-s] [-b BUILD] [-A ADD] [-v VER] [-i ID] [-D DELETE] [-N] [-t TOGGLE] [-w] [-R] [-S] [-I] [-U]
+               [--install-only] [--uninstall-only] [-e] [--include-zic] [--include-zir] [--download-all] [-a]
+               [-p PATCHDOWN | -P PATCHUP | -c] [--old-patch] [-M MIDISKIP]
+               FILE [FILE ...]
 
-Options:
+positional arguments:
+  FILE                  File(s) to process
+
+options:
   -h, --help            show this help message and exit
   -d, --dump            dump configuration to text
   -s, --summary         summarized configuration in human readable form
-  -b BUILD, --build=BUILD
+  -b BUILD, --build BUILD
                         output commands required to build this FLTS_SEQ
-  -A ADD, --add=ADD     add effect to FLST_SEQ
-  -v VER, --ver=VER     effect version (use with --add)
-  -i ID, --id=ID        effect id (use with --add)
-  -D DELETE, --delete=DELETE
+  -A ADD, --add ADD     add effect to FLST_SEQ
+  -v VER, --ver VER     effect version (use with --add)
+  -i ID, --id ID        effect id (use with --add)
+  -D DELETE, --delete DELETE
                         delete effect from FLST_SEQ
-  -t TOGGLE, --toggle=TOGGLE
-                        toggle install/uninstall state of effect NAME in
-                        FLST_SEQ
+  -N, --not-add         add effect to FLST_SEQ, but as uninstalled
+  -t TOGGLE, --toggle TOGGLE
+                        toggle install/uninstall state of effect NAME in FLST_SEQ
   -w, --write           write config back to same file
   -R, --receive         Receive FLST_SEQ from attached device
   -S, --send            Send FLST_SEQ to attached device
-  -I INSTALL, --install=INSTALL
-                        Install effect binary to attached device
-  -U UNINSTALL, --uninstall=UNINSTALL
-                        Remove effect binary from attached device
-  -p PATCH, --patch=PATCH
-                        download specific patch (10..59)
-  -P UPLOAD, --upload=UPLOAD
-                        upload specific patch (10..59)
+  --include-zic         When downloading or uploading effect binary, include the corrsponding .ZIC icon file
+  --include-zir         When downloading or uploading effect binary, include the corrsponding .ZIR impulse response file
+  --old-patch           Use the 'old' method for reading patches
+  -M MIDISKIP, --midiskip MIDISKIP
+                        Skip devices when connecting, ie when you have multiple pedals
+
+ZD2:
+  Process ZDL2 effect file(s)
+
+  -I, --install         Install effect binary to attached device, updating FLST_SEQ
+  -U, --uninstall       Remove effect binary from attached device, updating FLST_SEQ
+  --install-only        Install effect binary to attached device without affecting FLST_SEQ
+  --uninstall-only      Remove effect binary from attached device without affecting FLST_SEQ
+  -e, --effectdown      Download effect binary with name FILE
+  --download-all        Download all files on pedal to directory FILE
+  -a, --available       Print out the available diskspace after action
+
+ZPTC:
+  Process ZPTC patch file
+
+  -p PATCHDOWN, --patchdown PATCHDOWN
+                        download specific zptc
+  -P PATCHUP, --patchup PATCHUP
+                        upload specific zptc
+  -c, --curdown         download current zptc
 ```
 
 ## MIDI Operation
