@@ -786,10 +786,10 @@ def main():
     zd2.add_argument("-e", "--effectdown",
         help="Download effect binary with name FILE",
         action="store_true", dest="effectdown")
-    zd2.add_argument("--include-zic",
+    parser.add_argument("--include-zic",
         help="When downloading or uploading effect binary, include the corrsponding .ZIC icon file",
         action="store_true", dest="includezic")
-    zd2.add_argument("--include-zir",
+    parser.add_argument("--include-zir",
         help="When downloading or uploading effect binary, include the corrsponding .ZIR impulse response file",
         action="store_true", dest="includezir")
     zd2.add_argument("--download-all",
