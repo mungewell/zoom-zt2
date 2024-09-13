@@ -89,7 +89,11 @@ TXJ1 = Struct(
 TXE1 = Struct(
     Const(b"TXE1"),
     "length" / Int32ul,
-    "description" / PaddedString(this.length, "ascii"),
+    "peekdescription" / Peek(FixedSized(this.length, PaddedString(this.length, "ascii"))),
+    "description" /  IfThenElse(lambda ctx: ctx.peekdescription == None,
+         "description" / Bytes(this.length),
+         "description" / PaddedString(this.length, "ascii"),
+    ),
 )
 
 INFO = Struct(
