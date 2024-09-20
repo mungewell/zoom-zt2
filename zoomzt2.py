@@ -134,11 +134,13 @@ ZD2 = Struct(
     "group" / Byte,
     "id" / Int32ul,
 
-    "aname" / Peek(CString("ascii")),
-    "bname" / Bytes(11),                # figure out how to write as PaddedString on rebuild
-    "name" / IfThenElse(lambda ctx: ctx.aname.__len__() < 11,
-        "name" / Computed(this.aname),
-        "name" / Computed(this.bname),
+    "namepeek" / Peek(FixedSized(11, CString("ascii"))),
+    "name" / IfThenElse(lambda ctx: ctx.namepeek == None,
+        "name" / PaddedString(11,"ascii"),
+        "name" / CString("ascii"),
+    ),
+    "namepad" / If(lambda ctx: ctx.namepeek != None,
+        "namepad" / Bytes(lambda this: 10 - len(this.name)),
     ),
 
     "grouppeek" / Peek(FixedSized(11, CString("ascii"))),
@@ -146,12 +148,11 @@ ZD2 = Struct(
         "groupname" / PaddedString(11,"ascii"),
         "groupname" / CString("ascii"),
     ),
-    "unknown3" / IfThenElse(lambda ctx: ctx.grouppeek == None,
-        "unknown3" / Bytes(2),
-        "unknown3" / Bytes(lambda this: 12 - len(this.groupname)),
+    "grouppad" / If(lambda ctx: ctx.grouppeek != None,
+        "grouppad" / Bytes(lambda this: 10 - len(this.groupname)),
     ),
 
-    "unknown4" / BitStruct("unknown4" / Array(8, BitsInteger(1))),
+    "unknown4" / Bytes(3),
     Const(b"\x00\x00\x00"),
 
     "ICON" / ICON,

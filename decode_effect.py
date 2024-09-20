@@ -77,14 +77,22 @@ def main():
         help="replace Code with ELF file (ie whole file)",
         action="store_true", dest="delf")
 
-    donor.add_argument("-V", "--crc",
+    mod = parser.add_argument_group("Modify",
+        "Take replacement sections from a donor ZD2")
+    mod.add_argument("-V", "--crc",
         help="validate CRC32 checksum",
         action="store_true", dest="crc")
-    donor.add_argument("--force-id",
+    mod.add_argument("--force-id",
         help="Force the ID to a particular value (in Hex)",
         dest="force_id")
+    mod.add_argument("--force-name",
+        help="Force the Name to a particular string (max 11 chars)",
+        dest="force_name")
+    mod.add_argument("--force-gname",
+        help="Force the GroupName to a particular string (max 11 chars)",
+        dest="force_gname")
 
-    donor.add_argument("-o", "--output",
+    mod.add_argument("-o", "--output",
         help="output combined result to FILE", dest="output")
 
     options = parser.parse_args()
@@ -226,6 +234,21 @@ def main():
 
        if options.force_id:
            config['id'] = int(options.force_id, 16)
+           config['group'] = int(options.force_id, 16) >> 24
+
+       if options.force_name:
+           config['name'] = options.force_name[:11]
+           if len(options.force_name) < 11:
+               config['namepad'] = "\x00" * (11 - len(options.force_name))
+           else:
+               config['namepad'] = None
+
+       if options.force_gname:
+           config['groupname'] = options.force_gname[:11]
+           if len(options.force_gname) < 11:
+               config['grouppad'] = "\x00" * (11 - len(options.force_gname))
+           else:
+               config['grouppad'] = None
 
        data = zoomzt2.ZD2.build(config)
 
