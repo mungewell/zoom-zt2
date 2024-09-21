@@ -66,7 +66,7 @@ def restripe(src):
             copy = src.crop((0, s * 8, x, (s + 1) * 8)).transpose(Image.Transpose.ROTATE_270)
         dest.paste(copy, (0, s * x))
 
-    #return(dest)
+    # seems to need inverting
     return(ImageOps.invert(dest))
 
 #--------------------------------------------------
@@ -80,7 +80,7 @@ def main():
         help="dump configuration to text",
         action="store_true", dest="dump")
     parser.add_option("-r", "--reverse",
-        help="under-dev : reverse mode, convert PNG icon(s) to ZIC",
+        help="reverse mode, push PNG icon(s) back into ZIC",
         action="store_true", dest="reverse")
 
     parser.add_option("-p", "--prefix",
@@ -108,27 +108,28 @@ def main():
         print(zic)
 
     if zic:
-        for i in range(len(zic.icons)):
-            imgSize = (8, zic.icons[i].bytes)
-            img = Image.frombytes('1', imgSize, zic.datas[i].data, 'raw', '1;I')
+        if options.reverse:
+            for i in range(len(zic.icons)):
+                infile = options.prefix + "_"+str(i)+".png"
+                img = Image.open(infile)
 
-            img2 = destripe(img, zic.icons[i].stripes, zic.icons[i].width, zic.icons[i].height)
+                img2 = restripe(img)
+                zic.datas[i].data = img2.tobytes()
 
-            outfile = options.prefix + "_"+str(i)+".png"
-            print("Writing:", outfile)
-            img2.save(outfile)
+            # Overwrite ZIC with modified PNG Icons
+            outfile = open(args[0], "wb")
+            outfile.write(ZIC.build(zic))
+            outfile.close
+        else:
+            for i in range(len(zic.icons)):
+                imgSize = (8, zic.icons[i].bytes)
+                img = Image.frombytes('1', imgSize, zic.datas[i].data, 'raw', '1;I')
 
-            if options.reverse:
-                img3 = restripe(img2)
-                zic.datas[i].data = img3.tobytes()
+                img2 = destripe(img, zic.icons[i].stripes, zic.icons[i].width, zic.icons[i].height)
 
-                #outfile = options.prefix + "_"+str(i)+"_rev.png"
-                #img3.save(outfile)
-
-    if options.reverse:
-        outfile = open("REVERSE.ZIC", "wb")
-        outfile.write(ZIC.build(zic))
-        outfile.close
+                outfile = options.prefix + "_"+str(i)+".png"
+                print("Writing:", outfile)
+                img2.save(outfile)
 
 if __name__ == "__main__":
     main()
