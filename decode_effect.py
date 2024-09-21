@@ -33,6 +33,9 @@ def main():
     parser.add_argument("-m", "--md5sum",
         help="include md5sum of file in summary report",
         action="store_true", dest="md5sum")
+    parser.add_argument("-7", "--7bit",
+        help="include ID as 5x 7bit summary report",
+        action="store_true", dest="seven_bit")
 
     parser.add_argument("-b", "--bitmap",
         help="extract Icon/Bitmap to FILE", dest="bitmap")
@@ -78,10 +81,13 @@ def main():
         action="store_true", dest="delf")
 
     mod = parser.add_argument_group("Modify",
-        "Take replacement sections from a donor ZD2")
+        "manipulate values specified in ZD2")
     mod.add_argument("-V", "--crc",
         help="validate CRC32 checksum",
         action="store_true", dest="crc")
+    mod.add_argument("--force-target",
+        help="Force target pedal (in Hex) - WARNING may be 'unsafe'",
+        dest="force_target")
     mod.add_argument("--force-id",
         help="Force the ID to a particular value (in Hex)",
         dest="force_id")
@@ -138,6 +144,11 @@ def main():
             print("0x%8.8x : %s, %s (v%s %2.2f%%)" % (config['id'], \
                     os.path.split(options.files[0])[-1], \
                     config['name'], config['version'], config['INFO']['dspload']/2.5))
+
+        if options.seven_bit:
+            for i in range(0, 29, 7):
+                print("%2.2x " % ((config['id'] >> i) & 0x7F), end="")
+            print()
 
     if options.id and data:
         config = zoomzt2.ZD2.parse(data)
@@ -231,6 +242,9 @@ def main():
                     config["PRME"] = dconfig["PRME"]
                 if options.dfinal:
                     config["unknown5"] = dconfig["unknown5"]
+
+       if options.force_target:
+           config['target'] = int(options.force_target, 16)
 
        if options.force_id:
            config['id'] = int(options.force_id, 16)

@@ -125,9 +125,10 @@ ZD2 = Struct(
     Const(b"ZDLF"),
     "length" / Int32ul,
     "checksum" / Int32ul,
+    "target" / Int32ul,
 
-    "hex1" / HexDump(Peek(Bytes(77))),
-    "unknown" / Bytes(77),
+    "hex1" / HexDump(Peek(Bytes(73))),
+    "unknown" / Bytes(73),
 
     "version" / PaddedString(4, "ascii"),
     Const(b"\x00\x00"),
