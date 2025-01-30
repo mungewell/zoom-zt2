@@ -76,6 +76,8 @@ and all effects are in a special 'group 29'.
 The 'zoomzt2.py' script is controlled via command line options. Primarily it used for editing
 the contents of '.zt2' files, but it also allows for upload/download to the pedal.
 
+If you want to install the required dependencies from PIP, you can do: `python3 -m venv ../zt2-venv && source ../zt2-venv/bin/activate && pip install -r requirements.txt`.
+
 ```
 $ python3 zoomzt2.py --help
 usage: zoomzt2 [-h] [-d] [-s] [-b BUILD] [-A ADD] [-v VER] [-i ID] [-D DELETE] [-N] [-t TOGGLE] [-w] [-R] [-S] [-I] [-U]
