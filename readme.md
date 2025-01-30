@@ -8,7 +8,7 @@ G1Four.
 https://github.com/Barsik-Barbosik/Zoom-Firmware-Editor
 
 The script has been tested with G1Four, it is expected/hoped that it will also 
-work on the G1XFour, B1Four, B1XFour, G3n, G3Xn, B3n and G5n.
+work on the G1XFour, B1Four, B1XFour, G3n, G3Xn, B3n and G5n. It is also at least partially compatible with the MS-50G+, MS-60B+, MS-70CDR+ and MS-80IR+.
 
 This project is not supported/authorized by ZOOM, use at your own risk.
 
