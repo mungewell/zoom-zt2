@@ -103,6 +103,18 @@ INFO = Struct(
     "dspload" / Float32l,
 )
 
+INF2 = Struct(
+    Const(b"INF2"),
+    "length" / Int32ul,
+    "data" / Bytes(this.length),
+)
+
+CCOE = Struct(
+    Const(b"CCOE"),
+    "length" / Int32ul,
+    "data" / Bytes(this.length),
+)
+
 DATA = Struct(
     Const(b"DATA"),
     "length" / Int32ul,
@@ -160,7 +172,9 @@ ZD2 = Struct(
     "TXJ1" / TXJ1,
     "TXE1" / TXE1,
     "INFO" / INFO,
-    "DATA" / DATA,
+    "INF2" / Optional(INF2),
+    "CCOE" / Optional(CCOE),
+    "DATA" / Optional(DATA),
 
     # these do not appear in the effects from AC-2 and AC-3
     "PRMJ" / Optional(PRMJ),
