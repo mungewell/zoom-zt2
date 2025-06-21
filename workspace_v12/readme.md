@@ -144,13 +144,13 @@ $ meld temp.asm check2.asm
 # Running DIY effects... Caution Will Robinson
 
 Note: This project is NOT supported or authorized by Zoom, there is
-a very large chance that DIY Effect will 'brick' you pedal.
+a very large chance that DIY Effect will 'brick' your pedal.
 
 I strongly advise the 'auto save' is disabled, so if a bad
 effect is added to the current patch it will NOT be reloaded
 if the pedal is rebooted.
 
-If added perminately you may get into the effect everytime the
+If it's added perminately you may get the effect loaded everytime the
 pedal is booted, and continuously crash the pedal...
 
 
@@ -160,7 +160,7 @@ $ python3 zoomzt2/decode_effect.py --donor diy_effect/Debug/diy_effect.out --don
 Checksum Recalculated: 0x55806d1f
 ```
 
-And then modified ZD2 can be uploaded to the pedal, and added to 
+And then modified 'LINESELm.ZD2' can be uploaded to the pedal, and added to 
 current patch via UI or midi.
 
 Note: so far I have only uploaded the rebuilt 'LINESEL' effect, 
