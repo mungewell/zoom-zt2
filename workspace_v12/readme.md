@@ -118,6 +118,21 @@ Once the '.asm' is copyied into the project, we need to:
 5. Check project entry-point and exported symbols.
 6. Build project.... :-)
 
+
+As a short cut, I have provided a project and a 'diff' file of the changes
+as required above, using this the proceedure is simplified to:
+```
+$ ./do_it.sh
+processing all .code files
+$ ls
+diy_effect  do_it.sh  LINESEL.ZD2.code	LINESEL.ZD2.code.asm  LINESEL.ZD2.code.reloc  patch_asm.py  readme.md
+$ cd diy_effect/
+$ cp ../LINESEL.ZD2.code.asm LINESEL.asm
+$ patch < LINESEL.diff
+patching file LINESEL.asm
+```
+and the open the project in CCS and build. :-)
+
 This can gives us a 100% duplicate compile, but it does depend on the effect.
 'OUT_VP' is about as simple as one could be:
 ```
@@ -142,7 +157,7 @@ pedal is booted, and continuously crash the pedal...
 Firstly the `.code` will need to be rewritten into a ZD2 contianer:
 ```
 $ python3 zoomzt2/decode_effect.py --donor diy_effect/Debug/diy_effect.out --donor-elf -o LINESELm.ZD2 LINESEL.ZD2
-Checksum Recalculated: 0xfcc29a78
+Checksum Recalculated: 0x9e4bb5e8
 ```
 
 And then modified ZD2 can be uploaded to the pedal, and added to 
