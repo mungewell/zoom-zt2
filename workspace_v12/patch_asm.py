@@ -72,7 +72,7 @@ while l:
                 print("	.dwattr $C$DW$%d, DW_AT_low_pc(%s)" % (c, l[0:-2]))
                 print("	.dwattr $C$DW$%d, DW_AT_high_pc(0x00)" % c)
 
-    print(l, end="")
+    print(l.replace(".fphead", ";.fphead"), end="")
     l = f.readline()
 
 if c:
