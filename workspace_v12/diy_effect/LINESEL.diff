@@ -1,5 +1,5 @@
---- ../LINESEL.ZD2.code.asm	2025-06-20 19:06:07.324825666 -0600
-+++ LINESEL.asm	2025-06-20 21:21:22.120828403 -0600
+--- ../LINESEL.ZD2.code.asm	2025-06-20 21:30:05.306047688 -0600
++++ LINESEL.asm	2025-06-20 22:50:13.765550698 -0600
 @@ -17,7 +17,7 @@
            CALLP.S2      __call_stub,B3
  ||        MV.L2         B0,B31
@@ -205,5 +205,14 @@
 -          .word 0x00000064
 +          .word Fx_SFX_LineSel_EfxLvl_edit
  	; 800001bc  00000401 R_C6000_ABS32          00000064   Fx_SFX_LineSel_EfxLvl_edit + 0
+           .word 0x00000000
+           .word 0x00000000
+@@ -454,7 +454,7 @@
+           .word 0x00000064
+           .word 0x00000096
+           .word 0x00000000
+-          .word 0x000000b0
++          .word Fx_SFX_LineSel_OutLvl_edit
+ 	; 800001f4  00000301 R_C6000_ABS32          000000b0   Fx_SFX_LineSel_OutLvl_edit + 0
            .word 0x00000000
            .word 0x00000000

@@ -157,7 +157,7 @@ pedal is booted, and continuously crash the pedal...
 Firstly the `.code` will need to be rewritten into a ZD2 contianer:
 ```
 $ python3 zoomzt2/decode_effect.py --donor diy_effect/Debug/diy_effect.out --donor-elf -o LINESELm.ZD2 LINESEL.ZD2
-Checksum Recalculated: 0x9e4bb5e8
+Checksum Recalculated: 0x55806d1f
 ```
 
 And then modified ZD2 can be uploaded to the pedal, and added to 
