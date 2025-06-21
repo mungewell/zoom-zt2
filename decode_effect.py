@@ -253,14 +253,14 @@ def main():
        if options.force_name:
            config['name'] = options.force_name[:11]
            if len(options.force_name) < 11:
-               config['namepad'] = "\x00" * (11 - len(options.force_name))
+               config['namepad'] = b"\x00" * (10 - len(options.force_name))
            else:
                config['namepad'] = None
 
        if options.force_gname:
            config['groupname'] = options.force_gname[:11]
            if len(options.force_gname) < 11:
-               config['grouppad'] = "\x00" * (11 - len(options.force_gname))
+               config['grouppad'] = b"\x00" * (10 - len(options.force_gname))
            else:
                config['grouppad'] = None
 
