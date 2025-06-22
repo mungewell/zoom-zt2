@@ -29,6 +29,9 @@ if options.reloc:
 print("	.compiler_opts --abi=eabi --array_alignment=8 --c64p_l1d_workaround=off --diag_wrap=off --endian=little --hll_source=on --long_precision_bits=32 --mem_model:code=near --mem_model:const=data --mem_model:data=far_aggregates --object_format=elf --silicon_version=6740")
 print()
 
+if options.reloc:
+    print()
+
 l = f.readline()
 while l:
     if options.reloc:
@@ -37,7 +40,7 @@ while l:
             a = "        "
         else:
             a = l[0:8]
-            l = l[20:]
+            l = l[19:]
 
         # print reloc as comment (not after header if it exist)
         if not re.match(re.compile(r".+:$"), l):
@@ -50,6 +53,10 @@ while l:
         d += 1
 
     if re.match(re.compile(r".+:$"), l):
+        # TI dis6x glitch with whitespace
+        if re.match(re.compile(r"^ {1,}"), l):
+            l = l[1:]
+
         if re.match(re.compile(r"^[$]{1,}"), l):
             #if re.match(re.compile(r"^[$]+.*L[0123456789]{1,}:$"), l):
             print(";%s_%d:" % (l[:-2], e))

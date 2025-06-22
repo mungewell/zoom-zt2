@@ -9,7 +9,7 @@ export dis6x=~/ti/ccs1281/ccs/tools/compiler/ti-cgt-c6000_8.3.12/bin/dis6x
 # 	add MD5Sum/Name of source effect's '.code'
 
 find . -name '*.code' -exec bash -c "readelf -W -r {} > {}.reloc; \
-	$dis6x --all --noaddr --realquiet {} >> temp.asm; \
+	$dis6x --all --noaddr --realquiet {} > temp.asm; \
 	\
 	$dis6x --all --bytes --noaddr --realquiet --suppress {} | \
 	grep -e \":$\" > 1.temp; \
