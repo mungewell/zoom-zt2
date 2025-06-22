@@ -1,0 +1,895 @@
+--- ../ZNR.ZD2.code.asm	2025-06-21 21:18:29.073870015 -0600
++++ ZNR.asm	2025-06-22 12:45:59.307937025 -0600
+@@ -57,8 +57,8 @@
+            SPKERNEL      3,0
+  || [ A0]  MV.L2         B9,B7
+  || [!A0]  STW.D1T1      A4,*-A3[16]
+-;$C$L3_1:
+-$C$L3:
++$C$L3_1:
++;$C$L3:
+            MV.L1         A6,A2
+            SPMASKR       
+  ||        MV.L1         A2,A6
+@@ -71,7 +71,7 @@
+            NOP           1
+            MVK.L2        0,B5
+  || [ A1]  MV.L1         A3,A7
+- || [ A1]  B.S2          $C$L3
++ || [ A1]  B.S2          $C$L3_1
+            ADD.L2X       B15,A3,B16
+            ADD.S2        8,B16,B4
+  ||        ADD.L1        A1,-1,A1
+@@ -120,7 +120,7 @@
+  ||        ADD.L2        4,B15,B4
+     [!A0]  MV.L1X        B16,A23
+  || [!A0]  LDW.D2T2      *+B19[7],B6
+- || [ A0]  B.S1          $C$L7
++ || [ A0]  B.S1          $C$L7_1
+     [ A0]  MV.L1X        B4,A24
+  || [!A0]  LDNDW.D1T1    *+A11[0],A27:A26
+     [!A0]  LDW.D1T1      *++A23[1],A3
+@@ -229,8 +229,8 @@
+            MPYSP.M1      A4,A5,A6
+            MPYSP.M1      A5,A19,A3
+  ||        MV.L2         B19,B9
+-;$C$L5_1:
+-$C$L5:
++$C$L5_1:
++;$C$L5:
+            NOP           
+            ADDSP.L2X     B17,A6,B16
+            CMPLTSP.S1    A6,A16,A0
+@@ -272,7 +272,7 @@
+            MV.L1         A3,A26
+  || [!A0]  STW.D1T2      B16,*+A28[0]
+  ||        MPYSP.M1      A22,A3,A6
+-    [ B1]  BDEC.S2       $C$L5,B1
++    [ B1]  BDEC.S2       $C$L5_1,B1
+            ;.fphead       n, l, W, BU, nobr, nosat, 0001000b
+  ||        LDW.D1T1      *+A28[0],A9
+            ADDSP.L1X     A3,B16,A5
+@@ -361,14 +361,14 @@
+     [!A0]  STW.D1T2      B16,*+A28[0]
+            LDW.D1T1      *+A28[0],A3
+            NOP           2
+-           BNOP.S1       $C$L12,1
++           BNOP.S1       $C$L12_1,1
+            ;.fphead       n, l, W, BU, nobr, nosat, 0000010b
+            STW.D1T1      A3,*A8++[1]
+            STNDW.D1T1    A27:A26,*+A11[0]
+            STW.D1T1      A25,*+A31[1]
+            STW.D1T1      A24,*+A31[0]
+-;$C$L7_1:
+-$C$L7:
++$C$L7_1:
++;$C$L7:
+            LDW.D2T1      *+B19[10],A25
+  ||        LDW.D1T2      *+A31[0],B4
+            LDNDW.D1T1    *+A10[0],A7:A6
+@@ -514,8 +514,8 @@
+  ||        LDW.D1T2      *++A24[1],B22
+     [!A0]  LDW.D2T1      *+B16[8],A17
+  ||        ADDSP.L2      B9,B7,B20
+-;$C$L9_1:
+-$C$L9:
++$C$L9_1:
++;$C$L9:
+     [!A0]  LDW.D2T2      *+B17[0],B19
+            CMPGTSP.S2X   B5,A6,B0
+  ||        ADDSP.L1X     A3,B20,A3
+@@ -547,7 +547,7 @@
+  ||        MV.L1X        B21,A3
+  ||        CMPLTSP.S2X   B21,A4,B0
+  ||        MPYSP.M1      A28,A26,A6
+-    [ B1]  BDEC.S2       $C$L9,B1
++    [ B1]  BDEC.S2       $C$L9_1,B1
+  || [ B0]  MV.S1         A4,A3
+  ||        MPYSP.M2X     B8,A26,B23
+  ||        MV.L1         A5,A28
+@@ -672,8 +672,8 @@
+            STW.D1T1      A23,*+A31[1]
+            MVK.S2        16,B4
+            ADD.L2        B4,-2,B4
+-;$C$L12_1:
+-$C$L12:
++$C$L12_1:
++;$C$L12:
+            SPLOOPD       3
+  ||        MV.L2         B24,B5
+  ||        ADDAW.D2      B15,34,B6
+@@ -714,8 +714,8 @@
+            ;.fphead       n, l, W, BU, nobr, nosat, 0010010b
+            NOP           3
+            LDW.D1T2      *+A3[0],B8
+-;$C$L16_1:
+-$C$L16:
++$C$L16_1:
++;$C$L16:
+            LDW.D2T2      *B9++[1],B4
+            NOP           4
+            STW.D2T2      B4,*+B8[0]
+@@ -749,7 +749,7 @@
+            LDW.D2T2      *+B7[4],B5
+            ADDSP.L2      B19,B4,B4
+            NOP           2
+-    [ A0]  BDEC.S1       $C$L16,A0
++    [ A0]  BDEC.S1       $C$L16_1,A0
+            MPYSP.M2      B5,B4,B4
+            NOP           1
+            STW.D2T2      B17,*B6[0]
+@@ -827,7 +827,7 @@
+  ||        MV.L1X        B8,A4
+  ||        STW.D2T2      B6,*B15[2]
+  ||        OR.S1         A5,A6,A13
+-    [!B1]  B.S1          $C$L3
++    [!B1]  B.S1          $C$L3_2
+  || [ B0]  CMPEQ.L2      B6,B18,B0
+  || [ B1]  CMPEQ.L1X     A13,B7,A0
+            ;.fphead       n, l, W, BU, nobr, nosat, 0000100b
+@@ -837,7 +837,7 @@
+            AND.L2        B4,B5,B0
+  || [ A0]  CMPEQ.L1      A14,A4,A0
+     [!B1]  MVK.L2        0,B0
+-    [ B0]  BNOP.S1       $C$L1,1
++    [ B0]  BNOP.S1       $C$L1_2,1
+  ||        CMPEQ.L2X     B19,A7,B0
+            CMPEQ.L2X     B19,A17,B4
+            CMPEQ.L1      A8,A17,A4
+@@ -850,7 +850,7 @@
+  ||        AND.S1X       A4,B7,A4
+            XOR.L1        1,A4,A5
+  ||        XOR.S1        1,A5,A4
+- || [ A0]  B.S2          $C$L1
++ || [ A0]  B.S2          $C$L1_2
+            OR.L1X        A4,B5,A6
+            OR.L2X        B5,A5,B4
+  ||        OR.L1         A31,A6,A5
+@@ -864,13 +864,13 @@
+            MVKH.S2       0x80000000,B4
+            CMPEQ.L2      B13,B4,B0
+            ;.fphead       n, l, W, BU, nobr, nosat, 0000100b
+-    [!B1]  BNOP.S1       $C$L2,3
++    [!B1]  BNOP.S1       $C$L2_2,3
+  ||        CMPEQ.L1X     A13,B4,A0
+  || [ B0]  LDW.D2T2      *+B15[2],B4
+     [ A0]  CMPEQ.L1      A14,A10,A0
+     [ B0]  CMPEQ.L2X     B4,A10,B0
+-;$C$L1_2:
+-$C$L1:
++$C$L1_2:
++;$C$L1:
+            LDW.D2T2      *++B15[4],B3
+            LDDW.D2T1     *++B15[1],A13:A12
+            LDDW.D2T1     *++B15[1],A15:A14
+@@ -889,8 +889,8 @@
+            EXTU.S1       A3,12,12,A3
+            OR.L1X        A3,B4,A5
+  ||        MVK.S1        0xffffffff,A4
+-;$C$L2_2:
+-$C$L2:
++$C$L2_2:
++;$C$L2:
+            CMPEQ.L1      A8,A9,A4
+  ||        AND.D2        B0,B5,B5
+  ||        CMPEQ.L2X     B19,A7,B7
+@@ -906,19 +906,19 @@
+  ||        CLR.S2        B4,0,19,B4
+            ;.fphead       n, l, W, BU, nobr, nosat, 0010000b
+            OR.L2X        B31,A6,B0
+- || [ A0]  B.S1          $C$L7
++ || [ A0]  B.S1          $C$L7_2
+  || [!A0]  ZERO.L1       A17:A16
+     [ A0]  MVK.L2        0,B0
+  ||        OR.L1X        A3,B4,A5
+  || [!A0]  SHL.S2        B6,0x1f,B4
+  || [!A0]  EXTU.S1       A17,12,12,A3
+-    [ B0]  BNOP.S1       $C$L7,2
++    [ B0]  BNOP.S1       $C$L7_2,2
+     [!A0]  OR.L1X        A3,B4,A5
+     [!B0]  CMPEQ.L2X     B19,A7,B0
+            NOP           
+-;$C$L3_2:
+-$C$L3:
+-    [ B0]  B.S2          $C$L7
++$C$L3_2:
++;$C$L3:
++    [ B0]  B.S2          $C$L7_2
+  ||        ZERO.L1       A5:A4
+  ||        SUB.S1X       B19,A8,A3
+  ||        MV.L2X        A11,B4
+@@ -937,7 +937,7 @@
+            MVK.L1        0,A4
+            MV.L2X        A11,B4
+  || [ B0]  LDW.D2T1      *+B15[2],A5
+- || [!B1]  BNOP.S1       $C$L4,2
++ || [!B1]  BNOP.S1       $C$L4_2,2
+  || [!B0]  CMPGTU.L1X    A13,B13,A0
+            XOR.L2        B11,B4,B4
+            ;.fphead       n, l, W, BU, nobr, nosat, 0000100b
+@@ -950,19 +950,19 @@
+            CMPLT.L1      A3,A9,A1
+  ||        SET.S2        B5,0,30,B5
+  ||        EXTU.S1       A17,12,12,A5
+-    [!A1]  B.S1          $C$L7
++    [!A1]  B.S1          $C$L7_2
+  ||        CMPLT.L1      A3,A6,A0
+  ||        CLR.S2        B5,0,19,B5
+     [!A1]  MVK.S1        0x0000,A0
+  || [ A1]  SHL.S2        B4,0x1f,B4
+  || [ A1]  ZERO.L1       A9:A8
+-    [ A0]  BNOP.S2       $C$L7,2
++    [ A0]  BNOP.S2       $C$L7_2,2
+  ||        OR.L1X        A5,B5,A5
+  || [ A1]  EXTU.S1       A9,12,12,A3
+     [ A1]  OR.L1X        A3,B4,A5
+            NOP           2
+-;$C$L4_2:
+-$C$L4:
++$C$L4_2:
++;$C$L4:
+            SHL.S2        B11,0x1f,B5
+            MVK.L1        0,A3
+  ||        SHRU.S2X      A13,0xb,B4
+@@ -1091,18 +1091,18 @@
+            AND.L2        B6,B10,B10
+            AND.L2X       B10,A26,B4
+     [ B0]  CMPEQ.L2X     B4,A10,B0
+-    [ B0]  B.S1          $C$L5
++    [ B0]  B.S1          $C$L5_2
+     [!B0]  B.S1          __c6xabi_frcmpyd_div
+            MV.L2         B12,B11
+            AND.L1X       A12,B27,A12
+            MV.L2         B10,B4
+            MV.L2X        A12,B5
+-           ADDKPC.S2     $C$RL4,B3,0
++           ADDKPC.S2     $C$RL4_2,B3,0
+  ||        NOP           1
+  ||        NOP           1
+            ;.fphead       n, l, W, BU, nobr, nosat, 1010000b
+-;$C$RL4_2:
+-$C$RL4:
++$C$RL4_2:
++;$C$RL4:
+            MVK.L2        0,B4
+  ||        MVK.L1        0,A3
+  ||        SHRU.S2X      A4,0x1f,B31
+@@ -1126,7 +1126,7 @@
+            AND.L2        B5,B4,B5
+            OR.S2X        B5,A3,B0
+  ||        ADDU.L2       B30,B10,B5:B4
+-    [!B0]  B.S1          $C$L6
++    [!B0]  B.S1          $C$L6_2
+  || [ B0]  MVK.L1        0,A3
+  || [ B0]  MVK.L2        1,B31
+  || [ B0]  MV.D2         B4,B10
+@@ -1143,14 +1143,14 @@
+     [ A0]  MV.L1         A3,A12
+  || [ A0]  MV.L2         B4,B12
+  || [ A0]  MV.S2X        A10,B10
+-;$C$L5_2:
+-$C$L5:
++$C$L5_2:
++;$C$L5:
+            LDW.D2T2      *+B15[1],B4
+            MVK.L1        0,A3
+            SET.S1        A3,20,29,A3
+  ||        SHL.S2        B12,0x14,B5
+-;$C$L6_2:
+-$C$L6:
++$C$L6_2:
++;$C$L6:
+            SHRU.S1       A12,0xb,A31
+  ||        SHRU.S2       B10,0xb,B31
+            ADD.L2X       B5,A3,B5
+@@ -1162,8 +1162,8 @@
+            OR.L2         B5,B6,B30
+            OR.L1X        A30,B31,A4
+            OR.L1X        A3,B30,A5
+-;$C$L7_2:
+-$C$L7:
++$C$L7_2:
++;$C$L7:
+            LDW.D2T2      *++B15[4],B3
+            LDDW.D2T1     *++B15[1],A13:A12
+            LDDW.D2T1     *++B15[1],A15:A14
+@@ -1213,17 +1213,17 @@
+            OR.L2X        B6,A3,B0
+  ||        EXTU.S1       A6,24,24,A3
+     [!B0]  MVK.S1        0,A0
+- || [!B0]  B.S2          $C$L3
++ || [!B0]  B.S2          $C$L3_3
+            ;.fphead       n, l, W, BU, nobr, nosat, 0110000b
+  || [!B0]  CMPEQ.L1      A17,A8,A1
+  || [ B0]  MVK.D1        0,A1
+  || [ B0]  CMPEQ.L2      B16,B9,B5
+-    [ A0]  B.S2          $C$L1
++    [ A0]  B.S2          $C$L1_3
+  || [!B0]  SUB.L2X       A17,B7,B4
+  || [ B0]  XOR.D2        1,B5,B5
+  || [!B0]  XOR.L1X       A7,B17,A3
+  || [!B0]  MVK.S1        0xffffff83,A4
+-    [ A1]  BNOP.S1       $C$L5,2
++    [ A1]  BNOP.S1       $C$L5_3,2
+  || [!B0]  CMPLT.L2      B4,B19,B5
+  || [ B0]  AND.S2        B6,B5,B1
+     [!B0]  XOR.L2        1,B5,B5
+@@ -1239,7 +1239,7 @@
+            XOR.L1        1,A6,A9
+  ||        AND.S1X       A9,B6,A6
+            XOR.L1        1,A6,A6
+- || [ B1]  B.S1          $C$L1
++ || [ B1]  B.S1          $C$L1_3
+            OR.L2X        B4,A9,B6
+            OR.L2X        B4,A6,B4
+  ||        OR.S2         B5,B6,B6
+@@ -1247,7 +1247,7 @@
+  ||        CMPEQ.L2      0,B6,B5
+            CMPEQ.L2      0,B4,B4
+            OR.L2         B4,B5,B0
+-    [!B0]  B.S1          $C$L2
++    [!B0]  B.S1          $C$L2_3
+  ||        CMPEQ.L2      B16,B9,B5
+  ||        CMPEQ.L1X     A18,B9,A6
+            CMPEQ.L2X     B7,A8,B4
+@@ -1255,15 +1255,15 @@
+            AND.L1        A6,A5,A4
+            OR.L1X        A4,B4,A0
+            CMPEQ.L2      B16,B9,B4
+-;$C$L1_3:
+-$C$L1:
++$C$L1_3:
++;$C$L1:
+            BNOP.S2       B3,3
+            SHL.S1        A3,0x1f,A3
+            SET.S1        A3,0,30,A4
+-;$C$L2_3:
+-$C$L2:
++$C$L2_3:
++;$C$L2:
+            CMPEQ.L2      B7,B19,B5
+- || [ A0]  B.S2          $C$L5
++ || [ A0]  B.S2          $C$L5_3
+  ||        AND.D2X       B8,A6,B31
+  ||        SHL.S1        A3,0x1f,A4
+            AND.L2        B4,B5,B5
+@@ -1273,10 +1273,10 @@
+  ||        CLR.S1        A4,0,22,A4
+     [ A0]  MVK.L2        0,B0
+  || [!A0]  SHL.S1        A3,0x1f,A4
+-    [ B0]  BNOP.S1       $C$L5,1
++    [ B0]  BNOP.S1       $C$L5_3,1
+     [!B0]  CMPEQ.L1      A17,A8,A1
+            NOP           3
+-    [ A1]  BNOP.S2       $C$L5,1
++    [ A1]  BNOP.S2       $C$L5_3,1
+  ||        SUB.L2X       A17,B7,B4
+  ||        MVK.S1        0xffffff83,A4
+  ||        XOR.L1X       A7,B17,A3
+@@ -1284,13 +1284,13 @@
+            XOR.L2        1,B5,B5
+  ||        NOP           
+  ||        NOP           
+-;$C$L3_3:
+-$C$L3:
++$C$L3_3:
++;$C$L3:
+            CMPGT.L1X     A4,B4,A3
+  ||        SHL.S1        A3,0x1f,A4
+  ||        SUB.L2X       A17,B7,B6
+            OR.L1X        A3,B5,A0
+-    [!A0]  BNOP.S1       $C$L4,0
++    [!A0]  BNOP.S1       $C$L4_3,0
+  ||        CMPGTU.L2X    B16,A18,B0
+  ||        XOR.L1X       A7,B17,A3
+  || [ A0]  MVK.S2        0xffffff82,B5
+@@ -1302,14 +1302,14 @@
+     [!A0]  MVK.S2        0x0001,B1
+  || [ A0]  SET.S1        A4,0,30,A4
+  || [ A0]  CMPLT.L2      B4,B5,B0
+-    [!B1]  BNOP.S2       $C$L5,1
++    [!B1]  BNOP.S2       $C$L5_3,1
+  || [ A0]  CLR.S1        A4,0,22,A4
+     [!B1]  MVK.L2        0,B0
+  || [ B1]  SHL.S1        A3,0x1f,A4
+-    [ B0]  BNOP.S1       $C$L6,2
++    [ B0]  BNOP.S1       $C$L6_3,2
+     [ B0]  BNOP.S2       B3,2
+-;$C$L4_3:
+-$C$L4:
++$C$L4_3:
++;$C$L4:
+            SHL.S2        B17,0x1f,B4
+            EXTU.S2       B16,1,9,B5
+            SET.S2        B4,0,29,B4
+@@ -1348,11 +1348,11 @@
+            MPYDP.M1      A7:A6,A9:A8,A5:A4
+            NOP           9
+            DPSP.L1       A5:A4,A4
+-;$C$L5_3:
+-$C$L5:
++$C$L5_3:
++;$C$L5:
+            BNOP.S2       B3,2
+-;$C$L6_3:
+-$C$L6:
++$C$L6_3:
++;$C$L6:
+            NOP           3
+            NOP           
+            NOP           
+@@ -1372,10 +1372,10 @@
+            MV.D2         B0,B31
+  ||        CALLP.S2      __call_stub,B3
+  ||        MVK.L2        4,B4
+-           MVK.S2        0x0478,B6
++           MVKL.S2       ZNR_gate_depth_tbl,B6
+ 	; 00001318  00000a09 R_C6000_ABS_L16        80000478   ZNR_gate_depth_tbl + 0
+            ;.fphead       n, l, W, BU, nobr, nosat, 0001111b
+-           MVKH.S2       0x80000000,B6
++           MVKH.S2       ZNR_gate_depth_tbl,B6
+ 	; 00001320  00000a0a R_C6000_ABS_H16        80000478   ZNR_gate_depth_tbl + 0
+            MVK.L2        0,B2
+            CALLP.S2      __local_call_stub,B3
+@@ -1389,9 +1389,9 @@
+            LDW.D1T1      *A7[0],A4
+            MVK.L2        4,B4
+            ;.fphead       n, l, W, BU, br, nosat, 1101110b
+-           MVK.S1        0x04a8,A6
++           MVKL.S1       ZNR_sense_tbl,A6
+ 	; 00001340  00000909 R_C6000_ABS_L16        800004a8   ZNR_sense_tbl + 0
+-           MVKH.S1       0x80000000,A6
++           MVKH.S1       ZNR_sense_tbl,A6
+ 	; 00001344  0000090a R_C6000_ABS_H16        800004a8   ZNR_sense_tbl + 0
+            CALLP.S2      __call_stub,B3
+  ||        MV.L2         B0,B31
+@@ -1418,20 +1418,20 @@
+  ||        CALLP.S2      __call_stub,B3
+            MV.L2X        A4,B0
+            ;.fphead       n, l, W, BU, nobr, nosat, 0011111b
+-    [ B0]  BNOP.S1       $C$L1,5
++    [ B0]  BNOP.S1       $C$L1_5,5
+            LDW.D2T2      *+B5[3],B0
+            MVK.S1        0x6666,A6
+            MVKH.S1       0x44300000,A6
+            MV.L1         A0,A4
+            NOP           1
+            B.S2          B0
+-           ADDKPC.S2     $C$RL9,B3,4
++           ADDKPC.S2     $C$RL9_5,B3,4
+            ;.fphead       n, l, W, BU, nobr, nosat, 0010000b
+-;$C$RL9_5:
+-$C$RL9:
+-           BNOP.S1       $C$L2,5
+-;$C$L1_5:
+-$C$L1:
++$C$RL9_5:
++;$C$RL9:
++           BNOP.S1       $C$L2_5,5
++$C$L1_5:
++;$C$L1:
+            LDW.D2T2      *B5[3],B0
+            LDW.D2T2      *++B15[2],B3
+            MVK.S1        0x6666,A6
+@@ -1442,8 +1442,8 @@
+            MV.L1         A0,A4
+            NOP           3
+            ;.fphead       n, l, W, BU, nobr, nosat, 1100010b
+-;$C$L2_5:
+-$C$L2:
++$C$L2_5:
++;$C$L2:
+            LDW.D2T2      *++B15[2],B3
+            NOP           4
+            BNOP.S2       B3,5
+@@ -1462,9 +1462,9 @@
+            CALLP.S2      __call_stub,B3
+            ;.fphead       n, l, W, BU, nobr, nosat, 0111101b
+  ||        MV.L2         B0,B31
+-           MVK.S1        0x0418,A6
++           MVKL.S1       ZNR_DEPTH_offset_tbl,A6
+ 	; 000013e4  00000809 R_C6000_ABS_L16        80000418   ZNR_DEPTH_offset_tbl + 0
+-           MVKH.S1       0x80000000,A6
++           MVKH.S1       ZNR_DEPTH_offset_tbl,A6
+ 	; 000013e8  0000080a R_C6000_ABS_H16        80000418   ZNR_DEPTH_offset_tbl + 0
+  ||        MVK.L2        11,B6
+            MV.L2X        A4,B4
+@@ -1503,12 +1503,12 @@
+            LDW.D1T1      *A4[1],A0
+            LDW.D1T1      *A4[0],A4
+            MVK.L2        5,B4
+-           MVK.S1        0x0448,A6
++           MVKL.S1       ZNR_decay_rel_tbl,A6
+ 	; 00001438  00000709 R_C6000_ABS_L16        80000448   ZNR_decay_rel_tbl + 0
+            ;.fphead       n, l, W, BU, nobr, nosat, 0111100b
+            CALLP.S2      __call_stub,B3
+  ||        MV.L2         B0,B31
+-           MVKH.S1       0x80000000,A6
++           MVKH.S1       ZNR_decay_rel_tbl,A6
+ 	; 00001448  0000070a R_C6000_ABS_H16        80000448   ZNR_decay_rel_tbl + 0
+            MVK.L2        11,B6
+            MV.L2X        A4,B4
+@@ -1566,9 +1566,9 @@
+            LDW.D1T1      *A4[0],A3
+            MV.L1X        B4,A1
+            MV.L2         B4,B0
+-           MVK.S2        0x02dc,B4
++           MVKL.S2       _Fx_DYN_ZNR_Coe,B4
+ 	; 000014cc  00000609 R_C6000_ABS_L16        800002dc   _Fx_DYN_ZNR_Coe + 0
+-           MVKH.S2       0x80000000,B4
++           MVKH.S2       _Fx_DYN_ZNR_Coe,B4
+ 	; 000014d0  0000060a R_C6000_ABS_H16        800002dc   _Fx_DYN_ZNR_Coe + 0
+  ||        MV.L1         A10,A4
+            MV.L2X        A3,B31
+@@ -1619,9 +1619,9 @@
+ __local_call_stub:
+            B.S1          __call_stub
+            ;.fphead       n, l, W, BU, br, nosat, 0011111b
+- ||        MVK.S2        0x0324,B31
++ ||        MVKL.S2       $C$T0_30,B31
+ 	; 00001540  00000509 R_C6000_ABS_L16        80000324   $C$T0 + 0
+-           MVKH.S2       0x80000000,B31
++           MVKH.S2       $C$T0_30,B31
+ 	; 00001544  0000050a R_C6000_ABS_H16        80000324   $C$T0 + 0
+            LDW.D2T2      *+B31[B2],B31
+            NOP           3
+@@ -1636,25 +1636,25 @@
+            ADD.L1        A4,-1,A0
+            MV.L1X        B3,A2
+            CMPEQ.L2X     B4,A0,B1
+-    [ B1]  BNOP.S1       $C$L2,4
++    [ B1]  BNOP.S1       $C$L2_12,4
+            ADD.L2        B6,-1,B3
+  ||        MV.S2         B4,B0
+-    [ B0]  BNOP.S1       $C$L1,5
++    [ B0]  BNOP.S1       $C$L1_12,5
+            B.S2X         A2
+            LDW.D1T1      *A6[0],A4
+            NOP           4
+            ;.fphead       n, l, W, BU, nobr, nosat, 1001001b
+-;$C$L1_12:
+-$C$L1:
++$C$L1_12:
++;$C$L1:
+            INTSP.L2      B3,B4
+- ||        CALLP.S2      __local_call_stub,B3
++ ||        CALLP.S2      __local_call_stub2,B3
+  ||        MVK.D2        0,B2
+  ||        INTSP.L1      A0,A4
+            INTSP.L2      B0,B5
+            MV.L2X        A4,B4
+            NOP           3
+            MV.L1X        B5,A4
+- ||        CALLP.S2      __local_call_stub,B3
++ ||        CALLP.S2      __local_call_stub2,B3
+            SPTRUNC.L1    A4,A7
+            ;.fphead       n, l, W, BU, br, nosat, 0110010b
+            NOP           3
+@@ -1674,8 +1674,8 @@
+            SPTRUNC.L1    A3,A1
+            NOP           3
+            ADD.L1        A1,A0,A4
+-;$C$L2_12:
+-$C$L2:
++$C$L2_12:
++;$C$L2:
+            NOP           1
+            MV.L1X        B3,A4
+  ||        B.S2X         A2
+@@ -1689,19 +1689,19 @@
+            ADD.L1        A4,-1,A0
+            MV.L1X        B3,A2
+            CMPEQ.L2X     B4,A0,B1
+-    [ B1]  BNOP.S1       $C$L4,4
++    [ B1]  BNOP.S1       $C$L4_13,4
+            ADD.L2        B6,-1,B3
+  ||        MV.S2         B4,B0
+-    [ B0]  BNOP.S1       $C$L3,5
++    [ B0]  BNOP.S1       $C$L3_13,5
+            BNOP.S2X      A2,4
+            ;.fphead       n, l, W, BU, nobr, nosat, 0010011b
+  ||        LDDW.D1T1     *+A6[0],A1:A0
+            MV.L1         A1,A5
+  ||        MV.S1         A0,A4
+-;$C$L3_13:
+-$C$L3:
++$C$L3_13:
++;$C$L3:
+            INTDP.L2      B3,B5:B4
+-           CALLP.S2      __local_call_stub,B3
++           CALLP.S2      __local_call_stub2,B3
+  ||        MVK.L2        1,B2
+  ||        INTDP.L1      A0,A5:A4
+            INTDP.L2      B0,B7:B6
+@@ -1710,7 +1710,7 @@
+            ;.fphead       n, l, W, BU, br, nosat, 1001010b
+            NOP           3
+            MV.L1X        B6,A4
+-           CALLP.S2      __local_call_stub,B3
++           CALLP.S2      __local_call_stub2,B3
+  ||        MV.L1X        B7,A5
+            MV.L1         A5,A17
+  ||        MV.S1         A4,A16
+@@ -1734,8 +1734,8 @@
+            BNOP.S2X      A2,4
+            MV.L1         A1,A5
+  ||        MV.S1         A0,A4
+-;$C$L4_13:
+-$C$L4:
++$C$L4_13:
++;$C$L4:
+            NOP           1
+            MV.L1X        B3,A4
+            BNOP.S2X      A2,4
+@@ -1750,25 +1750,25 @@
+            ADD.L1        A4,-1,A0
+            MV.L1X        B3,A1
+            CMPEQ.L2X     B4,A0,B1
+-    [ B1]  BNOP.S1       $C$L6,4
++    [ B1]  BNOP.S1       $C$L6_14,4
+            ADD.L2        B6,-1,B3
+  ||        MV.S2         B4,B0
+-    [ B0]  BNOP.S1       $C$L5,5
++    [ B0]  BNOP.S1       $C$L5_14,5
+            B.S2X         A1
+            ;.fphead       n, l, W, BU, nobr, nosat, 0010010b
+            LDW.D1T1      *A6[0],A4
+            NOP           4
+-;$C$L5_14:
+-$C$L5:
++$C$L5_14:
++;$C$L5:
+            INTSP.L2      B3,B4
+- ||        CALLP.S2      __local_call_stub,B3
++ ||        CALLP.S2      __local_call_stub2,B3
+  ||        MVK.D2        0,B2
+  ||        INTSP.L1      A0,A4
+            INTSP.L2      B0,B5
+            MV.L2X        A4,B4
+            NOP           3
+            MV.L1X        B5,A4
+- ||        CALLP.S2      __local_call_stub,B3
++ ||        CALLP.S2      __local_call_stub2,B3
+            ;.fphead       n, l, W, BU, br, nosat, 1100101b
+            SPTRUNC.L1    A4,A7
+            NOP           3
+@@ -1787,8 +1787,8 @@
+            ADDSP.L1      A3,A0,A0
+            NOP           3
+            MV.L1         A0,A4
+-;$C$L6_14:
+-$C$L6:
++$C$L6_14:
++;$C$L6:
+            NOP           1
+            MV.L1X        B3,A4
+            ;.fphead       n, l, W, BU, nobr, nosat, 1100000b
+@@ -1796,13 +1796,13 @@
+            LDW.D1T1      *A6[A4],A4
+            NOP           4
+ 
+-	.def __local_call_stub
++	.def __local_call_stub2
+ 	.align 32
+-__local_call_stub:
++__local_call_stub2:
+            B.S1          __call_stub
+- ||        MVK.S2        0x050c,B31
++ ||        MVKL.S2       $C$T0_39,B31
+ 	; 0000170c  00000309 R_C6000_ABS_L16        8000050c   $C$T0 + 0
+-           MVKH.S2       0x80000000,B31
++           MVKH.S2       $C$T0_39,B31
+ 	; 00001710  0000030a R_C6000_ABS_H16        8000050c   $C$T0 + 0
+            LDW.D2T2      *+B31[B2],B31
+            NOP           3
+@@ -1812,9 +1812,9 @@
+ 	.align 32
+ _GetString_EnvIn:
+            MV.L1         A4,A5
+- ||        MVK.S1        0x0518,A4
++ ||        MVKL.S1       disp_prm_EnvIn,A4
+ 	; 00001724  00001d09 R_C6000_ABS_L16        80000518   disp_prm_EnvIn + 0
+-           MVKH.S1       0x80000000,A4
++           MVKH.S1       disp_prm_EnvIn,A4
+ 	; 00001728  00001d0a R_C6000_ABS_H16        80000518   disp_prm_EnvIn + 0
+            LDW.D1T1      *A4[A5],A5
+            MVK.L1        0,A4
+@@ -1822,7 +1822,7 @@
+            NOP           2
+            LDB.D1T1      *A5[0],A0
+            NOP           4
+-    [!A0]  BNOP.S1       $C$L4,5
++    [!A0]  BNOP.S1       $C$L4_16,5
+            MV.L2X        A4,B0
+            ;.fphead       n, l, W, B, br, nosat, 1111000b
+            MV.L1         A5,A4
+@@ -1841,8 +1841,8 @@
+  ||        ADD.L2        B0,1,B0
+            NOP           1
+            MV.L1X        B0,A4
+-;$C$L4_16:
+-$C$L4:
++$C$L4_16:
++;$C$L4:
+            BNOP.S2       B3,3
+            MVK.L1        0,A0
+            STB.D1T1      A0,*A4[A6]
+@@ -1852,15 +1852,15 @@
+ Dll_ZNR:
+            BNOP.S2       B3,1
+            MVK.L1        6,A0
+- ||        MVK.S2        0x0000,B0
++ ||        MVKL.S2       ZNR,B0
+ 	; 00001778  00001c09 R_C6000_ABS_L16        80000000   ZNR + 0
+            ;.fphead       n, l, W, BU, nobr, nosat, 0111101b
+-           MVK.S1        0x0150,A1
++           MVKL.S1       effectTypeImageInfo,A1
+ 	; 00001780  00001b09 R_C6000_ABS_L16        80000150   effectTypeImageInfo + 0
+- ||        MVKH.S2       0x80000000,B0
++ ||        MVKH.S2       ZNR,B0
+ 	; 00001784  00001c0a R_C6000_ABS_H16        80000000   ZNR + 0
+  ||        STB.D1T1      A0,*+A4[0]
+-           MVKH.S1       0x80000000,A1
++           MVKH.S1       effectTypeImageInfo,A1
+ 	; 0000178c  00001b0a R_C6000_ABS_H16        80000150   effectTypeImageInfo + 0
+  ||        STW.D1T2      B0,*+A4[1]
+            STW.D1T1      A1,*+A4[3]
+@@ -1999,7 +1999,7 @@
+            .word 0x00000000
+            .word 0x00000000
+            .word 0x00000000
+-           .word 0x00001360
++           .word Fx_DYN_ZNR_onf
+ 	; 8000001c  00001801 R_C6000_ABS32          00001360   Fx_DYN_ZNR_onf + 0
+            .word 0x00000000
+            .word 0x00000000
+@@ -2014,9 +2014,9 @@
+            .word 0x00000000
+            .word 0x00000001
+            .word 0x00000000
+-           .word 0x000014b4
++           .word Fx_DYN_ZNR_init
+ 	; 80000054  00001701 R_C6000_ABS32          000014b4   Fx_DYN_ZNR_init + 0
+-           .word 0x00000000
++           .word Fx_DYN_ZNR
+ 	; 80000058  00001601 R_C6000_ABS32          00000000   Fx_DYN_ZNR + 0
+            .word 0x00000000
+            .word 0x00000000
+@@ -2030,10 +2030,10 @@
+            .word 0x00000001
+            .word 0x00000000
+            .word 0x00000000
+-           .word 0x00001404
++           .word Fx_DYN_ZNR_EnvIn_edit
+ 	; 8000008c  00001501 R_C6000_ABS32          00001404   Fx_DYN_ZNR_EnvIn_edit + 0
+            .word 0x00000000
+-           .word 0x00001720
++           .word _GetString_EnvIn
+ 	; 80000094  00001401 R_C6000_ABS32          00001720   _GetString_EnvIn + 0
+            .word 0x00000000
+            .word 0x00000000
+@@ -2046,7 +2046,7 @@
+            .word 0x00000064
+            .word 0x00000000
+            .word 0x00000000
+-           .word 0x000013c8
++           .word Fx_DYN_ZNR_depth_edit
+ 	; 800000c4  00001301 R_C6000_ABS32          000013c8   Fx_DYN_ZNR_depth_edit + 0
+            .word 0x00000000
+            .word 0x00000000
+@@ -2061,7 +2061,7 @@
+            .word 0x0000001e
+            .word 0x00000000
+            .word 0x00000000
+-           .word 0x00001300
++           .word Fx_DYN_ZNR_thr_edit
+ 	; 800000fc  00001201 R_C6000_ABS32          00001300   Fx_DYN_ZNR_thr_edit + 0
+            .word 0x00000000
+            .word 0x00000000
+@@ -2076,7 +2076,7 @@
+            .word 0x00000000
+            .word 0x00000064
+            .word 0x00000000
+-           .word 0x00001428
++           .word Fx_DYN_ZNR_decay_edit
+ 	; 80000134  00001101 R_C6000_ABS32          00001428   Fx_DYN_ZNR_decay_edit + 0
+            .word 0x00000000
+            .word 0x00000000
+@@ -2094,15 +2094,15 @@
+ effectTypeImageInfo:
+            .word 0x00000017
+            .word 0x0000001e
+-           .word 0x80000280
++           .word picTotalDisplay_ZNR
+ 	; 80000158  00001001 R_C6000_ABS32          80000280   picTotalDisplay_ZNR + 0
+            .word 0x00000014
+            .word 0x0000000a
+-           .word 0x800004d8
++           .word CategoryIcon_Dynamics
+ 	; 80000164  00000f01 R_C6000_ABS32          800004d8   CategoryIcon_Dynamics + 0
+            .word 0x00000018
+            .word 0x00000016
+-           .word 0x80000328
++           .word AddDelIcon_Dynamics
+ 	; 80000170  00000e01 R_C6000_ABS32          80000328   AddDelIcon_Dynamics + 0
+            .word 0x00000000
+            .word 0x00000000
+@@ -2116,15 +2116,15 @@
+            .word 0x00000000
+            .word 0x0000001c
+            .word 0x00000009
+-           .word 0x80000370
++           .word _PrmPic_DETCT
+ 	; 800001a4  00000d01 R_C6000_ABS32          80000370   _PrmPic_DETCT + 0
+            .word 0x0000001b
+            .word 0x00000009
+-           .word 0x800003a8
++           .word _PrmPic_Depth
+ 	; 800001b0  00000c01 R_C6000_ABS32          800003a8   _PrmPic_Depth + 0
+            .word 0x0000001b
+            .word 0x00000009
+-           .word 0x800003e0
++           .word _PrmPic_THRSH
+ 	; 800001bc  00000b01 R_C6000_ABS32          800003e0   _PrmPic_THRSH + 0
+            .word 0x00000000
+            .word 0x00000000
+@@ -2231,9 +2231,9 @@
+            .word 0x417d953a
+            .word 0x3f4ccccd
+            .word 0x00000000
+-;$C$T0_30:
+-$C$T0:
+-           .word 0x00001684
++$C$T0_30:
++;$C$T0:
++           .word TBL_TO_VAL
+ 	; 80000324  00000401 R_C6000_ABS32          00001684   TBL_TO_VAL + 0
+ 	.dwendtag $C$DW$4
+ 
+@@ -2425,16 +2425,20 @@
+            .word 0x00000000
+            .word 0x00000000
+            .word 0x00000000
+-;$C$SL1_39:
+-$C$SL1:
++$C$SL1_39:
++;$C$SL1:
+            .word 0x49525447
+-           .word 0x4645004e
+-           .word 0x004e4958
+-;$C$T0_39:
+-$C$T0:
+-           .word 0x00001080
++           ;.word 0x4645004e
++           ;.word 0x004e4958
++           .word 0x0000004e
++$C$SL2_39:
++           .word 0x49584645	; fix missing symbol due to alignment
++           .word 0x0000004e
++$C$T0_39:
++;$C$T0:
++           .word __c6xabi_divf
+ 	; 8000050c  00000201 R_C6000_ABS32          00001080   __c6xabi_divf + 0
+-           .word 0x00000ae0
++           .word __c6xabi_divd
+ 	; 80000510  00000101 R_C6000_ABS32          00000ae0   __c6xabi_divd + 0
+            .word 0x00000000
+ 	.dwendtag $C$DW$13
+@@ -2445,9 +2449,9 @@
+ 	.dwattr $C$DW$14, DW_AT_low_pc(disp_prm_EnvIn)
+ 	.dwattr $C$DW$14, DW_AT_high_pc(0x00)
+ disp_prm_EnvIn:
+-           .word 0x80000500
++           .word $C$SL1_39
+ 	; 80000518  00001a01 R_C6000_ABS32          80000500   $C$SL1 + 0
+-           .word 0x80000506
++           .word $C$SL2_39
+ 	; 8000051c  00001901 R_C6000_ABS32          80000506   $C$SL2 + 0
+ 	.dwendtag $C$DW$14
+ 
+@@ -2460,4 +2464,4 @@
+            .cstring "976aab8bf8c3deedd6a127d03f7189c4  ./ZNR.ZD2.code"
+ 	.dwendtag $C$DW$15
+ 
+-.error "symbols are not word aligned!"
++;.error "symbols are not word aligned!"
