@@ -1,5 +1,5 @@
---- ../LINESEL.ZD2.code.asm	2025-06-20 21:30:05.306047688 -0600
-+++ LINESEL.asm	2025-06-20 22:50:13.765550698 -0600
+--- ../LINESEL.ZD2.code.asm	2025-06-21 21:18:29.115870357 -0600
++++ LINESEL.asm	2025-06-23 18:18:03.748626382 -0600
 @@ -17,7 +17,7 @@
             CALLP.S2      __call_stub,B3
   ||        MV.L2         B0,B31
@@ -60,38 +60,142 @@
  	; 00000110  0000010a R_C6000_ABS_H16        8000026c   _Fx_SFX_LineSel_Coe + 0
             MV.L1         A4,A10
             LDW.D1T1      *A4[1],A4
-@@ -164,10 +164,10 @@
-  ||        LDW.D2T2      *B5[0],B7
-  ||        ADD.L1        A0,-1,A0
-  ||        ADD.S1X       A5,B19,A4
+@@ -148,77 +148,81 @@
+ 	.def Fx_SFX_LineSel
+ 	.align 32
+ Fx_SFX_LineSel:
+-           LDW.D2T2      *+B4[7],B5
+-           LDW.D2T2      *+B4[1],B20
+-           LDW.D2T2      *+B4[8],B21
+-           LDW.D2T1      *+B4[2],A5
+-           MVK.L2        0,B19
+-           MVK.L2        0,B9
+-           MVK.S1        16,A0
+-           LDW.D1T2      *A4[1],B4
+-           ;.fphead       n, l, W, BU, nobr, nosat, 1000000b
+- ||        SET.S2        B9,23,29,B9
+- ||        MVK.L2        2,B0
+-           MV.L2         B21,B6
+- ||        ADD.S2        B19,B20,B8
+- ||        LDW.D2T2      *B5[0],B7
+- ||        ADD.L1        A0,-1,A0
+- ||        ADD.S1X       A5,B19,A4
 -;$C$L1_5:
 -$C$L1:
 -;$C$L2_5:
 -$C$L2:
+-           LDW.D2T2      *B6++[1],B5
+-           NOP           4
+-           STW.D2T2      B5,*+B7[0]
+-           ;.fphead       n, l, W, BU, nobr, nosat, 0101010b
+-           LDW.D2T2      *+B4[5],B17
+-           LDW.D2T2      *+B8[0],B5
+-           NOP           3
+-           LDW.D2T2      *B4[0],B16
+-           MPYSP.M2      B5,B17,B18
+-           NOP           2
+-           LDW.D2T2      *B4[4],B17
+-           MPYSP.M2      B16,B18,B16
+-           NOP           3
+-           ;.fphead       n, h, W, BU, nobr, nosat, 0010100b
+-           MPYSP.M2      B17,B16,B16
+-           NOP           3
+-           STW.D2T2      B16,*B8++[1]
+-           LDW.D2T2      *B4[6],B16
+-           LDW.D2T2      *B4[0],B17
+-           NOP           4
+-           SUBSP.L2      B9,B17,B16
+- ||        MPYSP.M2      B5,B16,B5
+-           ;.fphead       n, h, W, BU, nobr, nosat, 0001000b
+-           NOP           2
+-           LDW.D2T2      *+B4[4],B17
+-           MPYSP.M2      B16,B5,B5
+-           NOP           2
+-           LDW.D1T1      *A4[0],A3
+-           MPYSP.M2      B17,B5,B5
+-           NOP           2
+-    [ A0]  BDEC.S1       $C$L1,A0
+-           ;.fphead       n, l, W, BU, nobr, nosat, 0001000b
+-           ADDSP.L2X     B5,A3,B5
+-           NOP           3
+-           STW.D1T2      B5,*A4++[1]
+-           ADD.L2        B0,-1,B0
+- ||        MVK.S1        16,A3
+- ||        ADDK.S2       64,B19
+- ||        MV.D2         B21,B6
+-           ADD.L1        A3,-1,A0
+- ||        ADD.L2        B19,B20,B8
+- || [ B0]  B.S1          $C$L1
+-           ;.fphead       n, l, W, BU, nobr, nosat, 0010110b
+-    [!B0]  BNOP.S2       B3,4
++           LDW.D2T2      *+B4[7],B5	; pointer to 'something' structure
++           LDW.D2T2      *+B4[1],B20	; base of 'effect' output buffer
++           LDW.D2T2      *+B4[8],B21	; base of 'effect' input buffer
++           LDW.D2T1      *+B4[2],A5	; base of 'final' output buffer
++
++           MVK.L2        0,B19		; zero offset into buffers
++           MVK.L2        0,B9		;
++           MVK.S1        16,A0		; prep inner loop x16
++           LDW.D1T2      *A4[1],B4	; base of 'parameters'
++ ||        SET.S2        B9,23,29,B9	; set B9 = 1.0 float
++ ||        MVK.L2        2,B0		; prep outer loop x2
++
++           MV.L2         B21,B6		; pointer to 'effect' input
++ ||        ADD.S2        B19,B20,B8	; add offset, pointer to 'effects' output
++ ||        LDW.D2T2      *B5[0],B7	; pointer to 'curent sample' store (within 'something')
++ ||        ADD.L1        A0,-1,A0	; tweak for BDEC
++ ||        ADD.S1X       A5,B19,A4	; add offset, pointer to 'final' output
 +$C$L1_5:
 +;$C$L1:
 +$C$L2_5:
 +;$C$L2:
-            LDW.D2T2      *B6++[1],B5
-            NOP           4
-            STW.D2T2      B5,*+B7[0]
-@@ -198,7 +198,7 @@
-            LDW.D1T1      *A4[0],A3
-            MPYSP.M2      B17,B5,B5
-            NOP           2
--    [ A0]  BDEC.S1       $C$L1,A0
-+    [ A0]  BDEC.S1       $C$L1_5,A0
-            ;.fphead       n, l, W, BU, nobr, nosat, 0001000b
-            ADDSP.L2X     B5,A3,B5
-            NOP           3
-@@ -209,16 +209,16 @@
-  ||        MV.D2         B21,B6
-            ADD.L1        A3,-1,A0
-  ||        ADD.L2        B19,B20,B8
-- || [ B0]  B.S1          $C$L1
-+ || [ B0]  B.S1          $C$L1_5
-            ;.fphead       n, l, W, BU, nobr, nosat, 0010110b
-     [!B0]  BNOP.S2       B3,4
++           		LDW.D2T2      *B6++[1],B5	; read 'effect' input
++           		NOP           4
++
++           		STW.D2T2      B5,*+B7[0]	; write to 'current sample'? B7 never increased...
++           		LDW.D2T2      *+B4[5],B17	; K5
++           		LDW.D2T2      *+B8[0],B5	; read previous sample back from 'effect' output???
++							; note B8: increases as loop runs
++           		NOP           3
++
++           		LDW.D2T2      *B4[0],B16	; K0
++           		MPYSP.M2      B5,B17,B18 	; Sample * K5
++           		NOP           2			;
++           		LDW.D2T2      *B4[4],B17	; K4
++           		MPYSP.M2      B16,B18,B16 	; K0 * (Sample * K5)
++           		NOP           3			;
++           		MPYSP.M2      B17,B16,B16	; K4 * (K0 * (Sample * K5))
++           		NOP           3			;
++           		STW.D2T2      B16,*B8++[1]	; write audio 'effect' output
++
++           		LDW.D2T2      *B4[6],B16	; K6, why bother? <= delay slots = 4 
++           		LDW.D2T2      *B4[0],B17	; K0
++           		NOP           4			;
++           		SUBSP.L2      B9,B17,B16	; 1.0 - K0 (delay slots = 1)
++ ||        		MPYSP.M2      B5,B16,B5 	; Sample * K6
++           		NOP           2			;
++           		LDW.D2T2      *+B4[4],B17	; K4
++           		MPYSP.M2      B16,B5,B5		;(1.0 - K0) * (Sample * K6)
++           		NOP           2			;
++           		LDW.D1T1      *A4[0],A3		; read previous sample back from 'final' output
++							; note: A4 increases as loop runs
++           		MPYSP.M2      B17,B5,B5		; K4 * ((1.0 - K0) * (Sample * K6))
++           		NOP           2			;
++    [ A0]  		BDEC.S1       $C$L1_5,A0	; LOOP 15 times back to $C$L1 (delay slots = 5)
++           		ADDSP.L2X     B5,A3,B5		; combine previous 'final' and curent sample
++           		NOP           3			;
++           		STW.D1T2      B5,*A4++[1]	; write audio to 'final' output
++
++           	ADD.L2        B0,-1,B0		; decrement outer loop counter
++ ||        	MVK.S1        16,A3		; reload 16 loops
++ ||        	ADDK.S2       64,B19		; 2nd outer loop adds 64byte offset 'effect' output buffer?
++ ||        	MV.D2         B21,B6		; update pointer to input audio (same audio repeated?)
++
++           	ADD.L1        A3,-1,A0		; tweak for BDEC
++ ||        	ADD.L2        B19,B20,B8	; increase/update pointer to output audio block
++ || [ B0]  	B.S1          $C$L1_5		; outer loop back to $C$L1
++    [!B0]  	BNOP.S2       B3,4		; add delay to compensate for delay slots
++
   ||        ADD.L1X       A5,B19,A4
 -           NOP           
 -           NOP           
@@ -108,7 +212,7 @@
  
  	.def __call_stub
  	.align 32
-@@ -250,23 +250,23 @@
+@@ -250,23 +254,23 @@
   ||        LDDW.D2T1     *++B15[1],A7:A6
             LDW.D2T1      *++B15[2],A2
             NOP           4
@@ -138,7 +242,7 @@
             STW.D1T1      A1,*+A4[3]
             ;.fphead       n, l, W, BU, nobr, nosat, 0010001b
  
-@@ -286,8 +286,8 @@
+@@ -286,8 +290,8 @@
   ||        LDDW.D2T1     *++B15[1],A15:A14
             LDW.D2T2      *++B15[2],B14
             NOP           4
@@ -149,7 +253,7 @@
             ;.fphead       n, l, W, BU, nobr, nosat, 0001111b
  
  	.def __push_rts
-@@ -305,8 +305,8 @@
+@@ -305,8 +309,8 @@
             STDW.D2T2     B11:B10,*B15--[1]
             STDW.D2T1     A11:A10,*B15--[1]
             STDW.D2T2     B3:B2,*B15--[1]
@@ -160,7 +264,7 @@
             ;.fphead       n, l, W, BU, nobr, nosat, 0011100b
  	.sect ".const"
  
-@@ -318,7 +318,7 @@
+@@ -318,7 +322,7 @@
  effectTypeImageInfo:
             .word 0x00000017
             .word 0x00000020
@@ -169,7 +273,7 @@
  	; 80000008  00000201 R_C6000_ABS32          80000210   _picTotalDisplay_LineSel + 0
             .word 0x00000000
             .word 0x00000000
-@@ -408,7 +408,7 @@
+@@ -408,7 +412,7 @@
             .word 0x00000000
             .word 0x00000000
             .word 0x00000000
@@ -178,7 +282,7 @@
  	; 8000014c  00000701 R_C6000_ABS32          00000000   Fx_SFX_LineSel_onf + 0
             .word 0x00000000
             .word 0x00000000
-@@ -423,23 +423,23 @@
+@@ -423,23 +427,23 @@
             .word 0x00000000
             .word 0x00000001
             .word 0x00000000
@@ -207,7 +311,7 @@
  	; 800001bc  00000401 R_C6000_ABS32          00000064   Fx_SFX_LineSel_EfxLvl_edit + 0
             .word 0x00000000
             .word 0x00000000
-@@ -454,7 +454,7 @@
+@@ -454,7 +458,7 @@
             .word 0x00000064
             .word 0x00000096
             .word 0x00000000
