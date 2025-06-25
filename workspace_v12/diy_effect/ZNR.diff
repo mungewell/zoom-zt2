@@ -1,5 +1,5 @@
---- ../ZNR.ZD2.code.asm	2025-06-21 21:18:29.073870015 -0600
-+++ ZNR.asm	2025-06-22 12:45:59.307937025 -0600
+--- ../ZNR.ZD2.code.asm	2025-06-24 14:56:21.032801869 -0600
++++ ZNR.asm	2025-06-24 14:53:08.360555230 -0600
 @@ -57,8 +57,8 @@
             SPKERNEL      3,0
   || [ A0]  MV.L2         B9,B7
@@ -694,7 +694,7 @@
  	; 00001728  00001d0a R_C6000_ABS_H16        80000518   disp_prm_EnvIn + 0
             LDW.D1T1      *A4[A5],A5
             MVK.L1        0,A4
-@@ -1822,7 +1822,7 @@
+@@ -1822,13 +1822,13 @@
             NOP           2
             LDB.D1T1      *A5[0],A0
             NOP           4
@@ -703,6 +703,13 @@
             MV.L2X        A4,B0
             ;.fphead       n, l, W, B, br, nosat, 1111000b
             MV.L1         A5,A4
+  ||        MVK.S1        1,A2
+  ||        MV.L2X        A0,B1
+-    [ A2]  SPLOOPW       7
++    [ A2]  SPLOOPW       5				; guessing as 7 doesn't compile
+            NOP           3
+     [ A2]  STB.D2T2      B1,*B4++[1]
+     [ A2]  LDB.D1T1      *++A4[1],A3
 @@ -1841,8 +1841,8 @@
   ||        ADD.L2        B0,1,B0
             NOP           1
@@ -846,26 +853,34 @@
  	; 80000324  00000401 R_C6000_ABS32          00001684   TBL_TO_VAL + 0
  	.dwendtag $C$DW$4
  
-@@ -2425,16 +2425,20 @@
+@@ -2425,16 +2425,27 @@
             .word 0x00000000
             .word 0x00000000
             .word 0x00000000
 -;$C$SL1_39:
 -$C$SL1:
-+$C$SL1_39:
-+;$C$SL1:
-            .word 0x49525447
+-           .word 0x49525447
 -           .word 0x4645004e
 -           .word 0x004e4958
 -;$C$T0_39:
 -$C$T0:
 -           .word 0x00001080
-+           ;.word 0x4645004e
-+           ;.word 0x004e4958
-+           .word 0x0000004e
++$C$SL1_39:
++;$C$SL1:
++           .byte 0x47
++           .byte 0x54
++           .byte 0x52
++           .byte 0x49
++           .byte 0x4e
++           .byte 0x00
 +$C$SL2_39:
-+           .word 0x49584645	; fix missing symbol due to alignment
-+           .word 0x0000004e
++;$C$SL2:
++           .byte 0x45
++           .byte 0x46
++           .byte 0x58
++           .byte 0x49
++           .byte 0x4e
++           .byte 0x00
 +$C$T0_39:
 +;$C$T0:
 +           .word __c6xabi_divf
@@ -875,7 +890,7 @@
  	; 80000510  00000101 R_C6000_ABS32          00000ae0   __c6xabi_divd + 0
             .word 0x00000000
  	.dwendtag $C$DW$13
-@@ -2445,9 +2449,9 @@
+@@ -2445,9 +2456,9 @@
  	.dwattr $C$DW$14, DW_AT_low_pc(disp_prm_EnvIn)
  	.dwattr $C$DW$14, DW_AT_high_pc(0x00)
  disp_prm_EnvIn:
@@ -887,9 +902,9 @@
  	; 8000051c  00001901 R_C6000_ABS32          80000506   $C$SL2 + 0
  	.dwendtag $C$DW$14
  
-@@ -2460,4 +2464,4 @@
+@@ -2460,4 +2471,4 @@
             .cstring "976aab8bf8c3deedd6a127d03f7189c4  ./ZNR.ZD2.code"
  	.dwendtag $C$DW$15
  
--.error "symbols are not word aligned!"
-+;.error "symbols are not word aligned!"
+-.emsg "symbols are not word aligned!"
++;.emsg "symbols are not word aligned!"

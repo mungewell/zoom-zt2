@@ -34,12 +34,12 @@ SECTIONS
     .cio		> SHDSPL2RAM
 
     .const		> DATA
+    .data		> DATA
+    .switch		> DATA
+    .far		> DATA
+    .fardata	> DATA
 
-    .data		> SHDSPL2RAM
-    .switch		> SHDSPL2RAM
     .sysmem		> SHDSPL2RAM
-    .far		> SHDSPL2RAM
-    .fardata	> SHDSPL2RAM
     .ppinfo		> SHDSPL2RAM
     .ppdata		> SHDSPL2RAM
 }
