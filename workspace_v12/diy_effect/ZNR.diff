@@ -1,5 +1,5 @@
---- ../ZNR.ZD2.code.asm	2025-06-24 14:56:21.032801869 -0600
-+++ ZNR.asm	2025-06-24 14:53:08.360555230 -0600
+--- ../ZNR.ZD2.code.asm	2025-07-02 18:59:15.837155538 -0600
++++ ZNR.asm	2025-07-02 19:01:56.935062121 -0600
 @@ -57,8 +57,8 @@
             SPKERNEL      3,0
   || [ A0]  MV.L2         B9,B7
@@ -98,27 +98,112 @@
             SPLOOPD       3
   ||        MV.L2         B24,B5
   ||        ADDAW.D2      B15,34,B6
-@@ -714,8 +714,8 @@
+@@ -703,8 +703,8 @@
+  ||        STW.D1T1      A5,*A3++[1]
+            ;.fphead       n, l, W, BU, nobr, nosat, 0110100b
+            ADDAW.D2      B15,49,B6
+- ||        MVK.S1        16,A4
+-           ADD.L1        A4,-1,A0
++ ||        MVK.S1        16,A4		; set up loop for x16
++           ADD.L1        A4,-1,A0	; compensate for BDEC
+  ||        MV.L2X        A30,B16
+            SUB.L1X       B24,0x4,A4
+            NOP           5
+@@ -714,48 +714,54 @@
             ;.fphead       n, l, W, BU, nobr, nosat, 0010010b
             NOP           3
             LDW.D1T2      *+A3[0],B8
 -;$C$L16_1:
 -$C$L16:
+-           LDW.D2T2      *B9++[1],B4
+-           NOP           4
+-           STW.D2T2      B4,*+B8[0]
+-           LDW.D2T2      *+B7[2],B17
+-           LDW.D2T2      *++B6[1],B5
+-           LDW.D2T2      *+B7[0],B4
+-           NOP           3
+-           LDW.D1T1      *++A4[1],A3
+- ||        MPYSP.M2      B17,B5,B17
+-           SUBSP.L2      B16,B4,B19
+-           NOP           2
+-           MPYSP.M2      B4,B17,B5
+-           MPYSP.M2X     B19,A3,B18
+-           NOP           2
+-           LDW.D2T2      *+B7[4],B4
+-           ADDSP.L2      B18,B5,B5
+-           NOP           3
+-           MPYSP.M2      B4,B5,B5
+-           NOP           2
+-           LDW.D2T2      *+B6[16],B4
+-           STW.D1T2      B5,*+A4[0]
+-           LDW.D2T2      *+B7[2],B18
+-           NOP           2
+-           LDW.D1T1      *+A4[16],A3
+-           LDW.D2T2      *+B7[0],B5
+-           MPYSP.M2      B18,B4,B18
+-           NOP           2
+-           MPYSP.M2X     B19,A3,B19
+-           MPYSP.M2      B18,B5,B4
+-           NOP           2
+-           LDW.D2T2      *+B7[4],B5
+-           ADDSP.L2      B19,B4,B4
+-           NOP           2
+-    [ A0]  BDEC.S1       $C$L16,A0
+-           MPYSP.M2      B5,B4,B4
+-           NOP           1
 +$C$L16_1:
 +;$C$L16:
-            LDW.D2T2      *B9++[1],B4
-            NOP           4
-            STW.D2T2      B4,*+B8[0]
-@@ -749,7 +749,7 @@
-            LDW.D2T2      *+B7[4],B5
-            ADDSP.L2      B19,B4,B4
-            NOP           2
--    [ A0]  BDEC.S1       $C$L16,A0
-+    [ A0]  BDEC.S1       $C$L16_1,A0
-            MPYSP.M2      B5,B4,B4
-            NOP           1
++		   LDW.D2T2      *B9++[1],B4	; likely buffer
++		   NOP           4
++		   STW.D2T2      B4,*+B8[0]	; monitor? B8 never increases...
++
++		   LDW.D2T2      *+B7[2],B17	; K2
++		   LDW.D2T2      *++B6[1],B5	; likely buffer, read L-sample?
++		   LDW.D2T2      *+B7[0],B4	; K0
++		   NOP           3
++		   LDW.D1T1      *++A4[1],A3	; likely buffer, read L-output?
++	 ||        MPYSP.M2      B17,B5,B17	; K2 * L-sample
++		   SUBSP.L2      B16,B4,B19	; ??? - K0, this is most likely (1.0 - K0) as seen before
++		   NOP           2
++		   MPYSP.M2      B4,B17,B5	; K0 * (K2 * L-sample)
++		   MPYSP.M2X     B19,A3,B18	; (??? - K0) * L-output
++		   NOP           2
++		   LDW.D2T2      *+B7[4],B4	; K4
++		   ADDSP.L2      B18,B5,B5	; ((??? - K0) * L-output) + (K0 * (K2 * L-sample))
++		   NOP           3
++		   MPYSP.M2      B4,B5,B5	; K4 * (((??? - K0) * L-output) + (K0 * (K2 * L-sample)))
++		   NOP           2
++
++		   LDW.D2T2      *+B6[16],B4	; read R-sample, note offset
++		   STW.D1T2      B5,*+A4[0]	; store processed L-sample
++		   LDW.D2T2      *+B7[2],B18	; K2
++		   NOP           2
++		   LDW.D1T1      *+A4[16],A3	; read R-output, note offset
++
++		   LDW.D2T2      *+B7[0],B5	; K0
++		   MPYSP.M2      B18,B4,B18	; K2 * R-sample
++		   NOP           2
++		   MPYSP.M2X     B19,A3,B19	; (??? - K0) * R-output
++		   MPYSP.M2      B18,B5,B4	; (K2 * R-sample) * K0
++		   NOP           2
++		   LDW.D2T2      *+B7[4],B5	; K4
++		   ADDSP.L2      B19,B4,B4	; ((??? - K0) * R-output) + ((K2 * R-sample) * K0)
++		   NOP           2
++	    [ A0]  BDEC.S1       $C$L16_1,A0	; 16x loop, decreasing A0
++		   MPYSP.M2      B5,B4,B4	; K4 * (((??? - K0) * R-output) + ((K2 * R-sample) * K0))
++		   NOP           1
++
             STW.D2T2      B17,*B6[0]
-@@ -827,7 +827,7 @@
+            STW.D2T2      B18,*+B6[16]
+            ;.fphead       n, h, W, BU, nobr, nosat, 0100000b
+-           STW.D1T2      B4,*+A4[16]
++		   STW.D1T2      B4,*+A4[16]		; is this in the loop?
++							; store processed R-sample, offset 16
++
+            B.S2          B3
+  ||        LDW.D2T1      *+B15[84],A11
+            LDW.D2T1      *+B15[83],A10
+@@ -827,7 +833,7 @@
   ||        MV.L1X        B8,A4
   ||        STW.D2T2      B6,*B15[2]
   ||        OR.S1         A5,A6,A13
@@ -127,7 +212,7 @@
   || [ B0]  CMPEQ.L2      B6,B18,B0
   || [ B1]  CMPEQ.L1X     A13,B7,A0
             ;.fphead       n, l, W, BU, nobr, nosat, 0000100b
-@@ -837,7 +837,7 @@
+@@ -837,7 +843,7 @@
             AND.L2        B4,B5,B0
   || [ A0]  CMPEQ.L1      A14,A4,A0
      [!B1]  MVK.L2        0,B0
@@ -136,7 +221,7 @@
   ||        CMPEQ.L2X     B19,A7,B0
             CMPEQ.L2X     B19,A17,B4
             CMPEQ.L1      A8,A17,A4
-@@ -850,7 +850,7 @@
+@@ -850,7 +856,7 @@
   ||        AND.S1X       A4,B7,A4
             XOR.L1        1,A4,A5
   ||        XOR.S1        1,A5,A4
@@ -145,7 +230,7 @@
             OR.L1X        A4,B5,A6
             OR.L2X        B5,A5,B4
   ||        OR.L1         A31,A6,A5
-@@ -864,13 +864,13 @@
+@@ -864,13 +870,13 @@
             MVKH.S2       0x80000000,B4
             CMPEQ.L2      B13,B4,B0
             ;.fphead       n, l, W, BU, nobr, nosat, 0000100b
@@ -162,7 +247,7 @@
             LDW.D2T2      *++B15[4],B3
             LDDW.D2T1     *++B15[1],A13:A12
             LDDW.D2T1     *++B15[1],A15:A14
-@@ -889,8 +889,8 @@
+@@ -889,8 +895,8 @@
             EXTU.S1       A3,12,12,A3
             OR.L1X        A3,B4,A5
   ||        MVK.S1        0xffffffff,A4
@@ -173,7 +258,7 @@
             CMPEQ.L1      A8,A9,A4
   ||        AND.D2        B0,B5,B5
   ||        CMPEQ.L2X     B19,A7,B7
-@@ -906,19 +906,19 @@
+@@ -906,19 +912,19 @@
   ||        CLR.S2        B4,0,19,B4
             ;.fphead       n, l, W, BU, nobr, nosat, 0010000b
             OR.L2X        B31,A6,B0
@@ -198,7 +283,7 @@
   ||        ZERO.L1       A5:A4
   ||        SUB.S1X       B19,A8,A3
   ||        MV.L2X        A11,B4
-@@ -937,7 +937,7 @@
+@@ -937,7 +943,7 @@
             MVK.L1        0,A4
             MV.L2X        A11,B4
   || [ B0]  LDW.D2T1      *+B15[2],A5
@@ -207,7 +292,7 @@
   || [!B0]  CMPGTU.L1X    A13,B13,A0
             XOR.L2        B11,B4,B4
             ;.fphead       n, l, W, BU, nobr, nosat, 0000100b
-@@ -950,19 +950,19 @@
+@@ -950,19 +956,19 @@
             CMPLT.L1      A3,A9,A1
   ||        SET.S2        B5,0,30,B5
   ||        EXTU.S1       A17,12,12,A5
@@ -231,7 +316,7 @@
             SHL.S2        B11,0x1f,B5
             MVK.L1        0,A3
   ||        SHRU.S2X      A13,0xb,B4
-@@ -1091,18 +1091,18 @@
+@@ -1091,18 +1097,18 @@
             AND.L2        B6,B10,B10
             AND.L2X       B10,A26,B4
      [ B0]  CMPEQ.L2X     B4,A10,B0
@@ -254,7 +339,7 @@
             MVK.L2        0,B4
   ||        MVK.L1        0,A3
   ||        SHRU.S2X      A4,0x1f,B31
-@@ -1126,7 +1126,7 @@
+@@ -1126,7 +1132,7 @@
             AND.L2        B5,B4,B5
             OR.S2X        B5,A3,B0
   ||        ADDU.L2       B30,B10,B5:B4
@@ -263,7 +348,7 @@
   || [ B0]  MVK.L1        0,A3
   || [ B0]  MVK.L2        1,B31
   || [ B0]  MV.D2         B4,B10
-@@ -1143,14 +1143,14 @@
+@@ -1143,14 +1149,14 @@
      [ A0]  MV.L1         A3,A12
   || [ A0]  MV.L2         B4,B12
   || [ A0]  MV.S2X        A10,B10
@@ -282,7 +367,7 @@
             SHRU.S1       A12,0xb,A31
   ||        SHRU.S2       B10,0xb,B31
             ADD.L2X       B5,A3,B5
-@@ -1162,8 +1162,8 @@
+@@ -1162,8 +1168,8 @@
             OR.L2         B5,B6,B30
             OR.L1X        A30,B31,A4
             OR.L1X        A3,B30,A5
@@ -293,7 +378,7 @@
             LDW.D2T2      *++B15[4],B3
             LDDW.D2T1     *++B15[1],A13:A12
             LDDW.D2T1     *++B15[1],A15:A14
-@@ -1213,17 +1213,17 @@
+@@ -1213,17 +1219,17 @@
             OR.L2X        B6,A3,B0
   ||        EXTU.S1       A6,24,24,A3
      [!B0]  MVK.S1        0,A0
@@ -314,7 +399,7 @@
   || [!B0]  CMPLT.L2      B4,B19,B5
   || [ B0]  AND.S2        B6,B5,B1
      [!B0]  XOR.L2        1,B5,B5
-@@ -1239,7 +1239,7 @@
+@@ -1239,7 +1245,7 @@
             XOR.L1        1,A6,A9
   ||        AND.S1X       A9,B6,A6
             XOR.L1        1,A6,A6
@@ -323,7 +408,7 @@
             OR.L2X        B4,A9,B6
             OR.L2X        B4,A6,B4
   ||        OR.S2         B5,B6,B6
-@@ -1247,7 +1247,7 @@
+@@ -1247,7 +1253,7 @@
   ||        CMPEQ.L2      0,B6,B5
             CMPEQ.L2      0,B4,B4
             OR.L2         B4,B5,B0
@@ -332,7 +417,7 @@
   ||        CMPEQ.L2      B16,B9,B5
   ||        CMPEQ.L1X     A18,B9,A6
             CMPEQ.L2X     B7,A8,B4
-@@ -1255,15 +1255,15 @@
+@@ -1255,15 +1261,15 @@
             AND.L1        A6,A5,A4
             OR.L1X        A4,B4,A0
             CMPEQ.L2      B16,B9,B4
@@ -353,7 +438,7 @@
   ||        AND.D2X       B8,A6,B31
   ||        SHL.S1        A3,0x1f,A4
             AND.L2        B4,B5,B5
-@@ -1273,10 +1273,10 @@
+@@ -1273,10 +1279,10 @@
   ||        CLR.S1        A4,0,22,A4
      [ A0]  MVK.L2        0,B0
   || [!A0]  SHL.S1        A3,0x1f,A4
@@ -366,7 +451,7 @@
   ||        SUB.L2X       A17,B7,B4
   ||        MVK.S1        0xffffff83,A4
   ||        XOR.L1X       A7,B17,A3
-@@ -1284,13 +1284,13 @@
+@@ -1284,13 +1290,13 @@
             XOR.L2        1,B5,B5
   ||        NOP           
   ||        NOP           
@@ -383,7 +468,7 @@
   ||        CMPGTU.L2X    B16,A18,B0
   ||        XOR.L1X       A7,B17,A3
   || [ A0]  MVK.S2        0xffffff82,B5
-@@ -1302,14 +1302,14 @@
+@@ -1302,14 +1308,14 @@
      [!A0]  MVK.S2        0x0001,B1
   || [ A0]  SET.S1        A4,0,30,A4
   || [ A0]  CMPLT.L2      B4,B5,B0
@@ -402,7 +487,7 @@
             SHL.S2        B17,0x1f,B4
             EXTU.S2       B16,1,9,B5
             SET.S2        B4,0,29,B4
-@@ -1348,11 +1348,11 @@
+@@ -1348,11 +1354,11 @@
             MPYDP.M1      A7:A6,A9:A8,A5:A4
             NOP           9
             DPSP.L1       A5:A4,A4
@@ -418,7 +503,7 @@
             NOP           3
             NOP           
             NOP           
-@@ -1372,10 +1372,10 @@
+@@ -1372,10 +1378,10 @@
             MV.D2         B0,B31
   ||        CALLP.S2      __call_stub,B3
   ||        MVK.L2        4,B4
@@ -431,7 +516,7 @@
  	; 00001320  00000a0a R_C6000_ABS_H16        80000478   ZNR_gate_depth_tbl + 0
             MVK.L2        0,B2
             CALLP.S2      __local_call_stub,B3
-@@ -1389,9 +1389,9 @@
+@@ -1389,9 +1395,9 @@
             LDW.D1T1      *A7[0],A4
             MVK.L2        4,B4
             ;.fphead       n, l, W, BU, br, nosat, 1101110b
@@ -443,7 +528,7 @@
  	; 00001344  0000090a R_C6000_ABS_H16        800004a8   ZNR_sense_tbl + 0
             CALLP.S2      __call_stub,B3
   ||        MV.L2         B0,B31
-@@ -1418,20 +1418,20 @@
+@@ -1418,20 +1424,20 @@
   ||        CALLP.S2      __call_stub,B3
             MV.L2X        A4,B0
             ;.fphead       n, l, W, BU, nobr, nosat, 0011111b
@@ -471,7 +556,7 @@
             LDW.D2T2      *B5[3],B0
             LDW.D2T2      *++B15[2],B3
             MVK.S1        0x6666,A6
-@@ -1442,8 +1442,8 @@
+@@ -1442,8 +1448,8 @@
             MV.L1         A0,A4
             NOP           3
             ;.fphead       n, l, W, BU, nobr, nosat, 1100010b
@@ -482,7 +567,7 @@
             LDW.D2T2      *++B15[2],B3
             NOP           4
             BNOP.S2       B3,5
-@@ -1462,9 +1462,9 @@
+@@ -1462,9 +1468,9 @@
             CALLP.S2      __call_stub,B3
             ;.fphead       n, l, W, BU, nobr, nosat, 0111101b
   ||        MV.L2         B0,B31
@@ -494,7 +579,7 @@
  	; 000013e8  0000080a R_C6000_ABS_H16        80000418   ZNR_DEPTH_offset_tbl + 0
   ||        MVK.L2        11,B6
             MV.L2X        A4,B4
-@@ -1503,12 +1503,12 @@
+@@ -1503,12 +1509,12 @@
             LDW.D1T1      *A4[1],A0
             LDW.D1T1      *A4[0],A4
             MVK.L2        5,B4
@@ -509,7 +594,7 @@
  	; 00001448  0000070a R_C6000_ABS_H16        80000448   ZNR_decay_rel_tbl + 0
             MVK.L2        11,B6
             MV.L2X        A4,B4
-@@ -1566,9 +1566,9 @@
+@@ -1566,9 +1572,9 @@
             LDW.D1T1      *A4[0],A3
             MV.L1X        B4,A1
             MV.L2         B4,B0
@@ -521,7 +606,7 @@
  	; 000014d0  0000060a R_C6000_ABS_H16        800002dc   _Fx_DYN_ZNR_Coe + 0
   ||        MV.L1         A10,A4
             MV.L2X        A3,B31
-@@ -1619,9 +1619,9 @@
+@@ -1619,9 +1625,9 @@
  __local_call_stub:
             B.S1          __call_stub
             ;.fphead       n, l, W, BU, br, nosat, 0011111b
@@ -533,7 +618,7 @@
  	; 00001544  0000050a R_C6000_ABS_H16        80000324   $C$T0 + 0
             LDW.D2T2      *+B31[B2],B31
             NOP           3
-@@ -1636,25 +1636,25 @@
+@@ -1636,25 +1642,25 @@
             ADD.L1        A4,-1,A0
             MV.L1X        B3,A2
             CMPEQ.L2X     B4,A0,B1
@@ -565,7 +650,7 @@
             SPTRUNC.L1    A4,A7
             ;.fphead       n, l, W, BU, br, nosat, 0110010b
             NOP           3
-@@ -1674,8 +1674,8 @@
+@@ -1674,8 +1680,8 @@
             SPTRUNC.L1    A3,A1
             NOP           3
             ADD.L1        A1,A0,A4
@@ -576,7 +661,7 @@
             NOP           1
             MV.L1X        B3,A4
   ||        B.S2X         A2
-@@ -1689,19 +1689,19 @@
+@@ -1689,19 +1695,19 @@
             ADD.L1        A4,-1,A0
             MV.L1X        B3,A2
             CMPEQ.L2X     B4,A0,B1
@@ -601,7 +686,7 @@
   ||        MVK.L2        1,B2
   ||        INTDP.L1      A0,A5:A4
             INTDP.L2      B0,B7:B6
-@@ -1710,7 +1710,7 @@
+@@ -1710,7 +1716,7 @@
             ;.fphead       n, l, W, BU, br, nosat, 1001010b
             NOP           3
             MV.L1X        B6,A4
@@ -610,7 +695,7 @@
   ||        MV.L1X        B7,A5
             MV.L1         A5,A17
   ||        MV.S1         A4,A16
-@@ -1734,8 +1734,8 @@
+@@ -1734,8 +1740,8 @@
             BNOP.S2X      A2,4
             MV.L1         A1,A5
   ||        MV.S1         A0,A4
@@ -621,7 +706,7 @@
             NOP           1
             MV.L1X        B3,A4
             BNOP.S2X      A2,4
-@@ -1750,25 +1750,25 @@
+@@ -1750,25 +1756,25 @@
             ADD.L1        A4,-1,A0
             MV.L1X        B3,A1
             CMPEQ.L2X     B4,A0,B1
@@ -653,7 +738,7 @@
             ;.fphead       n, l, W, BU, br, nosat, 1100101b
             SPTRUNC.L1    A4,A7
             NOP           3
-@@ -1787,8 +1787,8 @@
+@@ -1787,8 +1793,8 @@
             ADDSP.L1      A3,A0,A0
             NOP           3
             MV.L1         A0,A4
@@ -664,7 +749,7 @@
             NOP           1
             MV.L1X        B3,A4
             ;.fphead       n, l, W, BU, nobr, nosat, 1100000b
-@@ -1796,13 +1796,13 @@
+@@ -1796,13 +1802,13 @@
             LDW.D1T1      *A6[A4],A4
             NOP           4
  
@@ -682,7 +767,7 @@
  	; 00001710  0000030a R_C6000_ABS_H16        8000050c   $C$T0 + 0
             LDW.D2T2      *+B31[B2],B31
             NOP           3
-@@ -1812,9 +1812,9 @@
+@@ -1812,9 +1818,9 @@
  	.align 32
  _GetString_EnvIn:
             MV.L1         A4,A5
@@ -694,7 +779,7 @@
  	; 00001728  00001d0a R_C6000_ABS_H16        80000518   disp_prm_EnvIn + 0
             LDW.D1T1      *A4[A5],A5
             MVK.L1        0,A4
-@@ -1822,13 +1822,13 @@
+@@ -1822,13 +1828,13 @@
             NOP           2
             LDB.D1T1      *A5[0],A0
             NOP           4
@@ -710,7 +795,7 @@
             NOP           3
      [ A2]  STB.D2T2      B1,*B4++[1]
      [ A2]  LDB.D1T1      *++A4[1],A3
-@@ -1841,8 +1841,8 @@
+@@ -1841,8 +1847,8 @@
   ||        ADD.L2        B0,1,B0
             NOP           1
             MV.L1X        B0,A4
@@ -721,7 +806,7 @@
             BNOP.S2       B3,3
             MVK.L1        0,A0
             STB.D1T1      A0,*A4[A6]
-@@ -1852,15 +1852,15 @@
+@@ -1852,15 +1858,15 @@
  Dll_ZNR:
             BNOP.S2       B3,1
             MVK.L1        6,A0
@@ -741,7 +826,7 @@
  	; 0000178c  00001b0a R_C6000_ABS_H16        80000150   effectTypeImageInfo + 0
   ||        STW.D1T2      B0,*+A4[1]
             STW.D1T1      A1,*+A4[3]
-@@ -1999,7 +1999,7 @@
+@@ -1999,7 +2005,7 @@
             .word 0x00000000
             .word 0x00000000
             .word 0x00000000
@@ -750,7 +835,7 @@
  	; 8000001c  00001801 R_C6000_ABS32          00001360   Fx_DYN_ZNR_onf + 0
             .word 0x00000000
             .word 0x00000000
-@@ -2014,9 +2014,9 @@
+@@ -2014,9 +2020,9 @@
             .word 0x00000000
             .word 0x00000001
             .word 0x00000000
@@ -762,7 +847,7 @@
  	; 80000058  00001601 R_C6000_ABS32          00000000   Fx_DYN_ZNR + 0
             .word 0x00000000
             .word 0x00000000
-@@ -2030,10 +2030,10 @@
+@@ -2030,10 +2036,10 @@
             .word 0x00000001
             .word 0x00000000
             .word 0x00000000
@@ -775,7 +860,7 @@
  	; 80000094  00001401 R_C6000_ABS32          00001720   _GetString_EnvIn + 0
             .word 0x00000000
             .word 0x00000000
-@@ -2046,7 +2046,7 @@
+@@ -2046,7 +2052,7 @@
             .word 0x00000064
             .word 0x00000000
             .word 0x00000000
@@ -784,7 +869,7 @@
  	; 800000c4  00001301 R_C6000_ABS32          000013c8   Fx_DYN_ZNR_depth_edit + 0
             .word 0x00000000
             .word 0x00000000
-@@ -2061,7 +2061,7 @@
+@@ -2061,7 +2067,7 @@
             .word 0x0000001e
             .word 0x00000000
             .word 0x00000000
@@ -793,7 +878,7 @@
  	; 800000fc  00001201 R_C6000_ABS32          00001300   Fx_DYN_ZNR_thr_edit + 0
             .word 0x00000000
             .word 0x00000000
-@@ -2076,7 +2076,7 @@
+@@ -2076,7 +2082,7 @@
             .word 0x00000000
             .word 0x00000064
             .word 0x00000000
@@ -802,7 +887,7 @@
  	; 80000134  00001101 R_C6000_ABS32          00001428   Fx_DYN_ZNR_decay_edit + 0
             .word 0x00000000
             .word 0x00000000
-@@ -2094,15 +2094,15 @@
+@@ -2094,15 +2100,15 @@
  effectTypeImageInfo:
             .word 0x00000017
             .word 0x0000001e
@@ -821,7 +906,7 @@
  	; 80000170  00000e01 R_C6000_ABS32          80000328   AddDelIcon_Dynamics + 0
             .word 0x00000000
             .word 0x00000000
-@@ -2116,15 +2116,15 @@
+@@ -2116,15 +2122,15 @@
             .word 0x00000000
             .word 0x0000001c
             .word 0x00000009
@@ -840,7 +925,7 @@
  	; 800001bc  00000b01 R_C6000_ABS32          800003e0   _PrmPic_THRSH + 0
             .word 0x00000000
             .word 0x00000000
-@@ -2231,9 +2231,9 @@
+@@ -2231,9 +2237,9 @@
             .word 0x417d953a
             .word 0x3f4ccccd
             .word 0x00000000
@@ -853,7 +938,94 @@
  	; 80000324  00000401 R_C6000_ABS32          00001684   TBL_TO_VAL + 0
  	.dwendtag $C$DW$4
  
-@@ -2425,16 +2425,27 @@
+@@ -2355,17 +2361,17 @@
+ 	.dwattr $C$DW$10, DW_AT_low_pc(ZNR_decay_rel_tbl)
+ 	.dwattr $C$DW$10, DW_AT_high_pc(0x00)
+ ZNR_decay_rel_tbl:
+-           .word 0x3f7f5526
+-           .word 0x3f7fe308
+-           .word 0x3f7ff024
+-           .word 0x3f7ff51f
+-           .word 0x3f7ff7ad
+-           .word 0x3f7ff951
+-           .word 0x3f7ffa5d
+-           .word 0x3f7ffb26
+-           .word 0x3f7ffbbd
+-           .word 0x3f7ffc33
+-           .word 0x3f7ffc98
++           .word 0x3f7f5526		; 0.997393
++           .word 0x3f7fe308		; 0.999558
++           .word 0x3f7ff024		; 0.999758
++           .word 0x3f7ff51f		; 0.999834
++           .word 0x3f7ff7ad		; 0.999873
++           .word 0x3f7ff951		; 0.999898
++           .word 0x3f7ffa5d		; 0.999914
++           .word 0x3f7ffb26		; 0.999926
++           .word 0x3f7ffbbd		; 0.999935
++           .word 0x3f7ffc33		; 0.999942
++           .word 0x3f7ffc98		; 0.999948
+            .word 0x00000000
+ 	.dwendtag $C$DW$10
+ 
+@@ -2375,17 +2381,17 @@
+ 	.dwattr $C$DW$11, DW_AT_low_pc(ZNR_gate_depth_tbl)
+ 	.dwattr $C$DW$11, DW_AT_high_pc(0x00)
+ ZNR_gate_depth_tbl:
+-           .word 0x3f800000
+-           .word 0x3f800000
+-           .word 0x3f733333
+-           .word 0x3f666666
+-           .word 0x3f59999a
+-           .word 0x3f4ccccd
+-           .word 0x3f400000
+-           .word 0x3f333333
+-           .word 0x3f266666
+-           .word 0x3f19999a
+-           .word 0x3f0ccccd
++           .word 0x3f800000		; 1.0
++           .word 0x3f800000		; 1.0
++           .word 0x3f733333		; 0.95
++           .word 0x3f666666		; 0.9
++           .word 0x3f59999a		; 0.85
++           .word 0x3f4ccccd		; 0.8
++           .word 0x3f400000		; 0.75
++           .word 0x3f333333		; 0.7
++           .word 0x3f266666		; 0.65
++           .word 0x3f19999a		; 0.6
++           .word 0x3f0ccccd		; 0.55
+            .word 0x00000000
+ 	.dwendtag $C$DW$11
+ 
+@@ -2395,17 +2401,17 @@
+ 	.dwattr $C$DW$12, DW_AT_low_pc(ZNR_sense_tbl)
+ 	.dwattr $C$DW$12, DW_AT_high_pc(0x00)
+ ZNR_sense_tbl:
+-           .word 0x447a0000
+-           .word 0x440c95d8
+-           .word 0x439e1d28
+-           .word 0x4331d3f4
+-           .word 0x42c80000
+-           .word 0x4260efc0
+-           .word 0x41fcfb74
+-           .word 0x418e4327
+-           .word 0x41200000
+-           .word 0x40b3f2fa
+-           .word 0x404a62cc
++           .word 0x447a0000		; 1000
++           .word 0x440c95d8		; 562.3413
++           .word 0x439e1d28		; 316.22778
++           .word 0x4331d3f4		; 177.82794
++           .word 0x42c80000		; 100
++           .word 0x4260efc0		; 56.23413
++           .word 0x41fcfb74		; 31.62278
++           .word 0x418e4327		; 17.78279
++           .word 0x41200000		; 10
++           .word 0x40b3f2fa		; 5.62341
++           .word 0x404a62cc		; 3.16228
+            .word 0x00000000
+ 	.dwendtag $C$DW$12
+ 
+@@ -2425,16 +2431,27 @@
             .word 0x00000000
             .word 0x00000000
             .word 0x00000000
@@ -890,7 +1062,7 @@
  	; 80000510  00000101 R_C6000_ABS32          00000ae0   __c6xabi_divd + 0
             .word 0x00000000
  	.dwendtag $C$DW$13
-@@ -2445,9 +2456,9 @@
+@@ -2445,9 +2462,9 @@
  	.dwattr $C$DW$14, DW_AT_low_pc(disp_prm_EnvIn)
  	.dwattr $C$DW$14, DW_AT_high_pc(0x00)
  disp_prm_EnvIn:
@@ -902,7 +1074,7 @@
  	; 8000051c  00001901 R_C6000_ABS32          80000506   $C$SL2 + 0
  	.dwendtag $C$DW$14
  
-@@ -2460,4 +2471,4 @@
+@@ -2460,4 +2477,4 @@
             .cstring "976aab8bf8c3deedd6a127d03f7189c4  ./ZNR.ZD2.code"
  	.dwendtag $C$DW$15
  

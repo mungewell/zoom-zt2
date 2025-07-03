@@ -1,5 +1,5 @@
---- ../LINESEL.ZD2.code.asm	2025-06-21 21:18:29.115870357 -0600
-+++ LINESEL.asm	2025-06-23 18:18:03.748626382 -0600
+--- ../LINESEL.ZD2.code.asm	2025-07-02 19:14:03.967713056 -0600
++++ LINESEL.asm	2025-07-02 19:26:14.224218718 -0600
 @@ -17,7 +17,7 @@
             CALLP.S2      __call_stub,B3
   ||        MV.L2         B0,B31
@@ -181,7 +181,7 @@
 +							; note: A4 increases as loop runs
 +           		MPYSP.M2      B17,B5,B5		; K4 * ((1.0 - K0) * (Sample * K6))
 +           		NOP           2			;
-+    [ A0]  		BDEC.S1       $C$L1_5,A0	; LOOP 15 times back to $C$L1 (delay slots = 5)
++    [ A0]  		BDEC.S1       $C$L2_5,A0	; LOOP 15 times back to $C$L2 (delay slots = 5)
 +           		ADDSP.L2X     B5,A3,B5		; combine previous 'final' and curent sample
 +           		NOP           3			;
 +           		STW.D1T2      B5,*A4++[1]	; write audio to 'final' output
