@@ -1,5 +1,5 @@
---- ../N_GATE.ZD2.code.asm	2025-07-05 14:37:07.580380577 -0600
-+++ N_GATE.asm	2025-07-05 14:55:49.224370998 -0600
+--- ../N_GATE.ZD2.code.asm	2025-07-05 16:51:52.537199260 -0600
++++ N_GATE.asm	2025-07-05 16:47:21.552954562 -0600
 @@ -66,7 +66,7 @@
   ||        MV.L1X        B8,A4
   ||        STW.D2T2      B6,*B15[2]
@@ -241,7 +241,7 @@
  
  	.def Fx_DYN_NoiseGate_depth_edit
  	.align 32
-@@ -553,15 +553,15 @@
+@@ -553,24 +553,24 @@
             ADD.L2        B0,B4,B4
             LDW.D2T2      *B4[0],B0
             ;.fphead       n, l, W, BU, nobr, nosat, 1100001b
@@ -260,7 +260,9 @@
  	; 000006f4  0000090a R_C6000_ABS_H16        80000418   NOISEGATE_DEPTH_offset_tbl + 0
   ||        MVK.L2        11,B6
             MV.L2X        A4,B4
-@@ -570,7 +570,7 @@
+            ;.fphead       n, l, W, BU, nobr, nosat, 1000011b
+- ||        CALLP.S2      __local_call_stub,B3
++ ||        CALLP.S2      __local_call_stub_tab,B3
   ||        MVK.S1        101,A4
   ||        MVK.D2        0,B2
             BNOP.S2X      A0,4
@@ -269,7 +271,7 @@
  
  	.def Fx_DYN_NoiseGate_decay_edit
  	.align 32
-@@ -584,11 +584,11 @@
+@@ -584,14 +584,14 @@
             ;.fphead       n, l, W, BU, nobr, nosat, 1110010b
             LDW.D1T1      *A4[0],A4
             MVK.L2        5,B4
@@ -282,8 +284,12 @@
 +           MVKH.S1       NOISEGATE_decay_rel_tbl,A6
  	; 00000730  0000080a R_C6000_ABS_H16        80000478   NOISEGATE_decay_rel_tbl + 0
             MVK.L2        11,B6
-            CALLP.S2      __local_call_stub,B3
-@@ -611,10 +611,10 @@
+-           CALLP.S2      __local_call_stub,B3
++           CALLP.S2      __local_call_stub_tab,B3
+  ||        MV.L2X        A4,B4
+  ||        MVK.S1        101,A4
+            ;.fphead       n, l, W, BU, br, nosat, 1100001b
+@@ -611,14 +611,14 @@
  	.def Fx_DYN_NoiseGate_edge_edit
  	.align 32
  Fx_DYN_NoiseGate_edge_edit:
@@ -296,6 +302,11 @@
  	; 00000768  0000070a R_C6000_ABS_H16        80000448   NOISEGATE_EDGE_tbl + 0
   ||        MV.L2         B4,B5
   ||        MVK.S2        20,B4
+-           CALLP.S2      __local_call_stub,B3
++           CALLP.S2      __local_call_stub_tab,B3
+  ||        LDW.D1T1      *A4[1],A0
+  ||        MVK.S1        101,A4
+  ||        MVK.L2        11,B6
 @@ -637,9 +637,9 @@
             ADD.L1        A0,A4,A4
             MVK.L1        8,A6
@@ -321,12 +332,18 @@
  	; 000007c8  0000060a R_C6000_ABS_H16        800002dc   _Fx_DYN_NoiseGate_Coe + 0
   ||        MV.L1         A10,A4
             MV.L2X        A3,B31
-@@ -715,13 +715,13 @@
+@@ -711,17 +711,17 @@
+  ||        MV.L2X        A11,B4
+            CALLP.S1      __c6xabi_pop_rts,A3
+ 
+-	.def __local_call_stub
++	.def __local_call_stub_tab
  	.align 32
- __local_call_stub:
+-__local_call_stub:
++__local_call_stub_tab:
             B.S1          __call_stub
 - ||        MVK.S2        0x0324,B31
-+ ||        MVKL.S2       $C$T0_31,B31
++ ||        MVKL.S2       $C$T0_31,B31		; to TBL_TO_VAL
  	; 0000084c  00000509 R_C6000_ABS_L16        80000324   $C$T0 + 0
 -           MVKH.S2       0x80000000,B31
 +           MVKH.S2       $C$T0_31,B31
@@ -746,7 +763,7 @@
   ||        STW.D2T2      B6,*+B4[0]
  
  	.def TBL_TO_VAL_int
-@@ -1053,25 +1067,25 @@
+@@ -1053,16 +1067,16 @@
             ADD.L1        A4,-1,A0
             MV.L1X        B3,A2
             CMPEQ.L2X     B4,A0,B1
@@ -765,19 +782,8 @@
 +$C$L1_13:
 +;$C$L1:
             INTSP.L2      B3,B4
-- ||        CALLP.S2      __local_call_stub,B3
-+ ||        CALLP.S2      __local_call_stub2,B3
+  ||        CALLP.S2      __local_call_stub,B3
   ||        MVK.D2        0,B2
-  ||        INTSP.L1      A0,A4
-            INTSP.L2      B0,B5
-            MV.L2X        A4,B4
-            NOP           3
-            MV.L1X        B5,A4
-- ||        CALLP.S2      __local_call_stub,B3
-+ ||        CALLP.S2      __local_call_stub2,B3
-            SPTRUNC.L1    A4,A7
-            ;.fphead       n, l, W, BU, br, nosat, 0110010b
-            NOP           3
 @@ -1091,8 +1105,8 @@
             SPTRUNC.L1    A3,A1
             NOP           3
@@ -789,7 +795,7 @@
             NOP           1
             MV.L1X        B3,A4
   ||        B.S2X         A2
-@@ -1106,19 +1120,19 @@
+@@ -1106,17 +1120,17 @@
             ADD.L1        A4,-1,A0
             MV.L1X        B3,A2
             CMPEQ.L2X     B4,A0,B1
@@ -809,20 +815,8 @@
 +$C$L3_14:
 +;$C$L3:
             INTDP.L2      B3,B5:B4
--           CALLP.S2      __local_call_stub,B3
-+           CALLP.S2      __local_call_stub2,B3
+            CALLP.S2      __local_call_stub,B3
   ||        MVK.L2        1,B2
-  ||        INTDP.L1      A0,A5:A4
-            INTDP.L2      B0,B7:B6
-@@ -1127,7 +1141,7 @@
-            ;.fphead       n, l, W, BU, br, nosat, 1001010b
-            NOP           3
-            MV.L1X        B6,A4
--           CALLP.S2      __local_call_stub,B3
-+           CALLP.S2      __local_call_stub2,B3
-  ||        MV.L1X        B7,A5
-            MV.L1         A5,A17
-  ||        MV.S1         A4,A16
 @@ -1151,8 +1165,8 @@
             BNOP.S2X      A2,4
             MV.L1         A1,A5
@@ -834,7 +828,7 @@
             NOP           1
             MV.L1X        B3,A4
             BNOP.S2X      A2,4
-@@ -1167,25 +1181,25 @@
+@@ -1167,16 +1181,16 @@
             ADD.L1        A4,-1,A0
             MV.L1X        B3,A1
             CMPEQ.L2X     B4,A0,B1
@@ -853,19 +847,8 @@
 +$C$L5_15:
 +;$C$L5:
             INTSP.L2      B3,B4
-- ||        CALLP.S2      __local_call_stub,B3
-+ ||        CALLP.S2      __local_call_stub2,B3
+  ||        CALLP.S2      __local_call_stub,B3
   ||        MVK.D2        0,B2
-  ||        INTSP.L1      A0,A4
-            INTSP.L2      B0,B5
-            MV.L2X        A4,B4
-            NOP           3
-            MV.L1X        B5,A4
-- ||        CALLP.S2      __local_call_stub,B3
-+ ||        CALLP.S2      __local_call_stub2,B3
-            ;.fphead       n, l, W, BU, br, nosat, 1100101b
-            SPTRUNC.L1    A4,A7
-            NOP           3
 @@ -1204,8 +1218,8 @@
             ADDSP.L1      A3,A0,A0
             NOP           3
@@ -877,18 +860,12 @@
             NOP           1
             MV.L1X        B3,A4
             ;.fphead       n, l, W, BU, nobr, nosat, 1100000b
-@@ -1213,13 +1227,13 @@
-            LDW.D1T1      *A6[A4],A4
-            NOP           4
- 
--	.def __local_call_stub
-+	.def __local_call_stub2
+@@ -1217,9 +1231,9 @@
  	.align 32
--__local_call_stub:
-+__local_call_stub2:
+ __local_call_stub:
             B.S1          __call_stub
 - ||        MVK.S2        0x04dc,B31
-+ ||        MVKL.S2       $C$T0_39,B31
++ ||        MVKL.S2       $C$T0_39,B31		; to divf/divd
  	; 00000e8c  00000309 R_C6000_ABS_L16        800004dc   $C$T0 + 0
 -           MVKH.S2       0x80000000,B31
 +           MVKH.S2       $C$T0_39,B31
