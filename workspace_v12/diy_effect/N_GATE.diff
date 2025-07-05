@@ -1,0 +1,810 @@
+--- ../N_GATE.ZD2.code.asm	2025-07-05 11:11:53.480597955 -0600
++++ N_GATE.asm	2025-07-05 11:11:15.055412763 -0600
+@@ -66,7 +66,7 @@
+  ||        MV.L1X        B8,A4
+  ||        STW.D2T2      B6,*B15[2]
+  ||        OR.S1         A5,A6,A13
+-    [!B1]  B.S1          $C$L3
++    [!B1]  B.S1          $C$L3_1
+  || [ B0]  CMPEQ.L2      B6,B18,B0
+  || [ B1]  CMPEQ.L1X     A13,B7,A0
+            ;.fphead       n, l, W, BU, nobr, nosat, 0000100b
+@@ -76,7 +76,7 @@
+            AND.L2        B4,B5,B0
+  || [ A0]  CMPEQ.L1      A14,A4,A0
+     [!B1]  MVK.L2        0,B0
+-    [ B0]  BNOP.S1       $C$L1,1
++    [ B0]  BNOP.S1       $C$L1_1,1
+  ||        CMPEQ.L2X     B19,A7,B0
+            CMPEQ.L2X     B19,A17,B4
+            CMPEQ.L1      A8,A17,A4
+@@ -89,7 +89,7 @@
+  ||        AND.S1X       A4,B7,A4
+            XOR.L1        1,A4,A5
+  ||        XOR.S1        1,A5,A4
+- || [ A0]  B.S2          $C$L1
++ || [ A0]  B.S2          $C$L1_1
+            OR.L1X        A4,B5,A6
+            OR.L2X        B5,A5,B4
+  ||        OR.L1         A31,A6,A5
+@@ -103,13 +103,13 @@
+            MVKH.S2       0x80000000,B4
+            CMPEQ.L2      B13,B4,B0
+            ;.fphead       n, l, W, BU, nobr, nosat, 0000100b
+-    [!B1]  BNOP.S1       $C$L2,3
++    [!B1]  BNOP.S1       $C$L2_1,3
+  ||        CMPEQ.L1X     A13,B4,A0
+  || [ B0]  LDW.D2T2      *+B15[2],B4
+     [ A0]  CMPEQ.L1      A14,A10,A0
+     [ B0]  CMPEQ.L2X     B4,A10,B0
+-;$C$L1_1:
+-$C$L1:
++$C$L1_1:
++;$C$L1:
+            LDW.D2T2      *++B15[4],B3
+            LDDW.D2T1     *++B15[1],A13:A12
+            LDDW.D2T1     *++B15[1],A15:A14
+@@ -128,8 +128,8 @@
+            EXTU.S1       A3,12,12,A3
+            OR.L1X        A3,B4,A5
+  ||        MVK.S1        0xffffffff,A4
+-;$C$L2_1:
+-$C$L2:
++$C$L2_1:
++;$C$L2:
+            CMPEQ.L1      A8,A9,A4
+  ||        AND.D2        B0,B5,B5
+  ||        CMPEQ.L2X     B19,A7,B7
+@@ -145,19 +145,19 @@
+  ||        CLR.S2        B4,0,19,B4
+            ;.fphead       n, l, W, BU, nobr, nosat, 0010000b
+            OR.L2X        B31,A6,B0
+- || [ A0]  B.S1          $C$L7
++ || [ A0]  B.S1          $C$L7_1
+  || [!A0]  ZERO.L1       A17:A16
+     [ A0]  MVK.L2        0,B0
+  ||        OR.L1X        A3,B4,A5
+  || [!A0]  SHL.S2        B6,0x1f,B4
+  || [!A0]  EXTU.S1       A17,12,12,A3
+-    [ B0]  BNOP.S1       $C$L7,2
++    [ B0]  BNOP.S1       $C$L7_1,2
+     [!A0]  OR.L1X        A3,B4,A5
+     [!B0]  CMPEQ.L2X     B19,A7,B0
+            NOP           
+-;$C$L3_1:
+-$C$L3:
+-    [ B0]  B.S2          $C$L7
++$C$L3_1:
++;$C$L3:
++    [ B0]  B.S2          $C$L7_1
+  ||        ZERO.L1       A5:A4
+  ||        SUB.S1X       B19,A8,A3
+  ||        MV.L2X        A11,B4
+@@ -176,7 +176,7 @@
+            MVK.L1        0,A4
+            MV.L2X        A11,B4
+  || [ B0]  LDW.D2T1      *+B15[2],A5
+- || [!B1]  BNOP.S1       $C$L4,2
++ || [!B1]  BNOP.S1       $C$L4_1,2
+  || [!B0]  CMPGTU.L1X    A13,B13,A0
+            XOR.L2        B11,B4,B4
+            ;.fphead       n, l, W, BU, nobr, nosat, 0000100b
+@@ -189,19 +189,19 @@
+            CMPLT.L1      A3,A9,A1
+  ||        SET.S2        B5,0,30,B5
+  ||        EXTU.S1       A17,12,12,A5
+-    [!A1]  B.S1          $C$L7
++    [!A1]  B.S1          $C$L7_1
+  ||        CMPLT.L1      A3,A6,A0
+  ||        CLR.S2        B5,0,19,B5
+     [!A1]  MVK.S1        0x0000,A0
+  || [ A1]  SHL.S2        B4,0x1f,B4
+  || [ A1]  ZERO.L1       A9:A8
+-    [ A0]  BNOP.S2       $C$L7,2
++    [ A0]  BNOP.S2       $C$L7_1,2
+  ||        OR.L1X        A5,B5,A5
+  || [ A1]  EXTU.S1       A9,12,12,A3
+     [ A1]  OR.L1X        A3,B4,A5
+            NOP           2
+-;$C$L4_1:
+-$C$L4:
++$C$L4_1:
++;$C$L4:
+            SHL.S2        B11,0x1f,B5
+            MVK.L1        0,A3
+  ||        SHRU.S2X      A13,0xb,B4
+@@ -330,18 +330,18 @@
+            AND.L2        B6,B10,B10
+            AND.L2X       B10,A26,B4
+     [ B0]  CMPEQ.L2X     B4,A10,B0
+-    [ B0]  B.S1          $C$L5
++    [ B0]  B.S1          $C$L5_1
+     [!B0]  B.S1          __c6xabi_frcmpyd_div
+            MV.L2         B12,B11
+            AND.L1X       A12,B27,A12
+            MV.L2         B10,B4
+            MV.L2X        A12,B5
+-           ADDKPC.S2     $C$RL4,B3,0
++           ADDKPC.S2     $C$RL4_1,B3,0
+  ||        NOP           1
+  ||        NOP           1
+            ;.fphead       n, l, W, BU, nobr, nosat, 1010000b
+-;$C$RL4_1:
+-$C$RL4:
++$C$RL4_1:
++;$C$RL4:
+            MVK.L2        0,B4
+  ||        MVK.L1        0,A3
+  ||        SHRU.S2X      A4,0x1f,B31
+@@ -365,7 +365,7 @@
+            AND.L2        B5,B4,B5
+            OR.S2X        B5,A3,B0
+  ||        ADDU.L2       B30,B10,B5:B4
+-    [!B0]  B.S1          $C$L6
++    [!B0]  B.S1          $C$L6_1
+  || [ B0]  MVK.L1        0,A3
+  || [ B0]  MVK.L2        1,B31
+  || [ B0]  MV.D2         B4,B10
+@@ -382,14 +382,14 @@
+     [ A0]  MV.L1         A3,A12
+  || [ A0]  MV.L2         B4,B12
+  || [ A0]  MV.S2X        A10,B10
+-;$C$L5_1:
+-$C$L5:
++$C$L5_1:
++;$C$L5:
+            LDW.D2T2      *+B15[1],B4
+            MVK.L1        0,A3
+            SET.S1        A3,20,29,A3
+  ||        SHL.S2        B12,0x14,B5
+-;$C$L6_1:
+-$C$L6:
++$C$L6_1:
++;$C$L6:
+            SHRU.S1       A12,0xb,A31
+  ||        SHRU.S2       B10,0xb,B31
+            ADD.L2X       B5,A3,B5
+@@ -401,8 +401,8 @@
+            OR.L2         B5,B6,B30
+            OR.L1X        A30,B31,A4
+            OR.L1X        A3,B30,A5
+-;$C$L7_1:
+-$C$L7:
++$C$L7_1:
++;$C$L7:
+            LDW.D2T2      *++B15[4],B3
+            LDDW.D2T1     *++B15[1],A13:A12
+            LDDW.D2T1     *++B15[1],A15:A14
+@@ -472,7 +472,7 @@
+            MV.L2         B0,B31
+  ||        CALLP.S2      __call_stub,B3
+            MV.L2X        A4,B0
+-    [ B0]  BNOP.S1       $C$L1,5
++    [ B0]  BNOP.S1       $C$L1_3,5
+            LDW.D2T2      *+B5[3],B0
+            MVK.S1        0x6666,A6
+            MVKH.S1       0x44300000,A6
+@@ -480,12 +480,12 @@
+            MV.L1         A0,A4
+            NOP           1
+            B.S2          B0
+-           ADDKPC.S2     $C$RL9,B3,4
+-;$C$RL9_3:
+-$C$RL9:
+-           BNOP.S1       $C$L2,5
+-;$C$L1_3:
+-$C$L1:
++           ADDKPC.S2     $C$RL9_3,B3,4
++$C$RL9_3:
++;$C$RL9:
++           BNOP.S1       $C$L2_3,5
++$C$L1_3:
++;$C$L1:
+            LDW.D2T2      *B5[3],B0
+            LDW.D2T2      *++B15[2],B3
+            MVK.S1        0x6666,A6
+@@ -496,8 +496,8 @@
+            SHL.S2        B4,0x17,B4
+            MV.L1         A0,A4
+            NOP           3
+-;$C$L2_3:
+-$C$L2:
++$C$L2_3:
++;$C$L2:
+            LDW.D2T2      *++B15[2],B3
+            BNOP.S2       B3,5
+ 
+@@ -559,9 +559,9 @@
+            MVK.L2        3,B4
+            CALLP.S2      __call_stub,B3
+  ||        MV.L2         B0,B31
+-           MVK.S1        0x0418,A6
++           MVKL.S1       NOISEGATE_DEPTH_offset_tbl,A6
+ 	; 000006f0  00000909 R_C6000_ABS_L16        80000418   NOISEGATE_DEPTH_offset_tbl + 0
+-           MVKH.S1       0x80000000,A6
++           MVKH.S1       NOISEGATE_DEPTH_offset_tbl,A6
+ 	; 000006f4  0000090a R_C6000_ABS_H16        80000418   NOISEGATE_DEPTH_offset_tbl + 0
+  ||        MVK.L2        11,B6
+            MV.L2X        A4,B4
+@@ -584,11 +584,11 @@
+            ;.fphead       n, l, W, BU, nobr, nosat, 1110010b
+            LDW.D1T1      *A4[0],A4
+            MVK.L2        5,B4
+-           MVK.S1        0x0478,A6
++           MVKL.S1       NOISEGATE_decay_rel_tbl,A6
+ 	; 00000724  00000809 R_C6000_ABS_L16        80000478   NOISEGATE_decay_rel_tbl + 0
+            CALLP.S2      __call_stub,B3
+  ||        MV.L2         B0,B31
+-           MVKH.S1       0x80000000,A6
++           MVKH.S1       NOISEGATE_decay_rel_tbl,A6
+ 	; 00000730  0000080a R_C6000_ABS_H16        80000478   NOISEGATE_decay_rel_tbl + 0
+            MVK.L2        11,B6
+            CALLP.S2      __local_call_stub,B3
+@@ -611,10 +611,10 @@
+ 	.def Fx_DYN_NoiseGate_edge_edit
+ 	.align 32
+ Fx_DYN_NoiseGate_edge_edit:
+-           MVK.S1        0x0448,A6
++           MVKL.S1       NOISEGATE_EDGE_tbl,A6
+ 	; 00000760  00000709 R_C6000_ABS_L16        80000448   NOISEGATE_EDGE_tbl + 0
+            STW.D2T2      B3,*B15--[4]
+- ||        MVKH.S1       0x80000000,A6
++ ||        MVKH.S1       NOISEGATE_EDGE_tbl,A6
+ 	; 00000768  0000070a R_C6000_ABS_H16        80000448   NOISEGATE_EDGE_tbl + 0
+  ||        MV.L2         B4,B5
+  ||        MVK.S2        20,B4
+@@ -637,9 +637,9 @@
+            ADD.L1        A0,A4,A4
+            MVK.L1        8,A6
+            ;.fphead       n, l, W, BU, nobr, nosat, 0101101b
+-           ADDKPC.S2     $C$RL27,B3,2
+-;$C$RL27_8:
+-$C$RL27:
++           ADDKPC.S2     $C$RL27_8,B3,2
++$C$RL27_8:
++;$C$RL27:
+            LDW.D2T2      *++B15[4],B3
+            NOP           4
+            BNOP.S2       B3,5
+@@ -656,9 +656,9 @@
+            MV.L1X        B4,A1
+            ;.fphead       n, l, W, BU, nobr, nosat, 1110100b
+            MV.L2         B4,B0
+-           MVK.S2        0x02dc,B4
++           MVKL.S2       _Fx_DYN_NoiseGate_Coe,B4
+ 	; 000007c4  00000609 R_C6000_ABS_L16        800002dc   _Fx_DYN_NoiseGate_Coe + 0
+-           MVKH.S2       0x80000000,B4
++           MVKH.S2       _Fx_DYN_NoiseGate_Coe,B4
+ 	; 000007c8  0000060a R_C6000_ABS_H16        800002dc   _Fx_DYN_NoiseGate_Coe + 0
+  ||        MV.L1         A10,A4
+            MV.L2X        A3,B31
+@@ -715,9 +715,9 @@
+ 	.align 32
+ __local_call_stub:
+            B.S1          __call_stub
+- ||        MVK.S2        0x0324,B31
++ ||        MVKL.S2       $C$T0_39,B31
+ 	; 0000084c  00000509 R_C6000_ABS_L16        80000324   $C$T0 + 0
+-           MVKH.S2       0x80000000,B31
++           MVKH.S2       $C$T0_39,B31
+ 	; 00000850  0000050a R_C6000_ABS_H16        80000324   $C$T0 + 0
+            LDW.D2T2      *+B31[B2],B31
+            NOP           3
+@@ -761,17 +761,17 @@
+            OR.L2X        B6,A3,B0
+  ||        EXTU.S1       A6,24,24,A3
+     [!B0]  MVK.S1        0,A0
+- || [!B0]  B.S2          $C$L3
++ || [!B0]  B.S2          $C$L3_11
+            ;.fphead       n, l, W, BU, nobr, nosat, 0110000b
+  || [!B0]  CMPEQ.L1      A17,A8,A1
+  || [ B0]  MVK.D1        0,A1
+  || [ B0]  CMPEQ.L2      B16,B9,B5
+-    [ A0]  B.S2          $C$L1
++    [ A0]  B.S2          $C$L1_11
+  || [!B0]  SUB.L2X       A17,B7,B4
+  || [ B0]  XOR.D2        1,B5,B5
+  || [!B0]  XOR.L1X       A7,B17,A3
+  || [!B0]  MVK.S1        0xffffff83,A4
+-    [ A1]  BNOP.S1       $C$L5,2
++    [ A1]  BNOP.S1       $C$L5_11,2
+  || [!B0]  CMPLT.L2      B4,B19,B5
+  || [ B0]  AND.S2        B6,B5,B1
+     [!B0]  XOR.L2        1,B5,B5
+@@ -787,7 +787,7 @@
+            XOR.L1        1,A6,A9
+  ||        AND.S1X       A9,B6,A6
+            XOR.L1        1,A6,A6
+- || [ B1]  B.S1          $C$L1
++ || [ B1]  B.S1          $C$L1_11
+            OR.L2X        B4,A9,B6
+            OR.L2X        B4,A6,B4
+  ||        OR.S2         B5,B6,B6
+@@ -795,7 +795,7 @@
+  ||        CMPEQ.L2      0,B6,B5
+            CMPEQ.L2      0,B4,B4
+            OR.L2         B4,B5,B0
+-    [!B0]  B.S1          $C$L2
++    [!B0]  B.S1          $C$L2_11
+  ||        CMPEQ.L2      B16,B9,B5
+  ||        CMPEQ.L1X     A18,B9,A6
+            CMPEQ.L2X     B7,A8,B4
+@@ -803,15 +803,15 @@
+            AND.L1        A6,A5,A4
+            OR.L1X        A4,B4,A0
+            CMPEQ.L2      B16,B9,B4
+-;$C$L1_11:
+-$C$L1:
++$C$L1_11:
++;$C$L1:
+            BNOP.S2       B3,3
+            SHL.S1        A3,0x1f,A3
+            SET.S1        A3,0,30,A4
+-;$C$L2_11:
+-$C$L2:
++$C$L2_11:
++;$C$L2:
+            CMPEQ.L2      B7,B19,B5
+- || [ A0]  B.S2          $C$L5
++ || [ A0]  B.S2          $C$L5_11
+  ||        AND.D2X       B8,A6,B31
+  ||        SHL.S1        A3,0x1f,A4
+            AND.L2        B4,B5,B5
+@@ -821,10 +821,10 @@
+  ||        CLR.S1        A4,0,22,A4
+     [ A0]  MVK.L2        0,B0
+  || [!A0]  SHL.S1        A3,0x1f,A4
+-    [ B0]  BNOP.S1       $C$L5,1
++    [ B0]  BNOP.S1       $C$L5_11,1
+     [!B0]  CMPEQ.L1      A17,A8,A1
+            NOP           3
+-    [ A1]  BNOP.S2       $C$L5,1
++    [ A1]  BNOP.S2       $C$L5_11,1
+  ||        SUB.L2X       A17,B7,B4
+  ||        MVK.S1        0xffffff83,A4
+  ||        XOR.L1X       A7,B17,A3
+@@ -832,13 +832,13 @@
+            XOR.L2        1,B5,B5
+  ||        NOP           
+  ||        NOP           
+-;$C$L3_11:
+-$C$L3:
++$C$L3_11:
++;$C$L3:
+            CMPGT.L1X     A4,B4,A3
+  ||        SHL.S1        A3,0x1f,A4
+  ||        SUB.L2X       A17,B7,B6
+            OR.L1X        A3,B5,A0
+-    [!A0]  BNOP.S1       $C$L4,0
++    [!A0]  BNOP.S1       $C$L4_11,0
+  ||        CMPGTU.L2X    B16,A18,B0
+  ||        XOR.L1X       A7,B17,A3
+  || [ A0]  MVK.S2        0xffffff82,B5
+@@ -850,14 +850,14 @@
+     [!A0]  MVK.S2        0x0001,B1
+  || [ A0]  SET.S1        A4,0,30,A4
+  || [ A0]  CMPLT.L2      B4,B5,B0
+-    [!B1]  BNOP.S2       $C$L5,1
++    [!B1]  BNOP.S2       $C$L5_11,1
+  || [ A0]  CLR.S1        A4,0,22,A4
+     [!B1]  MVK.L2        0,B0
+  || [ B1]  SHL.S1        A3,0x1f,A4
+-    [ B0]  BNOP.S1       $C$L6,2
++    [ B0]  BNOP.S1       $C$L6_11,2
+     [ B0]  BNOP.S2       B3,2
+-;$C$L4_11:
+-$C$L4:
++$C$L4_11:
++;$C$L4:
+            SHL.S2        B17,0x1f,B4
+            EXTU.S2       B16,1,9,B5
+            SET.S2        B4,0,29,B4
+@@ -896,11 +896,11 @@
+            MPYDP.M1      A7:A6,A9:A8,A5:A4
+            NOP           9
+            DPSP.L1       A5:A4,A4
+-;$C$L5_11:
+-$C$L5:
++$C$L5_11:
++;$C$L5:
+            BNOP.S2       B3,2
+-;$C$L6_11:
+-$C$L6:
++$C$L6_11:
++;$C$L6:
+            NOP           3
+            NOP           
+            NOP           
+@@ -931,8 +931,8 @@
+            ;.fphead       n, l, W, BU, nobr, nosat, 0010010b
+  ||        MVK.S2        0x0010,B1
+  ||        MVK.S1        0x0000,A21
+-;$C$L1_12:
+-$C$L1:
++$C$L1_12:
++;$C$L1:
+            LDW.D2T2      *B18++[1],B6
+            NOP           4
+            STW.D2T2      B6,*+B19[0]
+@@ -1032,7 +1032,7 @@
+            NOP           2
+            ADDSP.L2      B30,B17,B5
+            NOP           2
+-    [ B1]  B.S1          $C$L1
++    [ B1]  B.S1          $C$L1_12
+            MPYSP.M2X     B5,A30,B17
+            MV.L2         B16,B5
+            NOP           2
+@@ -1053,25 +1053,25 @@
+            ADD.L1        A4,-1,A0
+            MV.L1X        B3,A2
+            CMPEQ.L2X     B4,A0,B1
+-    [ B1]  BNOP.S1       $C$L2,4
++    [ B1]  BNOP.S1       $C$L2_13,4
+            ADD.L2        B6,-1,B3
+  ||        MV.S2         B4,B0
+-    [ B0]  BNOP.S1       $C$L1,5
++    [ B0]  BNOP.S1       $C$L1_13,5
+            B.S2X         A2
+            LDW.D1T1      *A6[0],A4
+            NOP           4
+            ;.fphead       n, l, W, BU, nobr, nosat, 1001001b
+-;$C$L1_13:
+-$C$L1:
++$C$L1_13:
++;$C$L1:
+            INTSP.L2      B3,B4
+- ||        CALLP.S2      __local_call_stub,B3
++ ||        CALLP.S2      __local_call_stub2,B3
+  ||        MVK.D2        0,B2
+  ||        INTSP.L1      A0,A4
+            INTSP.L2      B0,B5
+            MV.L2X        A4,B4
+            NOP           3
+            MV.L1X        B5,A4
+- ||        CALLP.S2      __local_call_stub,B3
++ ||        CALLP.S2      __local_call_stub2,B3
+            SPTRUNC.L1    A4,A7
+            ;.fphead       n, l, W, BU, br, nosat, 0110010b
+            NOP           3
+@@ -1091,8 +1091,8 @@
+            SPTRUNC.L1    A3,A1
+            NOP           3
+            ADD.L1        A1,A0,A4
+-;$C$L2_13:
+-$C$L2:
++$C$L2_13:
++;$C$L2:
+            NOP           1
+            MV.L1X        B3,A4
+  ||        B.S2X         A2
+@@ -1106,19 +1106,19 @@
+            ADD.L1        A4,-1,A0
+            MV.L1X        B3,A2
+            CMPEQ.L2X     B4,A0,B1
+-    [ B1]  BNOP.S1       $C$L4,4
++    [ B1]  BNOP.S1       $C$L4_14,4
+            ADD.L2        B6,-1,B3
+  ||        MV.S2         B4,B0
+-    [ B0]  BNOP.S1       $C$L3,5
++    [ B0]  BNOP.S1       $C$L3_14,5
+            BNOP.S2X      A2,4
+            ;.fphead       n, l, W, BU, nobr, nosat, 0010011b
+  ||        LDDW.D1T1     *+A6[0],A1:A0
+            MV.L1         A1,A5
+  ||        MV.S1         A0,A4
+-;$C$L3_14:
+-$C$L3:
++$C$L3_14:
++;$C$L3:
+            INTDP.L2      B3,B5:B4
+-           CALLP.S2      __local_call_stub,B3
++           CALLP.S2      __local_call_stub2,B3
+  ||        MVK.L2        1,B2
+  ||        INTDP.L1      A0,A5:A4
+            INTDP.L2      B0,B7:B6
+@@ -1127,7 +1127,7 @@
+            ;.fphead       n, l, W, BU, br, nosat, 1001010b
+            NOP           3
+            MV.L1X        B6,A4
+-           CALLP.S2      __local_call_stub,B3
++           CALLP.S2      __local_call_stub2,B3
+  ||        MV.L1X        B7,A5
+            MV.L1         A5,A17
+  ||        MV.S1         A4,A16
+@@ -1151,8 +1151,8 @@
+            BNOP.S2X      A2,4
+            MV.L1         A1,A5
+  ||        MV.S1         A0,A4
+-;$C$L4_14:
+-$C$L4:
++$C$L4_14:
++;$C$L4:
+            NOP           1
+            MV.L1X        B3,A4
+            BNOP.S2X      A2,4
+@@ -1167,25 +1167,25 @@
+            ADD.L1        A4,-1,A0
+            MV.L1X        B3,A1
+            CMPEQ.L2X     B4,A0,B1
+-    [ B1]  BNOP.S1       $C$L6,4
++    [ B1]  BNOP.S1       $C$L6_15,4
+            ADD.L2        B6,-1,B3
+  ||        MV.S2         B4,B0
+-    [ B0]  BNOP.S1       $C$L5,5
++    [ B0]  BNOP.S1       $C$L5_15,5
+            B.S2X         A1
+            ;.fphead       n, l, W, BU, nobr, nosat, 0010010b
+            LDW.D1T1      *A6[0],A4
+            NOP           4
+-;$C$L5_15:
+-$C$L5:
++$C$L5_15:
++;$C$L5:
+            INTSP.L2      B3,B4
+- ||        CALLP.S2      __local_call_stub,B3
++ ||        CALLP.S2      __local_call_stub2,B3
+  ||        MVK.D2        0,B2
+  ||        INTSP.L1      A0,A4
+            INTSP.L2      B0,B5
+            MV.L2X        A4,B4
+            NOP           3
+            MV.L1X        B5,A4
+- ||        CALLP.S2      __local_call_stub,B3
++ ||        CALLP.S2      __local_call_stub2,B3
+            ;.fphead       n, l, W, BU, br, nosat, 1100101b
+            SPTRUNC.L1    A4,A7
+            NOP           3
+@@ -1204,8 +1204,8 @@
+            ADDSP.L1      A3,A0,A0
+            NOP           3
+            MV.L1         A0,A4
+-;$C$L6_15:
+-$C$L6:
++$C$L6_15:
++;$C$L6:
+            NOP           1
+            MV.L1X        B3,A4
+            ;.fphead       n, l, W, BU, nobr, nosat, 1100000b
+@@ -1213,13 +1213,13 @@
+            LDW.D1T1      *A6[A4],A4
+            NOP           4
+ 
+-	.def __local_call_stub
++	.def __local_call_stub2
+ 	.align 32
+-__local_call_stub:
++__local_call_stub2:
+            B.S1          __call_stub
+- ||        MVK.S2        0x04dc,B31
++ ||        MVKL.S2       $C$T0_31,B31
+ 	; 00000e8c  00000309 R_C6000_ABS_L16        800004dc   $C$T0 + 0
+-           MVKH.S2       0x80000000,B31
++           MVKH.S2       $C$T0_31,B31
+ 	; 00000e90  0000030a R_C6000_ABS_H16        800004dc   $C$T0 + 0
+            LDW.D2T2      *+B31[B2],B31
+            NOP           3
+@@ -1229,9 +1229,9 @@
+ 	.align 32
+ _GetString_EnvIn:
+            MV.L1         A4,A5
+- ||        MVK.S1        0x04e8,A4
++ ||        MVKL.S1       disp_prm_EnvIn,A4
+ 	; 00000ea4  00001c09 R_C6000_ABS_L16        800004e8   disp_prm_EnvIn + 0
+-           MVKH.S1       0x80000000,A4
++           MVKH.S1       disp_prm_EnvIn,A4
+ 	; 00000ea8  00001c0a R_C6000_ABS_H16        800004e8   disp_prm_EnvIn + 0
+            LDW.D1T1      *A4[A5],A5
+            MVK.L1        0,A4
+@@ -1239,13 +1239,13 @@
+            NOP           2
+            LDB.D1T1      *A5[0],A0
+            NOP           4
+-    [!A0]  BNOP.S1       $C$L4,5
++    [!A0]  BNOP.S1       $C$L4_17,5
+            MV.L2X        A4,B0
+            ;.fphead       n, l, W, B, br, nosat, 1111000b
+            MV.L1         A5,A4
+  ||        MVK.S1        1,A2
+  ||        MV.L2X        A0,B1
+-    [ A2]  SPLOOPW       7
++    [ A2]  SPLOOPW       5			; as '7' doesn't compile
+            NOP           3
+     [ A2]  STB.D2T2      B1,*B4++[1]
+     [ A2]  LDB.D1T1      *++A4[1],A3
+@@ -1258,8 +1258,8 @@
+  ||        ADD.L2        B0,1,B0
+            NOP           1
+            MV.L1X        B0,A4
+-;$C$L4_17:
+-$C$L4:
++$C$L4_17:
++;$C$L4:
+            BNOP.S2       B3,3
+            MVK.L1        0,A0
+            STB.D1T1      A0,*A4[A6]
+@@ -1269,15 +1269,15 @@
+ Dll_NoiseGate:
+            BNOP.S2       B3,1
+            MVK.L1        6,A0
+- ||        MVK.S2        0x0000,B0
++ ||        MVKL.S2       NoiseGate,B0
+ 	; 00000ef8  00001b09 R_C6000_ABS_L16        80000000   NoiseGate + 0
+            ;.fphead       n, l, W, BU, nobr, nosat, 0111101b
+-           MVK.S1        0x0150,A1
++           MVKL.S1       effectTypeImageInfo,A1
+ 	; 00000f00  00001a09 R_C6000_ABS_L16        80000150   effectTypeImageInfo + 0
+- ||        MVKH.S2       0x80000000,B0
++ ||        MVKH.S2       NoiseGate,B0
+ 	; 00000f04  00001b0a R_C6000_ABS_H16        80000000   NoiseGate + 0
+  ||        STB.D1T1      A0,*+A4[0]
+-           MVKH.S1       0x80000000,A1
++           MVKH.S1       effectTypeImageInfo,A1
+ 	; 00000f0c  00001a0a R_C6000_ABS_H16        80000150   effectTypeImageInfo + 0
+  ||        STW.D1T2      B0,*+A4[1]
+            STW.D1T1      A1,*+A4[3]
+@@ -1416,7 +1416,7 @@
+            .word 0x00000000
+            .word 0x00000000
+            .word 0x00000000
+-           .word 0x0000060c
++           .word Fx_DYN_NoiseGate_onf
+ 	; 8000001c  00001701 R_C6000_ABS32          0000060c   Fx_DYN_NoiseGate_onf + 0
+            .word 0x00000000
+            .word 0x00000000
+@@ -1431,9 +1431,9 @@
+            .word 0x00000000
+            .word 0x00000001
+            .word 0x00000000
+-           .word 0x000007ac
++           .word Fx_DYN_NoiseGate_init
+ 	; 80000054  00001601 R_C6000_ABS32          000007ac   Fx_DYN_NoiseGate_init + 0
+-           .word 0x00000ae0
++           .word Fx_DYN_NoiseGate
+ 	; 80000058  00001501 R_C6000_ABS32          00000ae0   Fx_DYN_NoiseGate + 0
+            .word 0x00000000
+            .word 0x414e6666
+@@ -1447,10 +1447,10 @@
+            .word 0x00000001
+            .word 0x00000000
+            .word 0x00000000
+-           .word 0x000006b0
++           .word Fx_DYN_NoiseGate_EnvIn_edit
+ 	; 8000008c  00001401 R_C6000_ABS32          000006b0   Fx_DYN_NoiseGate_EnvIn_edit + 0
+            .word 0x00000000
+-           .word 0x00000ea0
++           .word _GetString_EnvIn 
+ 	; 80000094  00001301 R_C6000_ABS32          00000ea0   _GetString_EnvIn + 0
+            .word 0x00000000
+            .word 0x00000000
+@@ -1463,7 +1463,7 @@
+            .word 0x00000064
+            .word 0x00000000
+            .word 0x00000000
+-           .word 0x000006d4
++           .word Fx_DYN_NoiseGate_depth_edit
+ 	; 800000c4  00001201 R_C6000_ABS32          000006d4   Fx_DYN_NoiseGate_depth_edit + 0
+            .word 0x00000000
+            .word 0x00000000
+@@ -1478,7 +1478,7 @@
+            .word 0x00000036
+            .word 0x00000064
+            .word 0x00000000
+-           .word 0x000005a0
++           .word Fx_DYN_NoiseGate_thr_edit
+ 	; 800000fc  00001101 R_C6000_ABS32          000005a0   Fx_DYN_NoiseGate_thr_edit + 0
+            .word 0x00000000
+            .word 0x00000000
+@@ -1493,7 +1493,7 @@
+            .word 0x00000000
+            .word 0x00000064
+            .word 0x00000000
+-           .word 0x00000710
++           .word Fx_DYN_NoiseGate_decay_edit
+ 	; 80000134  00001001 R_C6000_ABS32          00000710   Fx_DYN_NoiseGate_decay_edit + 0
+            .word 0x00000000
+            .word 0x00000000
+@@ -1511,15 +1511,15 @@
+ effectTypeImageInfo:
+            .word 0x00000017
+            .word 0x0000001e
+-           .word 0x80000280
++           .word picTotalDisplay_NoiseGate
+ 	; 80000158  00000f01 R_C6000_ABS32          80000280   picTotalDisplay_NoiseGate + 0
+            .word 0x00000014
+            .word 0x0000000a
+-           .word 0x800004a8
++           .word CategoryIcon_Dynamics
+ 	; 80000164  00000e01 R_C6000_ABS32          800004a8   CategoryIcon_Dynamics + 0
+            .word 0x00000018
+            .word 0x00000016
+-           .word 0x80000328
++           .word AddDelIcon_Dynamics
+ 	; 80000170  00000d01 R_C6000_ABS32          80000328   AddDelIcon_Dynamics + 0
+            .word 0x00000000
+            .word 0x00000000
+@@ -1533,15 +1533,15 @@
+            .word 0x00000000
+            .word 0x0000001c
+            .word 0x00000009
+-           .word 0x80000370
++           .word _PrmPic_DETCT
+ 	; 800001a4  00000c01 R_C6000_ABS32          80000370   _PrmPic_DETCT + 0
+            .word 0x0000001b
+            .word 0x00000009
+-           .word 0x800003a8
++           .word _PrmPic_Depth
+ 	; 800001b0  00000b01 R_C6000_ABS32          800003a8   _PrmPic_Depth + 0
+            .word 0x0000001b
+            .word 0x00000009
+-           .word 0x800003e0
++           .word _PrmPic_THRSH
+ 	; 800001bc  00000a01 R_C6000_ABS32          800003e0   _PrmPic_THRSH + 0
+            .word 0x00000000
+            .word 0x00000000
+@@ -1648,8 +1648,8 @@
+            .word 0x00000000
+            .word 0x00000000
+            .word 0x00000000
+-;$C$T0_31:
+-$C$T0:
++$C$T0_31:
++;$C$T0:
+            .word 0x00000e04
+ 	; 80000324  00000401 R_C6000_ABS32          00000e04   TBL_TO_VAL + 0
+ 	.dwendtag $C$DW$4
+@@ -1822,16 +1822,27 @@
+            .word 0x00000000
+            .word 0x00000000
+            .word 0x00000000
+-;$C$SL1_39:
+-$C$SL1:
+-           .word 0x49525447
+-           .word 0x4645004e
+-           .word 0x004e4958
+-;$C$T0_39:
+-$C$T0:
+-           .word 0x00000860
++$C$SL1_39:
++;$C$SL1:
++           .byte 0x47
++           .byte 0x54
++           .byte 0x52
++           .byte 0x49
++           .byte 0x4e
++           .byte 0x00
++$C$SL2_39:
++;$C$SL2:
++           .byte 0x45
++           .byte 0x46
++           .byte 0x58
++           .byte 0x49
++           .byte 0x4e
++           .byte 0x00
++$C$T0_39:
++;$C$T0:
++           .word __c6xabi_divf 
+ 	; 800004dc  00000201 R_C6000_ABS32          00000860   __c6xabi_divf + 0
+-           .word 0x00000000
++           .word __c6xabi_divd
+ 	; 800004e0  00000101 R_C6000_ABS32          00000000   __c6xabi_divd + 0
+            .word 0x00000000
+ 	.dwendtag $C$DW$12
+@@ -1842,9 +1853,9 @@
+ 	.dwattr $C$DW$13, DW_AT_low_pc(disp_prm_EnvIn)
+ 	.dwattr $C$DW$13, DW_AT_high_pc(0x00)
+ disp_prm_EnvIn:
+-           .word 0x800004d0
++           .word $C$SL1_39
+ 	; 800004e8  00001901 R_C6000_ABS32          800004d0   $C$SL1 + 0
+-           .word 0x800004d6
++           .word $C$SL2_39
+ 	; 800004ec  00001801 R_C6000_ABS32          800004d6   $C$SL2 + 0
+ 	.dwendtag $C$DW$13
+ 
+@@ -1857,4 +1868,4 @@
+            .cstring "fb6277e44cee0f9fdacf9028ae3c5483  ./N_GATE.ZD2.code"
+ 	.dwendtag $C$DW$14
+ 
+-.emsg "symbols are not word aligned!"
++;.emsg "symbols are not word aligned!"
