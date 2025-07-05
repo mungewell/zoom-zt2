@@ -1,16 +1,63 @@
 --- ../BOMBER.ZD2.code.asm	2025-06-24 16:15:27.062484109 -0600
-+++ BOMBER.asm	2025-07-02 18:55:27.033195405 -0600
-@@ -43,8 +43,8 @@
++++ BOMBER.asm	2025-07-04 21:24:56.427978269 -0600
+@@ -9,7 +9,7 @@
+            LDW.D1T1      *+A4[2],A5
+            MVK.S2        0x0001,B8
+            MVKH.S2       0xd0000000,B8
+-           LDW.D2T2      *+B4[8],B22
++           LDW.D2T2      *+B4[8],B22	; base of 'effect' input buffer
+            MVK.L1        0,A18
+            MV.L2X        A5,B5
+            LDW.D2T2      *B5[5],B6
+@@ -31,39 +31,39 @@
+            MV.L2X        A18,B25
+            MVK.S2        0x0010,B1
+            INTSP.L2      B6,B7
+-           LDW.D2T2      *+B4[7],B6
++           LDW.D2T2      *+B4[7],B6	; pointer to 'something' structure
+  ||        ADDK.S2       -208,B15
+-           LDW.D2T2      *B4[1],B21
++           LDW.D2T2      *B4[1],B21	; base of 'effect' output buffer
+            ADDAW.D1X     B15,0x4,A16
+            ;.fphead       n, h, W, BU, nobr, nosat, 1000010b
+            LDW.D1T1      *+A4[1],A21
+            MPYSP.M1X     A6,B7,A7
+-           LDW.D2T1      *B6[0],A22
++           LDW.D2T1      *B6[0],A22	; pointer to 'curent sample' store (within 'something')
+  ||        MV.L2X        A5,B20
   ||        SET.S1        A3,23,29,A3
   ||        MVK.S2        0x0001,B26
   ||        MVK.L1        0,A9
 -;$C$L1_1:
 -$C$L1:
+-           LDW.D1T1      *++A17[1],A4
 +$C$L1_1:
 +;$C$L1:
-            LDW.D1T1      *++A17[1],A4
++           LDW.D1T1      *++A17[1],A4	; read from 'effect' input
             ;.fphead       n, h, W, BU, nobr, nosat, 0000100b
             MVK.S1        0x0021,A31
+            LDW.D2T2      *+B5[0],B31
+            LDW.D2T2      *+B20[0],B30
+            LDW.D2T2      *+B20[1],B29
+-           STW.D1T1      A4,*+A22[0]
++           STW.D1T1      A4,*+A22[0]	; write to 'current sample'? A22 never increased...
+            LDW.D1T1      *+A21[A31],A0
+            ADD.L1X       A9,B21,A4
+            LDW.D1T1      *+A21[8],A6
+            LDW.D1T1      *+A21[3],A30
+            LDW.D1T1      *+A21[10],A8
+-    [!A0]  LDW.D2T2      *+B4[0],B6
++    [!A0]  LDW.D2T2      *+B4[0],B6	; base of 'pedal' (ie from inst.) input buffer?
+     [ A0]  LDW.D1T1      *+A4[0],A4
+     [ A0]  ADD.L2X       B21,A9,B6
+     [ A0]  LDW.D2T2      *+B6[16],B6
+            LDW.D1T1      *+A21[9],A28
+     [!A0]  ADD.L1X       A9,B6,A4
+-    [!A0]  LDW.D1T1      *+A4[0],A5
++    [!A0]  LDW.D1T1      *+A4[0],A5	; read sample from 'pedal' input?
+     [ A0]  STW.D2T1      A4,*+B15[2]
+     [ A0]  STW.D2T2      B6,*+B15[3]
+            LDW.D1T1      *+A21[12],A29
 @@ -106,10 +106,10 @@
             CMPLTSP.S2X   B7,A5,B6
             AND.L2X       B6,A4,B0
@@ -148,17 +195,19 @@
   || [ B0]  MV.D2         B7,B4
   ||        MPYSP.M2      B8,B5,B4
   ||        ADDSP.L1      A20,A19,A20
-@@ -389,8 +389,8 @@
+@@ -389,9 +389,9 @@
             LDW.D2T2      *+B20[6],B6
             LDW.D2T1      *+B20[11],A5
             NOP           4
 -;$C$L12_1:
 -$C$L12:
+-           STW.D1T2      B8,*+A9[0]
 +$C$L12_1:
 +;$C$L12:
-            STW.D1T2      B8,*+A9[0]
++           STW.D1T2      B8,*+A9[0]	; write to 'current sample'?
             LDW.D2T1      *+B16[24],A6
   ||        LDW.D1T2      *A16++[1],B8
+            LDW.D2T2      *+B16[25],B18
 @@ -445,7 +445,7 @@
             ADDSP.L1      A24,A3,A3
             ;.fphead       n, h, W, BU, nobr, nosat, 0000010b
@@ -173,9 +222,10 @@
             ;.fphead       n, l, W, BU, nobr, nosat, 1010000b
   ||        ADDAW.D2      B15,36,B8
 - ||        MVK.S2        0x0010,B18
-+ ||        MVK.S2        0x0010,B18		; loop x16
-  ||        STW.D1T2      B8,*+A9[0]
+- ||        STW.D1T2      B8,*+A9[0]
 -           SUB.L2        B18,0x1,B0
++ ||        MVK.S2        0x0010,B18		; loop x16
++ ||        STW.D1T2      B8,*+A9[0]		; write to 'current sample'?
 +           SUB.L2        B18,0x1,B0		; compensate for BDEC
   ||        LDW.D2T1      *+B16[24],A6
   ||        LDW.D1T2      *A16++[1],B18
@@ -247,9 +297,9 @@
 -           STW.D2T1      A4,*+B5[16]
 +$C$L14_1:
 +;$C$L14:
-+		   LDW.D2T2      *B9++[1],B7		; likely buffer
++		   LDW.D2T2      *B9++[1],B7		; read buffer?
 +		   NOP           4
-+		   STW.D2T2      B7,*B6[0]
++		   STW.D2T2      B7,*B6[0]		; write to 'current sample'? note B6 never increased...
 +
 +		   LDW.D1T1      *+A3[5],A8		; K5
 +	 ||        LDW.D2T2      *B8++[1],B7		; read L-sample
@@ -440,11 +490,13 @@
             LDW.D2T2      *++B15[2],B3
             NOP           4
             BNOP.S2       B3,5
-@@ -785,10 +789,10 @@
+@@ -784,11 +788,11 @@
+            LDW.D1T1      *A4[0],A4
             MV.D2X        A3,B31
   ||        CALLP.S2      __call_stub,B3
-  ||        MVK.L2        2,B4
+- ||        MVK.L2        2,B4
 -           MVK.S2        0x0538,B4
++ ||        MVK.L2        2,B4		; user param 1 = midi param 2
 +           MVKL.S2       Bomb_Decay_tbl_1,B4
  	; 000009b8  00001809 R_C6000_ABS_L16        80000538   Bomb_Decay_tbl_1 + 0
             ;.fphead       n, l, W, BU, nobr, nosat, 0001111b
@@ -1431,12 +1483,12 @@
             ;.fphead       n, l, W, BU, nobr, nosat, 0011100b
  	.sect ".const"
  
-@@ -2432,14 +2436,14 @@
+@@ -2432,61 +2436,64 @@
  	.dwattr $C$DW$1, DW_AT_low_pc(Bomber)
  	.dwattr $C$DW$1, DW_AT_high_pc(0x00)
  Bomber:
 -           .word 0x664f6e4f
-+           .word 0x664f6e4f			; 'OnOff'
++           .word 0x664f6e4f		; 'OnOff'
             .word 0x00000066
             .word 0x00000000
             .word 0x00000001
@@ -1448,15 +1500,18 @@
  	; 8000001c  00002601 R_C6000_ABS32          0000088c   Fx_SFX_Bomber_onf + 0
             .word 0x00000000
             .word 0x00000000
-@@ -2447,46 +2451,46 @@
             .word 0x00000000
-            .word 0x00080000
+            .word 0x00000000
+-           .word 0x00080000
++           .word 0x00080000		; bitfield?
             .word 0x00000000
 -           .word 0x626d6f42
-+           .word 0x626d6f42			; 'Bomber'
++
++           .word 0x626d6f42		; 'Bomber'
             .word 0x00007265
             .word 0x00000000
-            .word 0xffffffff
+-           .word 0xffffffff
++           .word 0xffffffff		; always 0xffffffff for init
             .word 0x00000000
             .word 0x00000001
             .word 0x00000000
@@ -1472,7 +1527,8 @@
             .word 0x00000000
             .word 0x00000000
 -           .word 0x61636544
-+           .word 0x61636544			; Label 'Decay'
++
++           .word 0x61636544		; 'Decay'
             .word 0x00000079
             .word 0x00000000
             .word 0x00000063
@@ -1491,11 +1547,14 @@
             .word 0x00000010
             .word 0x00000000
 -           .word 0x656e6f54
-+           .word 0x656e6f54			; Label 'Tone'
++
++           .word 0x656e6f54		; 'Tone'
             .word 0x00000000
             .word 0x00000000
-            .word 0x0000000a
-            .word 0x00000004
+-           .word 0x0000000a
+-           .word 0x00000004
++           .word 0x0000000a		; max
++           .word 0x00000004		; init
             .word 0x00000000
             .word 0x00000000
 -           .word 0x00000c50
@@ -1503,33 +1562,42 @@
  	; 800000c4  00002101 R_C6000_ABS32          00000c50   Fx_SFX_Bomber_Tone_edit + 0
             .word 0x00000000
             .word 0x00000000
-@@ -2494,14 +2498,14 @@
+@@ -2494,37 +2501,39 @@
             .word 0x00000000
             .word 0x00000000
             .word 0x00000000
 -           .word 0x0078694d
-+           .word 0x0078694d			; 'Mix'
+-           .word 0x00000000
++
++           .word 0x0078694d		; 'Mix'
             .word 0x00000000
-            .word 0x00000000
-            .word 0x00000064
-            .word 0x0000001e
-            .word 0x00000064
+-           .word 0x00000064
+-           .word 0x0000001e
+-           .word 0x00000064
             .word 0x00000000
 -           .word 0x00000b34
++           .word 0x00000064		; max
++           .word 0x0000001e		; init
++           .word 0x00000064		; ? typically set with bitfields
++           .word 0x00000000		; ? typically set with bitfields
 +           .word Fx_SFX_Bomber_Balance_edit
  	; 800000fc  00002001 R_C6000_ABS32          00000b34   Fx_SFX_Bomber_Balance_edit + 0
             .word 0x00000000
             .word 0x00000000
-@@ -2509,17 +2513,17 @@
             .word 0x00000000
-            .word 0x00000002
+            .word 0x00000000
+-           .word 0x00000002
++           .word 0x00000002		; bitfield1?
             .word 0x00000000
 -           .word 0x4f2f4e4f
-+           .word 0x4f2f4e4f			; 'ON/OFF'
++
++           .word 0x4f2f4e4f		; 'ON/OFF'
             .word 0x00004646
             .word 0x00000000
-            .word 0x00000001
-            .word 0x00000001
+-           .word 0x00000001
+-           .word 0x00000001
++           .word 0x00000001		; max
++           .word 0x00000001		; init
             .word 0x00000000
             .word 0x00000000
 -           .word 0x00000cf4
@@ -1541,7 +1609,14 @@
  	; 8000013c  00001e01 R_C6000_ABS32          00001800   _GetString_Onf + 0
             .word 0x00000000
             .word 0x00000000
-@@ -2535,15 +2539,15 @@
+-           .word 0x00108000
+-           .word 0x00000002
++           .word 0x00108000		; bitfield1
++           .word 0x00000002		; bitfield2 invert text?
+ 	.dwendtag $C$DW$1
+ 
+ 	.def effectTypeImageInfo
+@@ -2535,15 +2544,15 @@
  effectTypeImageInfo:
             .word 0x00000018
             .word 0x0000001e
@@ -1560,7 +1635,7 @@
  	; 80000170  00001b01 R_C6000_ABS32          80000468   AddDelIcon_Dynamics + 0
             .word 0x00000000
             .word 0x00000000
-@@ -2551,7 +2555,7 @@
+@@ -2551,7 +2560,7 @@
             .word 0x00000000
             .word 0x00000000
             .word 0x00000000
@@ -1569,7 +1644,7 @@
  	; 8000018c  00001a01 R_C6000_ABS32          80000620   Bomber_FswPrmPic1 + 0
             .word 0x00000000
             .word 0x00000000
-@@ -2567,7 +2571,7 @@
+@@ -2567,7 +2576,7 @@
             .word 0x00000000
             .word 0x0000001c
             .word 0x00000008
@@ -1578,7 +1653,7 @@
  	; 800001c8  00001901 R_C6000_ABS32          80000578   _PrmPic_ON_OFF + 0
             .word 0x00000000
             .word 0x00000000
-@@ -2734,9 +2738,9 @@
+@@ -2734,9 +2743,9 @@
             .word 0x00000000
             .word 0x00000000
             .word 0x00000001
@@ -1591,7 +1666,7 @@
  	; 80000400  00000801 R_C6000_ABS32          00001764   TBL_TO_VAL + 0
             .word 0x00000000
  	.dwendtag $C$DW$5
-@@ -2806,16 +2810,16 @@
+@@ -2806,16 +2815,16 @@
  	.dwattr $C$DW$8, DW_AT_high_pc(0x00)
  Fx_SFX_Bomber_Balance_tbl:
             .word 0x00000000
@@ -1618,7 +1693,7 @@
             .word 0x00000000
  	.dwendtag $C$DW$8
  
-@@ -2825,17 +2829,17 @@
+@@ -2825,17 +2834,17 @@
  	.dwattr $C$DW$9, DW_AT_low_pc(PostLPF_Tbl)
  	.dwattr $C$DW$9, DW_AT_high_pc(0x00)
  PostLPF_Tbl:
@@ -1647,7 +1722,7 @@
             .word 0x00000000
  	.dwendtag $C$DW$9
  
-@@ -2967,16 +2971,27 @@
+@@ -2967,16 +2976,27 @@
             .word 0x3d75c28f
             .word 0x3d75c28f
             .word 0x3d23d70a
@@ -1684,7 +1759,7 @@
  	; 80000608  00000101 R_C6000_ABS32          00000e20   __c6xabi_divd + 0
             .word 0x00000000
  	.dwendtag $C$DW$18
-@@ -2987,9 +3002,9 @@
+@@ -2987,9 +3007,9 @@
  	.dwattr $C$DW$19, DW_AT_low_pc(disp_prm_Onf)
  	.dwattr $C$DW$19, DW_AT_high_pc(0x00)
  disp_prm_Onf:
@@ -1696,7 +1771,7 @@
  	; 80000614  00002701 R_C6000_ABS32          800005fe   $C$SL2 + 0
  	.dwendtag $C$DW$19
  
-@@ -3000,15 +3015,22 @@
+@@ -3000,15 +3020,22 @@
  	.dwattr $C$DW$20, DW_AT_high_pc(0x00)
  SW_FILTER_Multi1Tbl:
             .word 0x00000100
@@ -1726,7 +1801,7 @@
  
  	.def Bomber_FswPrmPic1
  $C$DW$21	.dwtag  DW_TAG_subprogram
-@@ -3018,11 +3040,11 @@
+@@ -3018,11 +3045,11 @@
  Bomber_FswPrmPic1:
             .word 0x00000016
             .word 0x00000007
@@ -1740,7 +1815,7 @@
  	; 80000634  00000901 R_C6000_ABS32          800005b0   _picFsw_TRGGR + 0
  	.dwendtag $C$DW$21
  
-@@ -3032,7 +3054,7 @@
+@@ -3032,7 +3059,7 @@
  	.dwattr $C$DW$22, DW_AT_low_pc(MultiFswTbl_Bomber)
  	.dwattr $C$DW$22, DW_AT_high_pc(0x00)
  MultiFswTbl_Bomber:
@@ -1749,7 +1824,7 @@
  	; 80000638  00000c01 R_C6000_ABS32          80000618   SW_FILTER_Multi1Tbl + 0
             .word 0x00000000
             .word 0x00000000
-@@ -3048,4 +3070,4 @@
+@@ -3048,4 +3075,4 @@
             .cstring "e2bf7ce001d2b356a80128ccbfb6609f  ./BOMBER.ZD2.code"
  	.dwendtag $C$DW$23
  

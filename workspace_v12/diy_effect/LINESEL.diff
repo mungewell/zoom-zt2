@@ -1,6 +1,12 @@
 --- ../LINESEL.ZD2.code.asm	2025-07-02 19:14:03.967713056 -0600
-+++ LINESEL.asm	2025-07-02 19:26:14.224218718 -0600
-@@ -17,7 +17,7 @@
++++ LINESEL.asm	2025-07-04 21:33:21.783258673 -0600
+@@ -12,37 +12,37 @@
+            LDW.D2T2      *B5[B4],B0
+            LDW.D1T1      *A4[1],A0
+            LDW.D1T1      *A4[0],A4
+-           MVK.L2        0,B4
++           MVK.L2        0,B4		; on/off = midi param 0
+            NOP           1
             CALLP.S2      __call_stub,B3
   ||        MV.L2         B0,B31
             MV.L2X        A4,B0
@@ -9,7 +15,8 @@
             ;.fphead       n, l, W, BU, nobr, nosat, 0101111b
             LDW.D2T2      *+B5[3],B0
             MVK.S1        0x6666,A6
-@@ -25,12 +25,12 @@
+-           MVKH.S1       0x44300000,A6
++           MVKH.S1       0x44300000,A6	; '705.6' as float
             MV.L1         A0,A4
             NOP           1
             B.S2          B0
@@ -28,7 +35,11 @@
             LDW.D2T2      *B5[3],B0
             ;.fphead       n, l, W, BU, br, nosat, 1001000b
             LDW.D2T2      *++B15[2],B3
-@@ -41,8 +41,8 @@
+            MVK.S1        0x6666,A6
+            MVK.S2        0x007f,B4
+-           MVKH.S1       0x44300000,A6
++           MVKH.S1       0x44300000,A6	; '705.6' as float
+            BNOP.S2       B0,0
             SHL.S2        B4,0x17,B4
             MV.L1         A0,A4
             NOP           3
@@ -39,6 +50,25 @@
             LDW.D2T2      *++B15[2],B3
             NOP           4
             ;.fphead       n, l, W, BU, nobr, nosat, 1110000b
+@@ -58,15 +58,15 @@
+            LDW.D2T2      *B4[0],B0
+            LDW.D1T1      *A4[1],A0
+            LDW.D1T1      *A4[0],A4
+-           MVK.L2        2,B4
+-           MVK.S1        151,A6
++           MVK.L2        2,B4		; 1st user param = midi param 2
++           MVK.S1        151,A6		; 151 clicks = 0 - 150 inclusive
+            MV.L2         B0,B31
+  ||        CALLP.S2      __call_stub,B3
+            ;.fphead       n, l, W, BU, nobr, nosat, 0111110b
+            MV.L1         A4,A8
+            MVK.S1        255,A4
+  ||        MVK.L2        0,B6
+-           SHL.S1        A4,0x16,A4
++           SHL.S1        A4,0x16,A4	; '1.5' as float
+  ||        LDW.D2T2      *+B5[30],B31
+  ||        CALLP.S2      __call_stub,B3
+  ||        MVK.L2        0,B4
 @@ -80,7 +80,7 @@
             MVK.S1        20,A4
             MV.L1X        B6,A6
@@ -60,7 +90,15 @@
  	; 00000110  0000010a R_C6000_ABS_H16        8000026c   _Fx_SFX_LineSel_Coe + 0
             MV.L1         A4,A10
             LDW.D1T1      *A4[1],A4
-@@ -148,77 +148,81 @@
+@@ -135,6 +135,7 @@
+  ||        MVK.S1        28,A6
+            ;.fphead       n, l, W, BU, nobr, nosat, 1100110b
+  ||        CALLP.S2      __call_stub,B3
++
+            CALLP.S2      Fx_SFX_LineSel_EfxLvl_edit,B3
+  ||        MV.L1X        B1,A11
+  ||        MV.L2         B1,B4
+@@ -148,77 +149,86 @@
  	.def Fx_SFX_LineSel
  	.align 32
  Fx_SFX_LineSel:
@@ -131,12 +169,13 @@
 +           LDW.D2T2      *+B4[7],B5	; pointer to 'something' structure
 +           LDW.D2T2      *+B4[1],B20	; base of 'effect' output buffer
 +           LDW.D2T2      *+B4[8],B21	; base of 'effect' input buffer
-+           LDW.D2T1      *+B4[2],A5	; base of 'final' output buffer
++           LDW.D2T1      *+B4[2],A5	; base of 'pedal' (ie to amp) output buffer
 +
-+           MVK.L2        0,B19		; zero offset into buffers
++           MVK.L2        0,B19		; zero offset into 'pedal' output buffer
 +           MVK.L2        0,B9		;
 +           MVK.S1        16,A0		; prep inner loop x16
-+           LDW.D1T2      *A4[1],B4	; base of 'parameters'
++
++           LDW.D1T2      *A4[1],B4	; base of 'co-efficients'
 + ||        SET.S2        B9,23,29,B9	; set B9 = 1.0 float
 + ||        MVK.L2        2,B0		; prep outer loop x2
 +
@@ -144,15 +183,18 @@
 + ||        ADD.S2        B19,B20,B8	; add offset, pointer to 'effects' output
 + ||        LDW.D2T2      *B5[0],B7	; pointer to 'curent sample' store (within 'something')
 + ||        ADD.L1        A0,-1,A0	; tweak for BDEC
-+ ||        ADD.S1X       A5,B19,A4	; add offset, pointer to 'final' output
++ ||        ADD.S1X       A5,B19,A4	; add offset, pointer to 'pedal' output
 +$C$L1_5:
 +;$C$L1:
++							; outer loop (x2)
 +$C$L2_5:
 +;$C$L2:
-+           		LDW.D2T2      *B6++[1],B5	; read 'effect' input
++							; inner loop (x16)
++							; Compute and write to 'pedal' outout
++           		LDW.D2T2      *B6++[1],B5	; read buffer? 'effect' input
 +           		NOP           4
++           		STW.D2T2      B5,*+B7[0]	; write to 'current sample'? note B7 never increased...
 +
-+           		STW.D2T2      B5,*+B7[0]	; write to 'current sample'? B7 never increased...
 +           		LDW.D2T2      *+B4[5],B17	; K5
 +           		LDW.D2T2      *+B8[0],B5	; read previous sample back from 'effect' output???
 +							; note B8: increases as loop runs
@@ -166,25 +208,26 @@
 +           		NOP           3			;
 +           		MPYSP.M2      B17,B16,B16	; K4 * (K0 * (Sample * K5))
 +           		NOP           3			;
-+           		STW.D2T2      B16,*B8++[1]	; write audio 'effect' output
++           		STW.D2T2      B16,*B8++[1]	; write audio to 'effect' output
 +
-+           		LDW.D2T2      *B4[6],B16	; K6, why bother? <= delay slots = 4 
++							; Compute and write to 'pedal' outout
++           		LDW.D2T2      *B4[6],B16	; K6
 +           		LDW.D2T2      *B4[0],B17	; K0
 +           		NOP           4			;
-+           		SUBSP.L2      B9,B17,B16	; 1.0 - K0 (delay slots = 1)
-+ ||        		MPYSP.M2      B5,B16,B5 	; Sample * K6
++           		SUBSP.L2      B9,B17,B16	; 1.0 - K0
++ ||        		MPYSP.M2      B5,B16,B5 	; Sample * K6 (runnig in parallel)
 +           		NOP           2			;
 +           		LDW.D2T2      *+B4[4],B17	; K4
 +           		MPYSP.M2      B16,B5,B5		;(1.0 - K0) * (Sample * K6)
 +           		NOP           2			;
-+           		LDW.D1T1      *A4[0],A3		; read previous sample back from 'final' output
++           		LDW.D1T1      *A4[0],A3		; read previous sample back from 'pedal' output
 +							; note: A4 increases as loop runs
 +           		MPYSP.M2      B17,B5,B5		; K4 * ((1.0 - K0) * (Sample * K6))
 +           		NOP           2			;
 +    [ A0]  		BDEC.S1       $C$L2_5,A0	; LOOP 15 times back to $C$L2 (delay slots = 5)
-+           		ADDSP.L2X     B5,A3,B5		; combine previous 'final' and curent sample
++           		ADDSP.L2X     B5,A3,B5		; combine previous 'pedal' and curent sample
 +           		NOP           3			;
-+           		STW.D1T2      B5,*A4++[1]	; write audio to 'final' output
++           		STW.D1T2      B5,*A4++[1]	; write audio to 'pedal' output
 +
 +           	ADD.L2        B0,-1,B0		; decrement outer loop counter
 + ||        	MVK.S1        16,A3		; reload 16 loops
@@ -212,7 +255,7 @@
  
  	.def __call_stub
  	.align 32
-@@ -250,23 +254,23 @@
+@@ -250,23 +260,23 @@
   ||        LDDW.D2T1     *++B15[1],A7:A6
             LDW.D2T1      *++B15[2],A2
             NOP           4
@@ -242,7 +285,7 @@
             STW.D1T1      A1,*+A4[3]
             ;.fphead       n, l, W, BU, nobr, nosat, 0010001b
  
-@@ -286,8 +290,8 @@
+@@ -286,8 +296,8 @@
   ||        LDDW.D2T1     *++B15[1],A15:A14
             LDW.D2T2      *++B15[2],B14
             NOP           4
@@ -253,7 +296,7 @@
             ;.fphead       n, l, W, BU, nobr, nosat, 0001111b
  
  	.def __push_rts
-@@ -305,8 +309,8 @@
+@@ -305,8 +315,8 @@
             STDW.D2T2     B11:B10,*B15--[1]
             STDW.D2T1     A11:A10,*B15--[1]
             STDW.D2T2     B3:B2,*B15--[1]
@@ -264,7 +307,7 @@
             ;.fphead       n, l, W, BU, nobr, nosat, 0011100b
  	.sect ".const"
  
-@@ -318,7 +322,7 @@
+@@ -318,7 +328,7 @@
  effectTypeImageInfo:
             .word 0x00000017
             .word 0x00000020
@@ -273,16 +316,36 @@
  	; 80000008  00000201 R_C6000_ABS32          80000210   _picTotalDisplay_LineSel + 0
             .word 0x00000000
             .word 0x00000000
-@@ -408,7 +412,7 @@
+@@ -401,14 +411,14 @@
+ 	.dwattr $C$DW$2, DW_AT_low_pc(LineSel)
+ 	.dwattr $C$DW$2, DW_AT_high_pc(0x00)
+ LineSel:
+-           .word 0x664f6e4f
++           .word 0x664f6e4f		; 'OnOff'
+            .word 0x00000066
             .word 0x00000000
-            .word 0x00000000
-            .word 0x00000000
+-           .word 0x00000001
 -           .word 0x00000000
+-           .word 0x00000000
++           .word 0x00000001		; max
++           .word 0x00000000		; init
+            .word 0x00000000
+            .word 0x00000000
 +           .word Fx_SFX_LineSel_onf
  	; 8000014c  00000701 R_C6000_ABS32          00000000   Fx_SFX_LineSel_onf + 0
             .word 0x00000000
             .word 0x00000000
-@@ -423,23 +427,23 @@
+@@ -416,30 +426,32 @@
+            .word 0x00000000
+            .word 0x00000000
+            .word 0x00000000
+-           .word 0x656e694c
++
++           .word 0x656e694c		; 'LineSel'
+            .word 0x006c6553
+            .word 0x00000000
+-           .word 0xffffffff
++           .word 0xffffffff		; always 0xffffffff for init func
             .word 0x00000000
             .word 0x00000001
             .word 0x00000000
@@ -299,24 +362,49 @@
             .word 0x00000000
 -           .word 0x20584645
 -           .word 0x004c564c
-+           .word 0x2d786645			; Changed to 'Efx-Lvl' to confirm effect loaded
-+           .word 0x006c764c
++
++           .word 0x2d786645		; Changed to 'Efx-Lvl' lowercase
++           .word 0x006c764c		; debug to confirm modified effect loaded
             .word 0x00000000
-            .word 0x00000096
-            .word 0x00000064
-            .word 0x00000096
+-           .word 0x00000096
+-           .word 0x00000064
+-           .word 0x00000096
++           .word 0x00000096		; max
++           .word 0x00000064		; init
++           .word 0x00000096		; ???
             .word 0x00000000
 -           .word 0x00000064
 +           .word Fx_SFX_LineSel_EfxLvl_edit
  	; 800001bc  00000401 R_C6000_ABS32          00000064   Fx_SFX_LineSel_EfxLvl_edit + 0
             .word 0x00000000
             .word 0x00000000
-@@ -454,7 +458,7 @@
-            .word 0x00000064
-            .word 0x00000096
+@@ -447,21 +459,22 @@
+            .word 0x00000000
+            .word 0x00000000
+            .word 0x00000000
+-           .word 0x2054554f
++
++           .word 0x2054554f		; 'OUT LVL'
+            .word 0x004c564c
+            .word 0x00000000
+-           .word 0x00000096
+-           .word 0x00000064
+-           .word 0x00000096
++           .word 0x00000096		; max
++           .word 0x00000064		; init
++           .word 0x00000096		; ???
             .word 0x00000000
 -           .word 0x000000b0
 +           .word Fx_SFX_LineSel_OutLvl_edit
  	; 800001f4  00000301 R_C6000_ABS32          000000b0   Fx_SFX_LineSel_OutLvl_edit + 0
             .word 0x00000000
             .word 0x00000000
+            .word 0x00000000
+            .word 0x00000000
+-           .word 0x00000006
+-           .word 0x00000000
++           .word 0x00000006		; bitfield1
++           .word 0x00000000		; bitfield2
+ 	.dwendtag $C$DW$2
+ 
+ 	.def _picTotalDisplay_LineSel

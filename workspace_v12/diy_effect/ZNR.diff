@@ -1,5 +1,5 @@
 --- ../ZNR.ZD2.code.asm	2025-07-02 18:59:15.837155538 -0600
-+++ ZNR.asm	2025-07-02 19:01:56.935062121 -0600
++++ ZNR.asm	2025-07-05 12:46:54.969478398 -0600
 @@ -57,8 +57,8 @@
             SPKERNEL      3,0
   || [ A0]  MV.L2         B9,B7
@@ -594,6 +594,15 @@
  	; 00001448  0000070a R_C6000_ABS_H16        80000448   ZNR_decay_rel_tbl + 0
             MVK.L2        11,B6
             MV.L2X        A4,B4
+@@ -1531,7 +1537,7 @@
+ 	.align 32
+ Fx_DYN_ZNR_Level_edit:
+            MVK.S1        255,A3
+-           SHL.S1        A3,0x16,A3
++           SHL.S1        A3,0x16,A3		; '1.5' as float
+            STW.D2T2      B3,*B15--[2]
+  ||        MV.L2         B4,B5
+            ;.fphead       n, l, W, BU, nobr, nosat, 1111100b
 @@ -1566,9 +1572,9 @@
             LDW.D1T1      *A4[0],A3
             MV.L1X        B4,A1
@@ -826,7 +835,12 @@
  	; 0000178c  00001b0a R_C6000_ABS_H16        80000150   effectTypeImageInfo + 0
   ||        STW.D1T2      B0,*+A4[1]
             STW.D1T1      A1,*+A4[3]
-@@ -1999,7 +2005,7 @@
+@@ -1995,11 +2001,11 @@
+            .word 0x664f6e4f
+            .word 0x00000066
+            .word 0x00000000
+-           .word 0x00000001
++           .word 0x00000001		; always 0x00000001 for on/off func
             .word 0x00000000
             .word 0x00000000
             .word 0x00000000
@@ -835,9 +849,19 @@
  	; 8000001c  00001801 R_C6000_ABS32          00001360   Fx_DYN_ZNR_onf + 0
             .word 0x00000000
             .word 0x00000000
-@@ -2014,9 +2020,9 @@
+@@ -2007,22 +2013,24 @@
             .word 0x00000000
-            .word 0x00000001
+            .word 0x00000000
+            .word 0x00000000
++
+            .word 0x00524e5a
+            .word 0x00000000
+            .word 0x00000000
+-           .word 0xffffffff
++           .word 0xffffffff		; always 0xffffffff for init func
+            .word 0x00000000
+-           .word 0x00000001
++           .word 0x00000001		; always 0x00000001 for init func
             .word 0x00000000
 -           .word 0x000014b4
 +           .word Fx_DYN_ZNR_init
@@ -847,7 +871,14 @@
  	; 80000058  00001601 R_C6000_ABS32          00000000   Fx_DYN_ZNR + 0
             .word 0x00000000
             .word 0x00000000
-@@ -2030,10 +2036,10 @@
+            .word 0x00000000
+            .word 0x00000000
+            .word 0x00000000
++
+            .word 0x43544544
+            .word 0x00000054
+            .word 0x00000000
+@@ -2030,15 +2038,16 @@
             .word 0x00000001
             .word 0x00000000
             .word 0x00000000
@@ -860,7 +891,13 @@
  	; 80000094  00001401 R_C6000_ABS32          00001720   _GetString_EnvIn + 0
             .word 0x00000000
             .word 0x00000000
-@@ -2046,7 +2052,7 @@
+            .word 0x00000000
+            .word 0x00000000
++
+            .word 0x74706544
+            .word 0x00000068
+            .word 0x00000000
+@@ -2046,7 +2055,7 @@
             .word 0x00000064
             .word 0x00000000
             .word 0x00000000
@@ -869,8 +906,18 @@
  	; 800000c4  00001301 R_C6000_ABS32          000013c8   Fx_DYN_ZNR_depth_edit + 0
             .word 0x00000000
             .word 0x00000000
-@@ -2061,7 +2067,7 @@
-            .word 0x0000001e
+@@ -2054,14 +2063,15 @@
+            .word 0x00000000
+            .word 0x00000000
+            .word 0x00000000
++
+            .word 0x53524854
+            .word 0x00000048
+            .word 0x00000000
+-           .word 0x00000064
+-           .word 0x0000001e
++           .word 0x00000064		; max 100
++           .word 0x0000001e		; init 30
             .word 0x00000000
             .word 0x00000000
 -           .word 0x00001300
@@ -878,16 +925,32 @@
  	; 800000fc  00001201 R_C6000_ABS32          00001300   Fx_DYN_ZNR_thr_edit + 0
             .word 0x00000000
             .word 0x00000000
-@@ -2076,7 +2082,7 @@
+@@ -2069,20 +2079,21 @@
+            .word 0x00000000
+            .word 0x00000000
+            .word 0x00000000
++
+            .word 0x61636544
+            .word 0x00000079
             .word 0x00000000
             .word 0x00000064
+            .word 0x00000000
+-           .word 0x00000064
++           .word 0x00000064		; ???
             .word 0x00000000
 -           .word 0x00001428
 +           .word Fx_DYN_ZNR_decay_edit
  	; 80000134  00001101 R_C6000_ABS32          00001428   Fx_DYN_ZNR_decay_edit + 0
             .word 0x00000000
             .word 0x00000000
-@@ -2094,15 +2100,15 @@
+            .word 0x00000000
+            .word 0x00000000
+-           .word 0x00000006
++           .word 0x00000006		; ???
+            .word 0x00000000
+ 	.dwendtag $C$DW$1
+ 
+@@ -2094,15 +2105,15 @@
  effectTypeImageInfo:
             .word 0x00000017
             .word 0x0000001e
@@ -906,7 +969,7 @@
  	; 80000170  00000e01 R_C6000_ABS32          80000328   AddDelIcon_Dynamics + 0
             .word 0x00000000
             .word 0x00000000
-@@ -2116,15 +2122,15 @@
+@@ -2116,15 +2127,15 @@
             .word 0x00000000
             .word 0x0000001c
             .word 0x00000009
@@ -925,7 +988,7 @@
  	; 800001bc  00000b01 R_C6000_ABS32          800003e0   _PrmPic_THRSH + 0
             .word 0x00000000
             .word 0x00000000
-@@ -2231,9 +2237,9 @@
+@@ -2231,9 +2242,9 @@
             .word 0x417d953a
             .word 0x3f4ccccd
             .word 0x00000000
@@ -938,7 +1001,7 @@
  	; 80000324  00000401 R_C6000_ABS32          00001684   TBL_TO_VAL + 0
  	.dwendtag $C$DW$4
  
-@@ -2355,17 +2361,17 @@
+@@ -2355,17 +2366,17 @@
  	.dwattr $C$DW$10, DW_AT_low_pc(ZNR_decay_rel_tbl)
  	.dwattr $C$DW$10, DW_AT_high_pc(0x00)
  ZNR_decay_rel_tbl:
@@ -967,7 +1030,7 @@
             .word 0x00000000
  	.dwendtag $C$DW$10
  
-@@ -2375,17 +2381,17 @@
+@@ -2375,17 +2386,17 @@
  	.dwattr $C$DW$11, DW_AT_low_pc(ZNR_gate_depth_tbl)
  	.dwattr $C$DW$11, DW_AT_high_pc(0x00)
  ZNR_gate_depth_tbl:
@@ -996,7 +1059,7 @@
             .word 0x00000000
  	.dwendtag $C$DW$11
  
-@@ -2395,17 +2401,17 @@
+@@ -2395,17 +2406,17 @@
  	.dwattr $C$DW$12, DW_AT_low_pc(ZNR_sense_tbl)
  	.dwattr $C$DW$12, DW_AT_high_pc(0x00)
  ZNR_sense_tbl:
@@ -1025,7 +1088,7 @@
             .word 0x00000000
  	.dwendtag $C$DW$12
  
-@@ -2425,16 +2431,27 @@
+@@ -2425,16 +2436,27 @@
             .word 0x00000000
             .word 0x00000000
             .word 0x00000000
@@ -1062,7 +1125,7 @@
  	; 80000510  00000101 R_C6000_ABS32          00000ae0   __c6xabi_divd + 0
             .word 0x00000000
  	.dwendtag $C$DW$13
-@@ -2445,9 +2462,9 @@
+@@ -2445,9 +2467,9 @@
  	.dwattr $C$DW$14, DW_AT_low_pc(disp_prm_EnvIn)
  	.dwattr $C$DW$14, DW_AT_high_pc(0x00)
  disp_prm_EnvIn:
@@ -1074,7 +1137,7 @@
  	; 8000051c  00001901 R_C6000_ABS32          80000506   $C$SL2 + 0
  	.dwendtag $C$DW$14
  
-@@ -2460,4 +2477,4 @@
+@@ -2460,4 +2482,4 @@
             .cstring "976aab8bf8c3deedd6a127d03f7189c4  ./ZNR.ZD2.code"
  	.dwendtag $C$DW$15
  
