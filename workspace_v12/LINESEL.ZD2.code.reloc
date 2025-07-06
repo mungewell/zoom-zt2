@@ -1,0 +1,15 @@
+
+Relocation section '.rela.dyn' at offset 0x630 contains 12 entries:
+ Offset     Info    Type                Sym. Value  Symbol's Name + Addend
+0000010c  00000109 R_C6000_ABS_L16        8000026c   _Fx_SFX_LineSel_Coe + 0
+00000110  0000010a R_C6000_ABS_H16        8000026c   _Fx_SFX_LineSel_Coe + 0
+00000264  00000909 R_C6000_ABS_L16        80000130   LineSel + 0
+00000268  00000809 R_C6000_ABS_L16        80000000   effectTypeImageInfo + 0
+0000026c  0000090a R_C6000_ABS_H16        80000130   LineSel + 0
+00000274  0000080a R_C6000_ABS_H16        80000000   effectTypeImageInfo + 0
+80000008  00000201 R_C6000_ABS32          80000210   _picTotalDisplay_LineSel + 0
+8000014c  00000701 R_C6000_ABS32          00000000   Fx_SFX_LineSel_onf + 0
+80000184  00000601 R_C6000_ABS32          00000100   Fx_SFX_LineSel_init + 0
+80000188  00000501 R_C6000_ABS32          00000140   Fx_SFX_LineSel + 0
+800001bc  00000401 R_C6000_ABS32          00000064   Fx_SFX_LineSel_EfxLvl_edit + 0
+800001f4  00000301 R_C6000_ABS32          000000b0   Fx_SFX_LineSel_OutLvl_edit + 0

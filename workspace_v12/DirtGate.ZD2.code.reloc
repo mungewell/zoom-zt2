@@ -1,0 +1,24 @@
+
+Relocation section '.rela.dyn' at offset 0xb30 contains 21 entries:
+ Offset     Info    Type                Sym. Value  Symbol's Name + Addend
+00000218  00000409 R_C6000_ABS_L16        80000210   Fx_DYN_DirtyGate_thr_tbl + 0
+00000220  0000040a R_C6000_ABS_H16        80000210   Fx_DYN_DirtyGate_thr_tbl + 0
+0000030c  00000309 R_C6000_ABS_L16        80000320   _Fx_DYN_DirtyGate_Coe + 0
+00000314  0000030a R_C6000_ABS_H16        80000320   _Fx_DYN_DirtyGate_Coe + 0
+00000374  00000209 R_C6000_ABS_L16        80000360   $C$T0 + 0
+00000378  0000020a R_C6000_ABS_H16        80000360   $C$T0 + 0
+00000444  00001009 R_C6000_ABS_L16        80000130   DirtyGate + 0
+00000448  00000f09 R_C6000_ABS_L16        80000000   effectTypeImageInfo + 0
+0000044c  0000100a R_C6000_ABS_H16        80000130   DirtyGate + 0
+00000454  00000f0a R_C6000_ABS_H16        80000000   effectTypeImageInfo + 0
+80000008  00000801 R_C6000_ABS32          80000278   picTotalDisplay_DirtyGate + 0
+80000014  00000701 R_C6000_ABS32          800003a0   CategoryIcon_Dynamics + 0
+80000020  00000601 R_C6000_ABS32          800002d8   AddDelIcon_Dynamics + 0
+80000060  00000501 R_C6000_ABS32          80000368   _PrmPic_P_ATTCK + 0
+8000014c  00000e01 R_C6000_ABS32          0000024c   Fx_DYN_DirtyGate_onf + 0
+80000184  00000d01 R_C6000_ABS32          000002f8   Fx_DYN_DirtyGate_init + 0
+80000188  00000c01 R_C6000_ABS32          00000000   Fx_DYN_DirtyGate + 0
+800001bc  00000b01 R_C6000_ABS32          00000200   Fx_DYN_DirtyGate_thr_edit + 0
+800001c4  00000a01 R_C6000_ABS32          000003a0   GetString_offset_1 + 0
+800001f4  00000901 R_C6000_ABS32          000002b4   Fx_DYN_DirtyGate_level_edit + 0
+80000360  00000101 R_C6000_ABS32          000005c0   VOLUME_0_80_100 + 0
