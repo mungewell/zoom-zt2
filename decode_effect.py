@@ -33,6 +33,9 @@ def main():
     parser.add_argument("-m", "--md5sum",
         help="include md5sum of file in summary report",
         action="store_true", dest="md5sum")
+    parser.add_argument("--target",
+        help="include 'target' bits in summary report",
+        action="store_true", dest="target")
     parser.add_argument("-7", "--7bit",
         help="include ID as 5x 7bit summary report",
         action="store_true", dest="seven_bit")
@@ -134,16 +137,19 @@ def main():
     if options.summary and data:
         config = zoomzt2.ZD2.parse(data)
 
+        print("0x%8.8x : %s, %s (v%s %2.2f%%)" % (config['id'], \
+                os.path.split(options.files[0])[-1], \
+                config['name'], config['version'], config['INFO']['dspload']/2.5), \
+                end="")
+
         if options.md5sum:
             md5sum = hashlib.md5(data).hexdigest()
-            print("0x%8.8x : %s, %s (v%s %2.2f%%), %s" % (config['id'], \
-                    os.path.split(options.files[0])[-1], \
-                    config['name'], config['version'], config['INFO']['dspload']/2.5, \
-                    md5sum))
-        else:
-            print("0x%8.8x : %s, %s (v%s %2.2f%%)" % (config['id'], \
-                    os.path.split(options.files[0])[-1], \
-                    config['name'], config['version'], config['INFO']['dspload']/2.5))
+            print(", %s" % md5sum, end="")
+
+        if options.target:
+            print(", 0x%8.8x" % config['target'], end="")
+
+        print("")
 
         if options.seven_bit:
             for i in range(0, 29, 7):
