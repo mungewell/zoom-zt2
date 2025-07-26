@@ -1002,6 +1002,43 @@ def main():
 
     if options.install or options.installonly:
         for target in options.files:
+            filename, extension = os.path.splitext(target)
+            if extension != ".ZD2":
+                print("'%s' is not 'ZD2', skipping" % target)
+                continue
+
+            if options.includezir:
+                zirfilename = filename + ".ZIR"
+                binfile = open(zirfilename, "rb")
+                if binfile:
+                    bindata = binfile.read()
+                    binfile.close()
+
+                    if not pedal.file_check(zirfilename):
+                        print("Uploading IR:", zirfilename)
+                        pedal.file_upload(zirfilename, bindata)
+
+                    pedal.file_close()
+
+                    if options.available:
+                        print("Percentage disk use:", pedal.disk_usage())
+
+            if options.includezic:
+                zicfilename = filename + ".ZIC"
+                binfile = open(zicfilename, "rb")
+                if binfile:
+                    bindata = binfile.read()
+                    binfile.close()
+
+                    if not pedal.file_check(zicfilename):
+                        print("Uploading icon:", zicfilename)
+                        pedal.file_upload(zicfilename, bindata)
+
+                    pedal.file_close()
+
+                    if options.available:
+                        print("Percentage disk use:", pedal.disk_usage())
+
             binfile = open(target, "rb")
             if binfile:
                 bindata = binfile.read()
@@ -1020,39 +1057,6 @@ def main():
                 if data and options.install:
                     data = pedal.add_effect_from_filename(data, target)
 
-            filename, extension = os.path.splitext(target)
-
-            if options.includezic:
-                zicfilename = filename + ".ZIC"
-                binfile = open(zicfilename, "rb")
-                if binfile:
-                    bindata = binfile.read()
-                    binfile.close()
-
-                    if not pedal.file_check(zicfilename):
-                        print("Uploading icon:", zicfilename)
-                        pedal.file_upload(zicfilename, bindata)
-
-                    pedal.file_close()
-
-                    if options.available:
-                        print("Percentage disk use:", pedal.disk_usage())
-
-            if options.includezir:
-                zirfilename = filename + ".ZIR"
-                binfile = open(zicfilename, "rb")
-                if binfile:
-                    bindata = binfile.read()
-                    binfile.close()
-
-                    if not pedal.file_check(zirfilename):
-                        print("Uploading impulse response:", zirfilename)
-                        pedal.file_upload(zirfilename, bindata)
-
-                    pedal.file_close()
-
-                    if options.available:
-                        print("Percentage disk use:", pedal.disk_usage())
 
     if options.uninstall or options.uninstallonly:
         for target in options.files:
