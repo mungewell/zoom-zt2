@@ -756,86 +756,102 @@ def main():
     parser.add_argument('files', metavar='FILE', nargs='+',
         help='File(s) to process')
 
-    # actions on FLST_SEQ file (local or received from pedal)
-    parser.add_argument("-d", "--dump",
-        help="dump configuration to text",
-        action="store_true", dest="dump")
-    parser.add_argument("-s", "--summary",
-        help="summarized configuration in human readable form",
-        action="store_true", dest="summary")
-    parser.add_argument("-b", "--build",
-        help="output commands required to build this FLTS_SEQ",
-        dest="build")
+    parser.add_argument("-M", "--midiskip",
+        type=int, default=0, dest="midiskip",
+        help="Skip devices when connecting, ie when you have multiple pedals")
 
-    parser.add_argument("-A", "--add",
-        help="add effect to FLST_SEQ", dest="add")
-    parser.add_argument("-v", "--ver",
-        help="effect version (use with --add)", dest="ver")
-    parser.add_argument("-i", "--id",
-        help="effect id (use with --add)", dest="id")
-    parser.add_argument("-D", "--delete",
-    help="delete effect from FLST_SEQ", dest="delete")
-    parser.add_argument("-N", "--not-add", action="store_true",
-        help="add effect to FLST_SEQ, but as uninstalled", dest="notadd")
+    # attached device's effects
+    zd2 = parser.add_argument_group("ZD2", "Process 'ZDL2' effect file(s)")
+    zd2x = zd2.add_mutually_exclusive_group()
 
-    parser.add_argument("-t", "--toggle",
-        help="toggle install/uninstall state of effect NAME in FLST_SEQ", dest="toggle")
-
-    parser.add_argument("-w", "--write", dest="write",
-        help="write config back to same file", action="store_true")
-
-    # interaction with attached device
-    parser.add_argument("-R", "--receive",
-        help="Receive FLST_SEQ from attached device",
-        action="store_true", dest="receive")
-    parser.add_argument("-S", "--send",
-        help="Send FLST_SEQ to attached device",
-        action="store_true", dest="send")
-
-    zd2 = parser.add_argument_group("ZD2", "Process ZDL2 effect file(s)").add_mutually_exclusive_group()
-    zd2.add_argument("-I", "--install",
+    zd2x.add_argument("-I", "--install",
         help="Install effect binary to attached device, updating FLST_SEQ",
         action="store_true", dest="install")
-    zd2.add_argument("-U", "--uninstall",
+    zd2x.add_argument("-U", "--uninstall",
         help="Remove effect binary from attached device, updating FLST_SEQ",
         action="store_true", dest="uninstall")
-    zd2.add_argument("--install-only",
-        help="Install effect binary to attached device without affecting FLST_SEQ",
-        action="store_true", dest="installonly")
-    zd2.add_argument("--uninstall-only",
-        help="Remove effect binary from attached device without affecting FLST_SEQ",
-        action="store_true", dest="uninstallonly")
-    zd2.add_argument("-e", "--effectdown",
-        help="Download effect binary with name FILE",
-        action="store_true", dest="effectdown")
-    parser.add_argument("--include-zic",
+    zd2.add_argument("--include-zic",
         help="When downloading or uploading effect binary, include the corrsponding .ZIC icon file",
         action="store_true", dest="includezic")
-    parser.add_argument("--include-zir",
+    zd2.add_argument("--include-zir",
         help="When downloading or uploading effect binary, include the corrsponding .ZIR impulse response file",
         action="store_true", dest="includezir")
-    zd2.add_argument("--download-all",
+
+    zd2x.add_argument("--install-only",
+        help="Install effect binary to attached device without affecting FLST_SEQ",
+        action="store_true", dest="installonly")
+    zd2x.add_argument("--uninstall-only",
+        help="Remove effect binary from attached device without affecting FLST_SEQ",
+        action="store_true", dest="uninstallonly")
+    zd2x.add_argument("-e", "--effectdown",
+        help="Download effect binary with name FILE",
+        action="store_true", dest="effectdown")
+    zd2x.add_argument("--download-all",
         help="Download all files on pedal to directory FILE",
         action="store_true", dest="downloadall")
+
     zd2.add_argument("-a", "--available",
         help="Print out the available diskspace after action",
         action="store_true", dest="available")
 
-    # attached device's effect patches
-    zptc = parser.add_argument_group("ZPTC", "Process ZPTC patch file").add_mutually_exclusive_group()
-    zptc.add_argument("-p", "--patchdown", type=int,
+
+    # attached device's patches
+    zptc = parser.add_argument_group("ZPTC", "Process 'ZPTC' patch file")
+    zptcx = zptc.add_mutually_exclusive_group()
+
+    zptcx.add_argument("-p", "--patchdown", type=int,
         help="download specific zptc", dest="patchdown")
-    zptc.add_argument("-P", "--patchup", type=int,
+    zptcx.add_argument("-P", "--patchup", type=int,
         help="upload specific zptc", dest="patchup")
-    zptc.add_argument("-c", "--curdown", action="store_true", 
+    zptcx.add_argument("-c", "--curdown", action="store_true", 
         help="download current zptc", dest="curdown")
-    parser.add_argument("--old-patch",
+
+    zptc.add_argument("--old-patch",
         help="Use the 'old' method for reading patches",
         action="store_true", dest="oldpatch")
 
-    parser.add_argument("-M", "--midiskip",
-        type=int, default=0, dest="midiskip",
-        help="Skip devices when connecting, ie when you have multiple pedals")
+
+    # actions on FLST_SEQ file (local or received from pedal)
+    zt2 = parser.add_argument_group("ZT2", "Process 'FLST_SEQ.ZT2' file " + \
+            "(not normally needed to add/remove effects to pedal)")
+    zt2x = zt2.add_mutually_exclusive_group()
+
+    # interaction with attached device
+    zt2x.add_argument("-R", "--receive",
+        help="Receive FLST_SEQ from attached device",
+        action="store_true", dest="receive")
+    zt2x.add_argument("-S", "--send",
+        help="Send FLST_SEQ to attached device",
+        action="store_true", dest="send")
+
+    zt2y = zt2.add_mutually_exclusive_group()
+    zt2y.add_argument("-d", "--dump",
+        help="dump configuration to text",
+        action="store_true", dest="dump")
+    zt2y.add_argument("-s", "--summary",
+        help="summarized configuration in human readable form",
+        action="store_true", dest="summary")
+    zt2y.add_argument("-b", "--build",
+        help="output commands required to 'build' this FLST_SEQ",
+        dest="build")
+
+    zt2z = zt2.add_mutually_exclusive_group()
+    zt2z.add_argument("-D", "--delete",
+        help="delete effect from FLST_SEQ", dest="delete")
+    zt2z.add_argument("-A", "--add",
+        help="add effect to FLST_SEQ", dest="add")
+    zt2z.add_argument("-N", "--not-add", action="store_true",
+        help="add effect to FLST_SEQ, but as uninstalled", dest="notadd")
+    zt2.add_argument("-v", "--ver",
+        help="effect version (use with --add/--not-add)", dest="ver")
+    zt2.add_argument("-i", "--id",
+        help="effect id (use with --add/--not-add)", dest="id")
+
+    zt2.add_argument("-t", "--toggle",
+        help="toggle install/uninstall state of effect NAME in FLST_SEQ", dest="toggle")
+
+    zt2.add_argument("-w", "--write", dest="write",
+        help="write config/changes back to same file", action="store_true")
 
     options = parser.parse_args()
 
@@ -1103,13 +1119,13 @@ def main():
         for group in config[1]:
             for effect in dict(group)["effects"]:
                 if dict(effect)["installed"]:
-                    print("python3 zoomzt2.py -i ", hex(dict(effect)["id"]), \
-                        "-A", dict(effect)["effect"], "-v", dict(effect)["version"], \
-                        "-w", options.build)
+                    print("python3 zoomzt2.py --id", hex(dict(effect)["id"]), \
+                        "--add", dict(effect)["effect"], "--ver", dict(effect)["version"], \
+                        "--write", options.build)
                 else:
-                    print("python3 zoomzt2.py -i ", hex(dict(effect)["id"]), \
-                        "-N -A", dict(effect)["effect"], "-v", dict(effect)["version"], \
-                        "-w", options.build)
+                    print("python3 zoomzt2.py --id", hex(dict(effect)["id"]), \
+                        "--not-add", dict(effect)["effect"], "--ver", dict(effect)["version"], \
+                        "--write", options.build)
 
     if options.write and data:
        outfile = open(options.files[0], "wb")
