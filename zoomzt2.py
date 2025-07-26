@@ -1044,9 +1044,8 @@ def main():
                 bindata = binfile.read()
                 binfile.close()
 
-                print("Installing effect:", target)
                 if not pedal.file_check(target):
-                    print("uploading...")
+                    print("Uploading effect:", target)
                     pedal.file_upload(target, bindata)
 
                 pedal.file_close()
@@ -1055,13 +1054,23 @@ def main():
                     print("Percentage disk use:", pedal.disk_usage())
 
                 if data and options.install:
+                    print("Installing effect:", target)
                     data = pedal.add_effect_from_filename(data, target)
 
 
     if options.uninstall or options.uninstallonly:
         for target in options.files:
-            print("Uninstalling effect:", target)
+            filename, extension = os.path.splitext(target)
+            if extension != ".ZD2":
+                print("'%s' is not 'ZD2', skipping" % target)
+                continue
+
+            if data and options.uninstall:
+                print("Uninstalling effect:", target)
+                data = pedal.remove_effect(data, target)
+
             if pedal.file_check(target):
+                print("Removing effect:", target)
                 pedal.file_delete(target)
 
             pedal.file_close()
@@ -1069,15 +1078,12 @@ def main():
             if options.available:
                 print("Percentage disk use:", pedal.disk_usage())
 
-            if data and options.uninstall:
-                data = pedal.remove_effect(data, target)
-
             filename, extension = os.path.splitext(target)
 
             if options.includezic:
                 zicfilename = filename + ".ZIC"
                 if pedal.file_check(zicfilename):
-                    print("Uninstalling icon:", zicfilename)
+                    print("Removing icon:", zicfilename)
                     pedal.file_delete(zicfilename)
 
                 pedal.file_close()
@@ -1088,7 +1094,7 @@ def main():
             if options.includezir:
                 zirfilename = filename + ".ZIR"
                 if pedal.file_check(zirfilename):
-                    print("Uninstalling IR  :", zirfilename)
+                    print("Removing IR:", zirfilename)
                     pedal.file_delete(zirfilename)
 
                 pedal.file_close()
