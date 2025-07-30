@@ -172,6 +172,9 @@ def main():
         parser.add_argument("-s", "--scale",
             help="wav file scale, set '0.0' for auto-scale",
             type=float, default=1.0, dest="scale")
+        parser.add_argument("-S", "--source",
+            help="wav file source, 'low/mid/high' or 'left/right' for '_ST.ZIR'",
+            dest="source")
 
     options = parser.parse_args()
 
@@ -286,11 +289,14 @@ def main():
             if options.scale == 0:
                 options.scale = "auto"
 
-            if zir['type'] == "ST":
-                wavio.write(options.wav, zir['left'], 48000, sampwidth=3, scale=options.scale)
+            if options.source:
+                source = options.source
+            elif zir['type'] == "ST":
+                source = 'left'
             else:
-                wavio.write(options.wav, zir['mid'], 48000, sampwidth=3, scale=options.scale)
+                source = 'mid'
 
+            wavio.write(options.wav, zir[source], 44100, sampwidth=3, scale=options.scale)
 
 if __name__ == "__main__":
     main()
