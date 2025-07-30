@@ -1003,41 +1003,40 @@ def main():
     if options.install or options.installonly:
         for target in options.files:
             filename, extension = os.path.splitext(target)
-            if extension != ".ZD2":
-                print("'%s' is not 'ZD2', skipping" % target)
-                continue
 
             if options.includezir:
                 zirfilename = filename + ".ZIR"
-                binfile = open(zirfilename, "rb")
-                if binfile:
-                    bindata = binfile.read()
-                    binfile.close()
+                if os.path.exists(zirfilename):
+                    binfile = open(zirfilename, "rb")
+                    if binfile:
+                        bindata = binfile.read()
+                        binfile.close()
 
-                    if not pedal.file_check(zirfilename):
-                        print("Uploading IR:", zirfilename)
-                        pedal.file_upload(zirfilename, bindata)
+                        if not pedal.file_check(zirfilename):
+                            print("Uploading IR:", zirfilename)
+                            pedal.file_upload(zirfilename, bindata)
 
-                    pedal.file_close()
+                        pedal.file_close()
 
-                    if options.available:
-                        print("Percentage disk use:", pedal.disk_usage())
+                        if options.available:
+                            print("Percentage disk use:", pedal.disk_usage())
 
             if options.includezic:
                 zicfilename = filename + ".ZIC"
-                binfile = open(zicfilename, "rb")
-                if binfile:
-                    bindata = binfile.read()
-                    binfile.close()
+                if os.path.exists(zicfilename):
+                    binfile = open(zicfilename, "rb")
+                    if binfile:
+                        bindata = binfile.read()
+                        binfile.close()
 
-                    if not pedal.file_check(zicfilename):
-                        print("Uploading icon:", zicfilename)
-                        pedal.file_upload(zicfilename, bindata)
+                        if not pedal.file_check(zicfilename):
+                            print("Uploading icon:", zicfilename)
+                            pedal.file_upload(zicfilename, bindata)
 
-                    pedal.file_close()
+                        pedal.file_close()
 
-                    if options.available:
-                        print("Percentage disk use:", pedal.disk_usage())
+                        if options.available:
+                            print("Percentage disk use:", pedal.disk_usage())
 
             binfile = open(target, "rb")
             if binfile:
@@ -1054,20 +1053,23 @@ def main():
                     print("Percentage disk use:", pedal.disk_usage())
 
                 if data and options.install:
-                    print("Installing effect:", target)
-                    data = pedal.add_effect_from_filename(data, target)
+                    if extension != ".ZD2":
+                        print("'%s' is not 'ZD2', skipping install" % target)
+                    else:
+                        print("Installing effect:", target)
+                        data = pedal.add_effect_from_filename(data, target)
 
 
     if options.uninstall or options.uninstallonly:
         for target in options.files:
             filename, extension = os.path.splitext(target)
-            if extension != ".ZD2":
-                print("'%s' is not 'ZD2', skipping" % target)
-                continue
 
             if data and options.uninstall:
-                print("Uninstalling effect:", target)
-                data = pedal.remove_effect(data, target)
+                if extension != ".ZD2":
+                    print("'%s' is not 'ZD2', skipping uninstall" % target)
+                else:
+                    print("Uninstalling effect:", target)
+                    data = pedal.remove_effect(data, target)
 
             if pedal.file_check(target):
                 print("Removing effect:", target)
