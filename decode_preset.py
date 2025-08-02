@@ -19,15 +19,19 @@ TXJ1 = Struct(
 
 TXE1 = Struct(
     Const(b"TXE1"),
-    "length" / Rebuild(Int32ul, len_(this.desc)),
+    "length" / Rebuild(Int32ul, (len_(this.desc)+4) & 0xFFFC),
     "desc" / PaddedString(this.length, "ascii"),
 )
 
 EDTB2 = Struct( # Working with a Byte-reversed copy of data
     #"dump" / Peek(HexDump(Bytes(24))),
-    "unknown" / Bytes(9),
-    "control" / Bitwise(Struct(
+    "unknown" / Bytes(3),
+    "bitwise" / Bitwise(Struct(
         "unknown" / BitsInteger(6),
+        "param12" / BitsInteger(12),
+        "param11" / BitsInteger(12),
+        "param10" / BitsInteger(12),
+        "param9" / BitsInteger(12),
         "param8" / BitsInteger(8),
         "param7" / BitsInteger(8),
         "param6" / BitsInteger(8),
@@ -53,15 +57,24 @@ EDTB = Struct(
     "effects" / Array(this._.fx_count, EDTB1),
 )
 
-PPRM12 = Struct(
+PPRM_rev = Struct(
     #"dump" / Peek(HexDump(Bytes(12))),
-    "control" / Bitwise(Struct(
-        "punknown" / BitsInteger(23),
-        "editslot" / BitsInteger(3), # active/editing slot 0..4 on G1Four/etc
-        "volume" / BitsInteger(7),
-        "pad" / BitsInteger(7),
+    "bitwise" / Bitwise(Struct(
+        #"punknown" / BitsInteger(23),
+        "byte11" / BitsInteger(8),
+        "byte10" / BitsInteger(8),
+        "byte09" / BitsInteger(7),
+        "editSlot" / BitsInteger(3), # active/editing slot 0..4 on G1Four/etc
+        "patchVolume" / BitsInteger(7),
+        "byte07" / BitsInteger(7),
+        "byte06" / BitsInteger(8),
+        "byte05" / BitsInteger(8),
+        "byte04" / BitsInteger(8),
+        "byte03" / BitsInteger(8),
+        "byte02" / BitsInteger(8),
+        "byte01" / BitsInteger(8),
+        "byte00" / BitsInteger(8),
     )),
-    "unknown" / Bytes(7),
 )
 
 PPRM = Struct(
@@ -70,20 +83,69 @@ PPRM = Struct(
     #"dump" / Peek(HexDump(Bytes(this.length))),
 
     "autorev" / ByteSwapped(Bytes(12)),                 # not sure all are 12bytes, but needs fixed len
-    "reversed" / RestreamData(this.autorev, PPRM12),    # this does not allow re-build of data :-(
+    "reversed" / RestreamData(this.autorev, PPRM_rev),  # this does not allow re-build of data :-(
+)
+
+PPRM_v2_rev = Struct(
+    #"dump" / Peek(HexDump(Bytes(32))),
+    "bitwise" / Bitwise(Struct(
+        "byte31" / BitsInteger(4),
+        "tempo" / BitsInteger(8),
+        "byte30" / BitsInteger(4),
+        "byte29" / BitsInteger(8),
+        "byte28" / BitsInteger(8),
+        "byte27" / BitsInteger(8),
+        "byte26" / BitsInteger(8),
+        "byte25" / BitsInteger(8),
+        "byte24" / BitsInteger(8),
+        "byte23" / BitsInteger(3),
+        "lineselSlot" / BitsInteger(6),     # bitfield
+        "byte22" / BitsInteger(5),
+        "bpmSlot" / BitsInteger(6),         # bitfield
+        "byte21" / BitsInteger(5),
+        "preampSlot" / BitsInteger(6),      # bitfield
+        "byte20" / BitsInteger(1),
+        "byte19" / BitsInteger(8),
+        "byte18" / BitsInteger(8),
+        "byte17" / BitsInteger(8),
+        "byte16" / BitsInteger(8),
+        "byte15" / BitsInteger(8),
+        "byte14" / BitsInteger(8),
+        "byte13" / BitsInteger(3),
+        "rightPosition" / BitsInteger(4),
+        "byte13" / BitsInteger(1),
+        "editSlotBits" / BitsInteger(16),
+        "editSlot" / BitsInteger(3),
+        "byte10" / BitsInteger(1),
+        "patchVolume" / BitsInteger(7),
+        "byte09" / BitsInteger(5),
+        "rhythmSlot" / BitsInteger(6),      # bitfield
+        "byte08" / BitsInteger(2),
+        "byte07" / BitsInteger(3),
+        "looperSlot" / BitsInteger(6),      # bitfield
+        "byte06" / BitsInteger(7),
+        "byte05" / BitsInteger(8),
+        "byte04" / BitsInteger(8),
+        "byte03" / BitsInteger(4),
+        "invalidFXSlot" / BitsInteger(6),
+        "byte02" / BitsInteger(6),
+        "byte01" / BitsInteger(8),
+        "byte00" / BitsInteger(8),
+    )),
 )
 
 PPRM_v2 = Struct(
     Const(b"PRM2"),
-    "length" / Rebuild(Int32ul, len_(this.unknown)),
-    "dump" / Peek(HexDump(Bytes(this.length))),
+    "length" / Rebuild(Int32ul, len_(this.autorev)),
+    #"dump" / Peek(HexDump(Bytes(this.length))),
 
-    "unknown" / Bytes(this.length),
+    "autorev" / ByteSwapped(Bytes(32)),                 # not sure all are 32bytes, but needs fixed len
+    "reversed" / RestreamData(this.autorev, PPRM_v2_rev), # this does not allow re-build of data :-(
 )
 
 NAME = Struct(
     Const(b"NAME"),
-    "length" / Rebuild(Int32ul, len_(this.name)),
+    "length" / Rebuild(Int32ul, (len_(this.name)+4) & 0xFFFC),
     #"dump" / Peek(HexDump(Bytes(this.length))),
 
     "name" / PaddedString(this.length, "ascii"),
@@ -99,8 +161,8 @@ ZPTC = Struct(
 
     "p" / Peek(PEEK),           # need to peek ahead for the version
 
-    "length" / IfThenElse(this.p.v> 1,
-            Rebuild(Int32ul, 68 + (this.fx_count * 4) + \
+    "length" / IfThenElse(this.p.v > 1,
+            Rebuild(Int32ul, 76 + (this.fx_count * 4) + \
                 this.TXJ1.length + this.TXE1.length + \
                 this.EDTB.length + this.PPRM.length + this.NAME.length),    # V2
             Rebuild(Int32ul, 68 + (this.fx_count * 4) + \
@@ -147,7 +209,7 @@ ZPTC = Struct(
         PPRM_v2,
         PPRM
     ),
-    "NAME" / If(this.version > 1, Optional(NAME)),
+    "NAME" / If(this.version > 1, NAME),
 )
 
 #--------------------------------------------------
@@ -265,7 +327,7 @@ convert = [ # 2screen -> 1screen
 def main():
     from argparse import ArgumentParser
 
-    parser = ArgumentParser(prog="decode_effect")
+    parser = ArgumentParser(prog="decode_preset")
     parser.add_argument('files', metavar='FILE', nargs=1,
         help='File to process')
 
@@ -331,16 +393,16 @@ def main():
 
         if options.summary:
             print("Name: %s" % config['name'])
-            if config['version'] == 1:
-                print("Patch Volume: %s" % config['PPRM']['reversed']['control']['volume'])
+            print("Patch Volume: %s" % config['PPRM']['reversed'] \
+                    ['bitwise']['patchVolume'])
             for id in range(config['fx_count']):
                 print("Effect %d: 0x%8.8X" % (id+1, config['ids'][id]))
 
                 print("   Enabled:", config['EDTB']['effects'][id] \
-                        ['reversed']['control']['enabled'])
-                for param in range(1,9):
+                        ['reversed']['bitwise']['enabled'])
+                for param in range(1,13):
                     print("   Param %d: %d" % (param, config['EDTB']['effects'][id] \
-                        ['reversed']['control']['param'+str(param)]))
+                        ['reversed']['bitwise']['param'+str(param)]))
 
         if options.outfile:
             outfile = open(options.outfile, "wb")
@@ -373,14 +435,14 @@ def main():
                             print("Converting Effect %d : 0x%8.8X -> 0x%8.8X" \
                                    % (id + 1, config['ids'][id], item[1]))
                             config['ids'][id] = item[1]
-                            config['EDTB']['effects'][id]['reversed']['control']['id'] \
+                            config['EDTB']['effects'][id]['reversed']['bitwise']['id'] \
                                     = item[1] & 0x1FFFFFFF
 
                         if options.convert2 and config['ids'][id] == item[1]:
                             print("Converting Effect %d : 0x%8.8X -> 0x%8.8X" \
                                    % (id + 1, config['ids'][id], item[0]))
                             config['ids'][id] = item[0]
-                            config['EDTB']['effects'][id]['reversed']['control']['id'] \
+                            config['EDTB']['effects'][id]['reversed']['bitwise']['id'] \
                                     = item[0] & 0x1FFFFFFF
             # force effect
             if options.effect:
@@ -388,17 +450,20 @@ def main():
                 for id in range(config['fx_count']):
                     for item in convert:
                         config['ids'][id] = effect
-                        config['EDTB']['effects'][id]['reversed']['control']['id'] \
+                        config['EDTB']['effects'][id]['reversed']['bitwise']['id'] \
                                 = effect & 0x1FFFFFFF
 
             # need to rebuild EDTB's reversed data
-            for id in range(len(config['EDTB']['effects'])):
+            for id in range(config['fx_count']):
                 blob = EDTB2.build(config['EDTB']['effects'][id]['reversed'])
                 config['EDTB']['effects'][id]['autorev'] = blob
 
             # rebuild PPRM's reverse data
-            if config['version'] == 1:
-                blob = PPRM12.build(config['PPRM']['reversed'])
+            if config['version'] > 1:
+                blob = PPRM_v2_rev.build(config['PPRM']['reversed'])
+                config['PPRM']['autorev'] = blob
+            else:
+                blob = PPRM_rev.build(config['PPRM']['reversed'])
                 config['PPRM']['autorev'] = blob
 
             data = ZPTC.build(config)
