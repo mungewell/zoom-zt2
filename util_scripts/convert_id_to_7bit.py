@@ -5,6 +5,7 @@
 #
 
 from argparse import ArgumentParser
+import os
 
 parser = ArgumentParser(prog="convert_id_to_7bit")
 parser.add_argument('id', metavar='FILE', nargs=1,
@@ -18,6 +19,10 @@ parser.add_argument("-s", "--slot", type=int, default=-1,
 parser.add_argument("-p", "--plus",
     help="modify midi for the MS-plus pedals",
     action="store_true", dest="plus")
+
+parser.add_argument("-D", "--do-it",
+    help="actually run the resultant command",
+    action="store_true", dest="doit")
 
 options = parser.parse_args()
 
@@ -40,10 +45,16 @@ if options.slot == -1:
 else:
     if options.plus:
         print("for MS-plus:")
-        print("amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 20 00 %2.2x 01 %2.2x %2.2x %2.2x %2.2x %2.2x f7'" % \
+        command = ("amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 20 00 %2.2x 01 %2.2x %2.2x %2.2x %2.2x %2.2x f7'" % \
                 (options.slot, (ID & 0x7f), (ID >> 7  & 0x7f), \
                 (ID >> 14 & 0x7f), (ID >> 21 & 0x7f), (ID >> 28 & 0x7f)))
     else:
-        print("amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 %2.2x 01 %2.2x %2.2x %2.2x %2.2x %2.2x f7'" % \
+        command = ("amidi -p hw:1,0,0 -S 'f0 52 00 6e 64 03 00 %2.2x 01 %2.2x %2.2x %2.2x %2.2x %2.2x f7'" % \
                 (options.slot, (ID & 0x7f), (ID >> 7  & 0x7f), \
                 (ID >> 14 & 0x7f), (ID >> 21 & 0x7f), (ID >> 28 & 0x7f)))
+
+    print(command)
+
+    if options.doit:
+        print("and doing it...")
+        os.system(command)
