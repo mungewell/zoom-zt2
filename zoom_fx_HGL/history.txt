@@ -1,0 +1,8 @@
+python3 zdownload-plus.py HGL_for_MS70CDR_Plus/HGL_AllZDL.lst HGL_for_MS70CDR_Plus/ZDLF
+python3 zdownload-plus.py HGL_for_MS50G_Plus/HGL_AllZDL.lst HGL_for_MS50G_Plus/ZDLF
+python3 zdownload-plus.py HGL_for_MS60B_Plus/HGL_AllZDL.lst HGL_for_MS60B_Plus/ZDLF
+python3 zdownload-plus.py HGL_for_MS200D_Plus/HGL_AllZDL.lst HGL_for_MS200D_Plus/ZDLF
+python3 zdownload-plus.py HGL_for_MS80IR_Plus/HGL_AllZDL.lst HGL_for_MS80IR_Plus/ZDLF
+
+# G2X Four/G2 Four/B2Four
+python3 zdownload-plus.py HGL_AllZDL_202206.lst HGL_ZDLF_202206
