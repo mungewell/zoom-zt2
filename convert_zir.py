@@ -45,9 +45,78 @@ ZIR_LT = Padded(12288,
     "high" / Array(256, Float32l),
 ))
 
+ZIR_IR = Struct(
+    "type" / Computed("IR"),
+
+    "low" / Array(1024, Float32l),
+    "mid" / Array(1024, Float32l),
+    "high" / Array(1024, Float32l),
+)
+
 #--------------------------------------------------
 
-def upscale_1U_to_ST(a):
+def downscale_1x5(a):               # 768 -> 512
+    o = []
+    for i in range(0, len(a), 3):
+        c = a[i]
+        try:
+            n = a[i+1]
+        except:
+            n = 0
+        try:
+            m = a[i+2]
+        except:
+            m = 0
+        o.append((c+c+n)/3)
+        o.append((n+m+m)/3)
+    return o
+
+def downscale_2x(a):                # 512 -> 256, or 1024 -> 512
+    o = []
+    for i in range(0, len(a), 2):
+        c = a[i]
+        try:
+            n = a[i+1]
+        except:
+            n = 0
+        o.append((c+n)/2)
+    return o
+
+def downscale_3x(a):                # 768 -> 256
+    o = []
+    for i in range(0, len(a), 3):
+        c = a[i]
+        try:
+            n = a[i+1]
+        except:
+            n = 0
+        try:
+            m = a[i+2]
+        except:
+            m = 0
+        o.append((c+n+m)/3)
+    return o
+
+def downscale_4x(a):                # 1024 -> 256
+    o = []
+    for i in range(0, len(a), 4):
+        c = a[i]
+        try:
+            n = a[i+1]
+        except:
+            n = 0
+        try:
+            m = a[i+2]
+        except:
+            m = 0
+        try:
+            l = a[i+3]
+        except:
+            l = 0
+        o.append((c+n+m+l)/4)
+    return o
+
+def upscale_1x5(a):                 # 512 -> 768
     o = []
     for i in range(0, len(a), 2):
         c = a[i]
@@ -64,49 +133,7 @@ def upscale_1U_to_ST(a):
         o.append((n+n+m)/3)
     return o
 
-def downscale_1U_to_LT(a):
-    o = []
-    for i in range(0, len(a), 2):
-        c = a[i]
-        try:
-            n = a[i+1]
-        except:
-            n = 0
-        o.append((c+n)/2)
-    return o
-
-def downscale_ST_to_1U(a):
-    o = []
-    for i in range(0, len(a), 3):
-        c = a[i]
-        try:
-            n = a[i+1]
-        except:
-            n = 0
-        try:
-            m = a[i+2]
-        except:
-            m = 0
-        o.append((c+c+n)/3)
-        o.append((n+m+m)/3)
-    return o
-
-def downscale_ST_to_LT(a):
-    o = []
-    for i in range(0, len(a), 3):
-        c = a[i]
-        try:
-            n = a[i+1]
-        except:
-            n = 0
-        try:
-            m = a[i+2]
-        except:
-            m = 0
-        o.append((c+n+m)/3)
-    return o
-
-def upscale_LT_to_1U(a):
+def upscale_2x(a):                  # 256 -> 512, or 512 -> 1024
     o = []
     for i in range(len(a)):
         c = a[i]
@@ -118,7 +145,7 @@ def upscale_LT_to_1U(a):
         o.append((c+n)/2)
     return o
 
-def upscale_LT_to_ST(a):
+def upscale_3x(a):                  # 256 -> 768
     o = []
     for i in range(len(a)):
         c = a[i]
@@ -129,6 +156,20 @@ def upscale_LT_to_ST(a):
         o.append(c)
         o.append((c+c+n)/3)
         o.append((c+n+n)/3)
+    return o
+
+def upscale_4x(a):                  # 256 -> 1024
+    o = []
+    for i in range(len(a)):
+        c = a[i]
+        try:
+            n = a[i+1]
+        except:
+            n = 0
+        o.append(c)
+        o.append((c+c+c+n)/4)
+        o.append((c+c+n+n)/4)
+        o.append((c+n+n+n)/4)
     return o
 
 #--------------------------------------------------
@@ -156,6 +197,9 @@ def main():
     tpx.add_argument("-3", "--LT",
         help="ZIR Type 3 '_LT' = 12288 bytes, low/mid/high",
         action="store_true", dest="type_lt")
+    tpx.add_argument("-4", "--IR",
+        help="ZIR Type 4 '_IR' = 12288 bytes, low/mid/high",
+        action="store_true", dest="type_ir")
 
     opx = parser.add_mutually_exclusive_group()
     opx.add_argument("-O", "--writeback",
@@ -206,21 +250,28 @@ def main():
             zir = ZIR_ST.parse(data)
         elif options.type_lt:
             zir = ZIR_LT.parse(data)
+        elif options.type_ir:
+            zir = ZIR_IR.parse(data)
         else:
             guess = True
 
     if guess:
-        if len(data) == 12288:
+        filename, extension = os.path.splitext(options.files[0])
+        if filename[-2:] == "ST":
+            print("Guessing 'ST'")
+            zir = ZIR_ST.parse(data)
+        elif filename[-2:] == "1U":
+            print("Guessing '1U'")
+            zir = ZIR_1U.parse(data)
+        elif filename[-2:] == "LT":
             print("Guessing 'LT'")
             zir = ZIR_LT.parse(data)
-        else:
-            filename, extension = os.path.splitext(options.files[0])
-            if filename[-2:] == "ST":
-                print("Guessing 'ST'")
-                zir = ZIR_ST.parse(data)
-            elif filename[-2:] == "1U":
-                print("Guessing '1U'")
-                zir = ZIR_1U.parse(data)
+        elif filename[-2:] == "IR":
+            print("Guessing 'IR'")
+            zir = ZIR_IR.parse(data)
+        elif filename[-2:] == "88":     # B2 Four
+            print("Guessing '88/IR'")
+            zir = ZIR_IR.parse(data)
 
         if not zir:
             sys.exit("unable to guess....")
@@ -232,37 +283,69 @@ def main():
 
     if options.output or options.writeback:
         # up/down-sample data to change type
-        if zir['type'] == "1U":
-            if options.type_st:
-                zir['left'] = upscale_1U_to_ST(zir['mid'])
-                zir['right'] = upscale_1U_to_ST(zir['mid'])
+        if zir['type'] == "1U":         # 512
+            if options.type_st:         #       -> 768
+                zir['left'] = upscale_1x5(zir['mid'])
+                zir['right'] = upscale_1x5(zir['mid'])
                 zir['type'] = "ST"
-            if options.type_lt:
-                zir['low'] = downscale_1U_to_LT(zir['low'])
-                zir['mid'] = downscale_1U_to_LT(zir['mid'])
-                zir['high'] = downscale_1U_to_LT(zir['high'])
+            elif options.type_lt:         #       -> 256
+                zir['low'] = downscale_2x(zir['low'])
+                zir['mid'] = downscale_2x(zir['mid'])
+                zir['high'] = downscale_2x(zir['high'])
                 zir['type'] = "LT"
-        if zir['type'] == "LT":
-            if options.type_1u:
-                zir['low'] = upscale_LT_to_1U(zir['low'])
-                zir['mid'] = upscale_LT_to_1U(zir['mid'])
-                zir['high'] = upscale_LT_to_1U(zir['high'])
+            elif options.type_ir:         #       -> 1024
+                zir['low'] = upscale_2x(zir['low'])
+                zir['mid'] = upscale_2x(zir['mid'])
+                zir['high'] = upscale_2x(zir['high'])
+                zir['type'] = "IR"
+            else:
+                sys.exit("Conversion not supported yet")
+
+        if zir['type'] == "ST":         # 768
+            if options.type_1u:         #       -> 512
+                zir['low'] = downscale_1x5(zir['left'])
+                zir['mid'] = downscale_1x5(zir['left'])
+                zir['high'] = downscale_1x5(zir['left'])
                 zir['type'] = "1U"
-            if options.type_st:
-                zir['left'] = upscale_LT_to_ST(zir['mid'])
-                zir['right'] = upscale_LT_to_ST(zir['mid'])
+            elif options.type_lt:         #       -> 256
+                zir['low'] = downscale_3x(zir['left'])
+                zir['mid'] = downscale_3x(zir['left'])
+                zir['high'] = downscale_3x(zir['left'])
+                zir['type'] = "LT"
+            else:
+                sys.exit("Conversion not supported yet")
+
+        if zir['type'] == "LT":         # 256
+            if options.type_1u:         #       -> 512
+                zir['low'] = upscale_2x(zir['low'])
+                zir['mid'] = upscale_2x(zir['mid'])
+                zir['high'] = upscale_2x(zir['high'])
+                zir['type'] = "1U"
+            elif options.type_st:         #       -> 768
+                zir['left'] = upscale_3x(zir['mid'])
+                zir['right'] = upscale_3x(zir['mid'])
                 zir['type'] = "ST"
-        if zir['type'] == "ST":
-            if options.type_1u:
-                zir['low'] = downscale_ST_to_1U(zir['left'])
-                zir['mid'] = downscale_ST_to_1U(zir['left'])
-                zir['high'] = downscale_ST_to_1U(zir['left'])
+            elif options.type_ir:         #       -> 1024
+                zir['low'] = upscale_4x(zir['low'])
+                zir['mid'] = upscale_4x(zir['mid'])
+                zir['high'] = upscale_4x(zir['high'])
+                zir['type'] = "IR"
+            else:
+                sys.exit("Conversion not supported yet")
+
+        if zir['type'] == "IR":         # 1024
+            if options.type_1u:         #       -> 512
+                zir['low'] = downscale_2x(zir['low'])
+                zir['mid'] = downscale_2x(zir['mid'])
+                zir['high'] = downscale_2x(zir['high'])
                 zir['type'] = "1U"
-            if options.type_lt:
-                zir['low'] = downscale_ST_to_LT(zir['left'])
-                zir['mid'] = downscale_ST_to_LT(zir['left'])
-                zir['high'] = downscale_ST_to_LT(zir['left'])
+            elif options.type_lt:         #       -> 256
+                zir['low'] = downscale_4x(zir['low'])
+                zir['mid'] = downscale_4x(zir['mid'])
+                zir['high'] = downscale_4x(zir['high'])
                 zir['type'] = "LT"
+            else:
+                sys.exit("Conversion not supported yet")
 
         if options.writeback:
             outfile = open(options.files[0], "wb")
@@ -279,6 +362,8 @@ def main():
             data = ZIR_ST.build(zir)
         elif zir['type'] == "LT":
             data = ZIR_LT.build(zir)
+        elif zir['type'] == "IR":
+            data = ZIR_IR.build(zir)
 
         outfile.write(data)
         outfile.close()
