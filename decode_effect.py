@@ -36,6 +36,9 @@ def main():
     parser.add_argument("--target",
         help="include 'target' bits in summary report",
         action="store_true", dest="target")
+    parser.add_argument("--targets",
+        help="print list of targeted pedals",
+        action="store_true", dest="targets")
     parser.add_argument("-7", "--7bit",
         help="include ID as 5x 7bit summary report",
         action="store_true", dest="seven_bit")
@@ -150,6 +153,15 @@ def main():
             print(", 0x%8.8x" % config['target'], end="")
 
         print("")
+
+        if options.targets:
+            print("Effect targets: ", end="")
+            for t in config['targets']:
+                if t == '_io':
+                    continue
+                elif config['targets'][t]:
+                    print("%s " % t, end="")
+            print("")
 
         if options.seven_bit:
             for i in range(0, 29, 7):

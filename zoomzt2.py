@@ -137,6 +137,22 @@ ZD2 = Struct(
     Const(b"ZDLF"),
     "length" / Int32ul,
     "checksum" / Int32ul,
+
+    "targets" / Peek(BitsSwapped(Bitwise(Struct(    # Informational, does not rebuild
+        "g-series"  / BitsInteger(1),   # 0x0001
+        "0x0002"    / BitsInteger(1),   # 0x0002
+        "0x0004"    / BitsInteger(1),   # 0x0004
+        "0x0008"    / BitsInteger(1),   # 0x0008    Seen on B6/G6/G11
+
+        "0x0010"    / BitsInteger(1),   # 0x0010
+        "0x0020"    / BitsInteger(1),   # 0x0020    Seen on B2Four
+        "0x0040"    / BitsInteger(1),   # 0x0040
+        "ms-50g+"   / BitsInteger(1),   # 0x0080    Seen on MS50G+, MS60B+, MS70CDR+
+
+        "ms-200d+"  / BitsInteger(1),   # 0x0100
+        "ms-80ir+"  / BitsInteger(1),   # 0x0200
+        Padding(22),
+    )))),
     "target" / Int32ul,
 
     "hex1" / HexDump(Peek(Bytes(73))),
@@ -879,7 +895,7 @@ def main():
 
         outfile.write(data)
         outfile.close()
-        exit(0)
+        sys.exit()
 
     if options.receive or options.send or \
             options.install or options.uninstall or \
