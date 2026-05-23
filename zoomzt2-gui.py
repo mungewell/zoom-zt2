@@ -7,6 +7,7 @@
 import wx
 import zoomzt2
 import os
+import sys
 from argparse import ArgumentParser
 
 global options

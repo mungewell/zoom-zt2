@@ -925,7 +925,7 @@ def main():
 
         outfile.write(data)
         outfile.close()
-        exit(0)
+        sys.exit()
 
     if options.patchup:
         (count, size, banks) = pedal.patch_check()
@@ -947,7 +947,7 @@ def main():
             else:
                 data = pedal.patch_upload(options.patchup, data)
         pedal.disconnect()
-        exit(0)
+        sys.exit()
 
     if options.effectdown:
         print("Downloading effect: \"" + options.files[0] + "\"" )
@@ -966,7 +966,7 @@ def main():
             download_and_save_file(pedal, zirfilename)
 
         pedal.disconnect()
-        exit(0)
+        sys.exit()
 
     if options.downloadall:
         dirname = options.files[0]
@@ -977,7 +977,7 @@ def main():
 
         download_and_save_all_files(pedal, dirname)
         pedal.disconnect()
-        exit(0)
+        sys.exit()
 
     if options.receive or options.install or options.uninstall:
         if pedal.file_check("FLST_SEQ.ZT2"):

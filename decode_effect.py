@@ -8,7 +8,7 @@ import zoomzt2
 import hashlib
 import crcmod
 import os
-from sys import exit
+import sys
 
 #--------------------------------------------------
 def main():
@@ -130,7 +130,7 @@ def main():
         if (config['checksum'] == crc32.crcValue ^ 0xffffffff):
             print("Checksum Validated: 0x%8.8x" % config['checksum'])
         else:
-            exit("Checksum Invalid: 0x%8.8x, should be 0x%8.8x" % \
+            sys.exit("Checksum Invalid: 0x%8.8x, should be 0x%8.8x" % \
                     (config['checksum'], crc32.crcValue ^ 0xffffffff))
 
     if options.dump and data:
@@ -179,7 +179,7 @@ def main():
     if data and options.bitmap:
        outfile = open(options.bitmap, "wb")
        if not outfile:
-           exit("Unable to open FILE for writing")
+           sys.exit("Unable to open FILE for writing")
 
        config = zoomzt2.ZD2.parse(data)
        outfile.write(config["ICON"]["data"])
@@ -188,7 +188,7 @@ def main():
     if data and options.xml:
        outfile = open(options.xml, "wb")
        if not outfile:
-           exit("Unable to open FILE for writing")
+           sys.exit("Unable to open FILE for writing")
 
        config = zoomzt2.ZD2.parse(data)
        if options.japan:
@@ -200,7 +200,7 @@ def main():
     if data and options.text:
        outfile = open(options.text, "wb")
        if not outfile:
-           exit("Unable to open FILE for writing")
+           sys.exit("Unable to open FILE for writing")
 
        config = zoomzt2.ZD2.parse(data)
        if options.japan:
@@ -212,7 +212,7 @@ def main():
     if data and options.info:
        outfile = open(options.info, "wb")
        if not outfile:
-           exit("Unable to open FILE for writing")
+           sys.exit("Unable to open FILE for writing")
 
        config = zoomzt2.ZD2.parse(data)
        outfile.write(config["INFO"]["data"])
@@ -221,7 +221,7 @@ def main():
     if data and options.code:
        outfile = open(options.code, "wb")
        if not outfile:
-           exit("Unable to open FILE for writing")
+           sys.exit("Unable to open FILE for writing")
 
        config = zoomzt2.ZD2.parse(data)
        outfile.write(config["DATA"]["data"])
@@ -230,13 +230,13 @@ def main():
     if data and options.output:
        outfile = open(options.output, "wb")
        if not outfile:
-           exit("Unable to open output FILE for writing")
+           sys.exit("Unable to open output FILE for writing")
        config = zoomzt2.ZD2.parse(data)
 
        if options.donor:
            infile = open(options.donor, "rb")
            if not infile:
-               exit("Unable to open donor FILE for reading")
+               sys.exit("Unable to open donor FILE for reading")
            else:
                ddata = infile.read()
            infile.close()
