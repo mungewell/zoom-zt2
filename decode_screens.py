@@ -5,46 +5,51 @@
 #
 # read with:
 # $ amidi -p hw:1,0,0 -S 'F0 52 00 6e 64 02 00 09 00 F7' -r temp.bin -t 2
+#                                                 ^^ Format: 00=Param/Value, 01=Value only
+#                                              ^^ Stop Screen
+#                                           ^^ Start Screen
 #
 
 from construct import *
 
 #--------------------------------------------------
-# Define ZPTC file format using Construct (v2.9)
+# Define format using Construct (v2.9)
 # requires:
 # https://github.com/construct/construct
 
 Info = Struct(
-    "screen1" / Byte,
-    "param1" / Byte,
-    "type1" / Enum(Byte,
-        VALUE  = 0x00,
-        NAME   = 0x01,
-        INVERT = 0x07,
-    ),
-    "invert1" / Byte,
-    "value" / PaddedString(10, "ascii"),
+    "test2" / Peek(Int16ul),
+    Check(this.test2 == this._.test1),
 
-    "screen2" / Byte,
-    "param2" / Byte,
-    "type2" / Enum(Byte,
+    "screen" / Byte,
+    "param" / Byte,
+    "type" / Enum(Byte,
         VALUE  = 0x00,
         NAME   = 0x01,
         INVERT = 0x07,
     ),
-    "invert2" / Byte,
-    "name" / PaddedString(10, "ascii"),
+    "invert" / Byte,
+    "value" / PaddedString(10, "ascii"),
+)
+
+Infos = Struct(
+    "test1" / Peek(Int16ul),
+
+    "info" / Info,
+    "info2" / Optional(Info),
 )
 
 Screen = Struct(
-    "info" / Array(6, Info),
+    "infos" / Array(6, Infos),
 )
 
 Display = Struct(
     GreedyRange(Const(b"\x00")),        # get rid of leading zeros
     Const(b"\xf0\x52\x00\x6e\x64\x01"), 
+
     "screens" / GreedyRange(Screen),
-    #Const(b"\xf7"),                    # not seen if we ask for too
+
+    "end" / Optional(Const(b"\xf7")),   # not seen if we ask for too
                                         # many screens worth of data
 )
 
@@ -83,9 +88,10 @@ def main():
             print(config)
 
         for screen in config['screens']:
-            for info in screen['info']:
-                if info['param1'] == 0:
-                    if info['name'] == "Dummy":
+            for infos in screen['infos']:
+                info = infos['info']
+                if info['param'] == 0:
+                    if info['value'] == "Dummy":
                         on_off = None
                     else:
                         if info['value'] == "1":
@@ -93,12 +99,17 @@ def main():
                         else:
                             on_off = "Off"
                         print("---")
-                elif info['param1'] == 1:
+                elif info['param'] == 1:
                     if on_off:
-                        print("Effect: %s (%s)" % (info['name'], on_off))
+                        print("Effect: %s (%s)" % (info['value'], on_off))
                 else:
-                    if info['name'] != "Dummy" or options.all:
-                        print("%s : %s" % (info['name'], info['value']))
+                    if info['value'] != "Dummy" or options.all:
+                        if infos['info2'] != None:
+                            print("%s : " % infos['info2']['value'], end="")
+                        print("%s" % info['value'])
+
+        if config['end'] == None:
+            print("\nWarning: data not complete!")
 
 
 if __name__ == "__main__":
