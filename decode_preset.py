@@ -97,13 +97,10 @@ PPRM_v2_rev = Struct(
         "byte27" / BitsInteger(8),
         "byte26" / BitsInteger(8),
         "byte25" / BitsInteger(8),
-        "byte24" / BitsInteger(8),
-        "byte23" / BitsInteger(3),
-        "lineselSlot" / BitsInteger(6),     # bitfield
-        "byte22" / BitsInteger(5),
-        "bpmSlot" / BitsInteger(6),         # bitfield
-        "byte21" / BitsInteger(5),
-        "preampSlot" / BitsInteger(6),      # bitfield
+        "byte24" / BitsInteger(6),
+        "lineselSlot" / BitsInteger(11),    # bitfield
+        "bpmSlot" / BitsInteger(11),        # bitfield
+        "preampSlot" / BitsInteger(11),     # bitfield
         "byte20" / BitsInteger(1),
         "byte19" / BitsInteger(8),
         "byte18" / BitsInteger(8),
@@ -118,16 +115,12 @@ PPRM_v2_rev = Struct(
         "editSlot" / BitsInteger(3),
         "byte10" / BitsInteger(1),
         "patchVolume" / BitsInteger(7),
-        "byte09" / BitsInteger(5),
-        "rhythmSlot" / BitsInteger(6),      # bitfield
-        "byte08" / BitsInteger(2),
-        "byte07" / BitsInteger(3),
-        "looperSlot" / BitsInteger(6),      # bitfield
+        "rhythmSlot" / BitsInteger(11),     # bitfield
+        "looperSlot" / BitsInteger(11),     # bitfield
         "byte06" / BitsInteger(7),
-        "byte05" / BitsInteger(8),
-        "byte04" / BitsInteger(8),
-        "byte03" / BitsInteger(4),
-        "invalidFXSlot" / BitsInteger(6),
+        "byte05" / BitsInteger(4),
+        "expressionSlot" / BitsInteger(11), # bitfield
+        "invalidFXSlot" / BitsInteger(11),  # bitfield
         "byte02" / BitsInteger(6),
         "byte01" / BitsInteger(8),
         "byte00" / BitsInteger(8),
@@ -191,7 +184,7 @@ ZPTC = Struct(
         Padding(1),
         "b2four"    / BitsInteger(1),   # 0x010000
         Padding(1),
-        "ms-50g+"   / BitsInteger(1),   # 0x040000
+        "ms-50g+"   / BitsInteger(1),   # 0x040000      Also for MS-70CDR+
         "ms-60b+"   / BitsInteger(1),   # 0x080000
         Padding(12),
     )))),
@@ -209,7 +202,7 @@ ZPTC = Struct(
         PPRM_v2,
         PPRM
     ),
-    "NAME" / If(this.version > 1, NAME),
+    "NAME" / Optional(If(this.version > 1, NAME)),
 )
 
 #--------------------------------------------------
