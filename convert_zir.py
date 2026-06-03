@@ -300,8 +300,7 @@ def main():
                 zir['type'] = "IR"
             else:
                 sys.exit("Conversion not supported yet")
-
-        if zir['type'] == "ST":         # 768
+        elif zir['type'] == "ST":         # 768
             if options.type_1u:         #       -> 512
                 zir['low'] = downscale_1x5(zir['left'])
                 zir['mid'] = downscale_1x5(zir['left'])
@@ -314,8 +313,7 @@ def main():
                 zir['type'] = "LT"
             else:
                 sys.exit("Conversion not supported yet")
-
-        if zir['type'] == "LT":         # 256
+        elif zir['type'] == "LT":         # 256
             if options.type_1u:         #       -> 512
                 zir['low'] = upscale_2x(zir['low'])
                 zir['mid'] = upscale_2x(zir['mid'])
@@ -332,8 +330,7 @@ def main():
                 zir['type'] = "IR"
             else:
                 sys.exit("Conversion not supported yet")
-
-        if zir['type'] == "IR":         # 1024
+        elif zir['type'] == "IR":         # 1024
             if options.type_1u:         #       -> 512
                 zir['low'] = downscale_2x(zir['low'])
                 zir['mid'] = downscale_2x(zir['mid'])
