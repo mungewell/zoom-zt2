@@ -418,9 +418,13 @@ class zoomzt2(object):
         msg = self.filename(packet, "*")
 
         if msg.data[4] == 4:
-            for x in range(14,27):
+            # The filename is a fixed 12-byte field at bytes 14-25, zero-padded
+            # when shorter. Byte 26 is not part of the name, so a name that
+            # fills all 12 bytes has no zero inside the field.
+            for x in range(14,26):
                 if msg.data[x] == 0:
                     return bytes(msg.data[14:x]).decode("utf-8")
+            return bytes(msg.data[14:26]).decode("utf-8")
         else:
             return ""
 
