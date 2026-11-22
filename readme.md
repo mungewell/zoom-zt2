@@ -48,8 +48,10 @@ you indend to remove/delete from the pedal.
 The effects used by the G1Four are '.ZD2' format, these are also used on the G3n and G5n 
 pedals. They are not compatible with the '.ZDL' effects used on the 'MultiStomp' pedals.
 
-Each effect is identified by a 32bit ID, the upper 8bits are a group ID. The ID/Group for
-the MS-plus pedals use a different ID/Group schema to the G1Four/etc.
+Each effect is identified by a 32bit ID. The effect's group ID is a byte stored just before
+the effect ID in the '.ZD2' file. In FLST_SEQ.ZT2, the effect is listed under this group ID.
+For most effects, the upper 8bits of the 32bit effect ID are equal to the 8bit group ID.
+The ID/Group for the MS-plus pedals use a different ID/Group schema to the G1Four/etc.
 
 Note: it is not yet know whether MS-plus ZD2 are compatible with G1Four/etc, or vice-versa.
 
@@ -80,7 +82,7 @@ If you want to install the required dependencies from PIP, you can do: `python3 
 
 ```
 $ python3 zoomzt2.py --help
-usage: zoomzt2 [-h] [-d] [-s] [-b BUILD] [-A ADD] [-v VER] [-i ID] [-D DELETE] [-N] [-t TOGGLE] [-w] [-R] [-S] [-I] [-U]
+usage: zoomzt2 [-h] [-d] [-s] [-b BUILD] [-A ADD] [-v VER] [-i ID] [-g GROUP] [-D DELETE] [-N] [-t TOGGLE] [-w] [-R] [-S] [-I] [-U]
                [--install-only] [--uninstall-only] [-e] [--include-zic] [--include-zir] [--download-all] [-a]
                [-p PATCHDOWN | -P PATCHUP | -c] [--old-patch] [-M MIDISKIP]
                FILE [FILE ...]
@@ -97,6 +99,8 @@ options:
   -A ADD, --add ADD     add effect to FLST_SEQ
   -v VER, --ver VER     effect version (use with --add)
   -i ID, --id ID        effect id (use with --add)
+  -g GROUP, --group GROUP
+                        effect group, default uses top byte of effect id (use with --add)
   -D DELETE, --delete DELETE
                         delete effect from FLST_SEQ
   -N, --not-add         add effect to FLST_SEQ, but as uninstalled

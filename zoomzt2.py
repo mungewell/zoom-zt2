@@ -23,14 +23,15 @@ Header = Struct(
 )
 
 Effect = Struct(
+    "_groupendpeek" / Peek(Bytes(4)),
+    Check(this._groupendpeek != b"\x3c\x3c\x3c\x00"), # Stop effect list at group end marker
     "effect" / PaddedString(12, "ascii"),
     Const(b"\x00"),
     "version" / PaddedString(4, "ascii"),
     Const(b"\x00"),
     "installed" / Default(Byte, 1),     # "Guitar Lab additional effects" = 0
     "id" / Int32ul,
-    "group" / Computed((this.id & 0xFF000000) >> 24),
-    Check(this.group == this._.group),
+    "group" / Computed(this._.group),
     Const(b"\x00\x00\x00"),
 )
 
@@ -327,31 +328,28 @@ class zoomzt2(object):
 
         return(data)
 
-    def add_effect(self, data, name, version, id, installed=True):
+    def add_effect(self, data, name, version, id, installed=True, group=None):
+        if (group is None):
+            group = (id & 0xFF000000) >> 24
+
         config = ZT2.parse(data)
+        self.remove_effect_from_config(config, name)
         head, tail = os.path.split(name)
         
-        group_new = (id & 0xFF000000) >> 24
         group_found = False
+        new = dict(effect=tail, version=version, id=id, installed=installed)
 
-        for group in config[1]:
-            if group['group'] == group_new:
+        for config_group in config[1]:
+            if config_group['group'] == group:
                 group_found = True
-                effects = group['effects']
-                slice = 0
-                for effect in effects:
-                    if effect['effect'] == tail:
-                        del effects[slice]
-                    slice = slice + 1
-
-                new = dict(effect=tail, version=version, id=id, installed=installed)
+                effects = config_group['effects']
                 effects.append(new)
+                break
 
         if not group_found:
             effects = []
-            new = dict(effect=tail, version=version, id=id, installed=installed, group=group_new)
             effects.append(new)
-            new = dict(group=group_new, groupname=group_new, effects=effects, groupend=group_new)
+            new = dict(group=group, groupname=group, effects=effects, group_end=group)
             config[1].append(new)
 
         return ZT2.build(config)
@@ -365,22 +363,22 @@ class zoomzt2(object):
             binconfig = ZD2.parse(bindata)
             head, tail = os.path.split(name)
 
-            return self.add_effect(data, tail, binconfig['version'], binconfig['id'])
+            return self.add_effect(data, tail, binconfig['version'], binconfig['id'], True, binconfig['group'])
         return data
 
-
-    def remove_effect(self, data, name):
-        config = ZT2.parse(data)
+    def remove_effect_from_config(self, config, name):
         head, tail = os.path.split(name)
         
         for group in config[1]:
             effects = group['effects']
-            slice = 0
-            for effect in effects:
+            for slice in reversed(range(len(effects))):
+                effect = effects[slice]
                 if effect['effect'] == tail:
                     del effects[slice]
-                slice = slice + 1
 
+    def remove_effect(self, data, name):
+        config = ZT2.parse(data)
+        self.remove_effect_from_config(config, name)
         return ZT2.build(config)
 
     def filename(self, packet, name):
@@ -862,6 +860,8 @@ def main():
         help="effect version (use with --add/--not-add)", dest="ver")
     zt2.add_argument("-i", "--id",
         help="effect id (use with --add/--not-add)", dest="id")
+    zt2.add_argument("-g", "--group",
+        help="effect group, default uses top byte of effect id (use with --add/--not-add)", dest="group")
 
     zt2.add_argument("-t", "--toggle",
         help="toggle install/uninstall state of effect NAME in FLST_SEQ", dest="toggle")
@@ -994,9 +994,16 @@ def main():
 
     if data and options.add and options.ver and options.id:
         if options.id[:2] == "0x":
-            data = pedal.add_effect(data, options.add, options.ver, int(options.id, 16), not options.notadd)
+            id = int(options.id, 16)
         else:
-            data = pedal.add_effect(data, options.add, options.ver, int(options.id), not options.notadd)
+            id = int(options.id)
+        group = None
+        if options.group:
+            if options.group[:2] == "0x":
+                group = int(options.group, 16)
+            else:
+                group = int(options.group)
+        data = pedal.add_effect(data, options.add, options.ver, id, not options.notadd, group)
 
     if data and options.delete:
         data = pedal.remove_effect(data, options.delete)
@@ -1149,11 +1156,11 @@ def main():
                 if dict(effect)["installed"]:
                     print("python3 zoomzt2.py --id", hex(dict(effect)["id"]), \
                         "--add", dict(effect)["effect"], "--ver", dict(effect)["version"], \
-                        "--write", options.build)
+                        "--group", hex(dict(effect)["group"]), "--write", options.build)
                 else:
                     print("python3 zoomzt2.py --id", hex(dict(effect)["id"]), \
                         "--not-add", dict(effect)["effect"], "--ver", dict(effect)["version"], \
-                        "--write", options.build)
+                        "--group", hex(dict(effect)["group"]), "--write", options.build)
 
     if options.write and data:
        outfile = open(options.files[0], "wb")
